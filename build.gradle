@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.trytodupe'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "io.github.spair:imgui-java-app:1.90.0"
+}
