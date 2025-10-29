@@ -5,6 +5,9 @@ import imgui.app.Application;
 import imgui.app.Configuration;
 
 public class Main extends Application {
+
+    public static final boolean DEBUG = true;
+
     @Override
     protected void configure(Configuration config) {
         config.setTitle("Dear ImGui is Awesome!");

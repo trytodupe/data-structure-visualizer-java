@@ -6,4 +6,6 @@ public abstract class DataStructure implements ISerializable {
 
     public abstract void draw();
 
+    public abstract void printValue();
+
 }

@@ -1,5 +1,9 @@
 package com.trytodupe.datastructure;
 
+import com.trytodupe.Main;
+
+import java.util.Arrays;
+
 public class ArrayStructure extends DataStructure {
 
     private int[] data;
@@ -23,6 +27,9 @@ public class ArrayStructure extends DataStructure {
             throw new IndexOutOfBoundsException("Index: " + i + ", Size: " + currentSize);
         }
         data[i] = value;
+
+        if (Main.DEBUG)
+            printValue();
     }
 
     public int getSize() {
@@ -34,10 +41,18 @@ public class ArrayStructure extends DataStructure {
             throw new IllegalArgumentException("Size must be between 0 and " + MAX_SIZE);
         }
         currentSize = size;
+
+        if (Main.DEBUG)
+            printValue();
     }
 
     @Override
     public void draw () {
 
+    }
+
+    @Override
+    public void printValue () {
+        System.out.println("data = " + Arrays.toString(Arrays.copyOf(data, currentSize)));
     }
 }
