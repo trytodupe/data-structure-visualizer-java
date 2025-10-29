@@ -36,9 +36,19 @@ public class Main extends Application {
         testOperations.add(new ArrayInsertUserOperation(arrayStructure, 1, 99));
         testOperations.add(new ArrayDeleteUserOperation(arrayStructure, 2));
 
+
+        // forward testing
         for (UserOperation<ArrayStructure> op : testOperations) {
             System.out.println(op.getDescription());
             op.execute();
+            System.out.println();
+        }
+
+        // backward testing
+        for (int i = testOperations.size() - 1; i >= 0; i--) {
+            UserOperation<ArrayStructure> op = testOperations.get(i);
+            System.out.println("Undoing: " + op.getDescription());
+            op.undo();
             System.out.println();
         }
 
