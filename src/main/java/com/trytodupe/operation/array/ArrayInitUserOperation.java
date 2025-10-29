@@ -1,0 +1,30 @@
+package com.trytodupe.operation.array;
+
+import com.trytodupe.datastructure.ArrayStructure;
+import com.trytodupe.operation.UserOperation;
+
+import java.util.Arrays;
+
+public class ArrayInitUserOperation extends UserOperation<ArrayStructure> {
+
+    private final int[] initialValues;
+
+    public ArrayInitUserOperation (ArrayStructure arrayStructure, int[] initialValues) {
+        super(arrayStructure);
+
+        if (initialValues == null)
+            throw new IllegalArgumentException("Initial values array cannot be null.");
+
+        this.initialValues = initialValues;
+        this.description = "Initialize array to: " + Arrays.toString(initialValues);
+    }
+
+    @Override
+    protected void buildAtomicOperations () {
+        super.atomicOperations.add(new ArrayResizeAtomicOperation(initialValues.length));
+
+        for (int i = 0; i < initialValues.length; i++) {
+            super.atomicOperations.add(new ArrayWriteAtomicOperation(i, initialValues[i]));
+        }
+    }
+}
