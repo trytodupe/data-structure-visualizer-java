@@ -1,9 +1,8 @@
 package com.trytodupe.operation;
 
 import com.trytodupe.datastructure.DataStructure;
-import com.trytodupe.serialization.ISerializable;
 
-public abstract class AtomicOperation<T extends DataStructure> implements ISerializable {
+public abstract class AtomicOperation<T extends DataStructure> {
 
     public abstract void execute(T dataStructure);
 
