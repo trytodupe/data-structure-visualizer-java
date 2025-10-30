@@ -8,8 +8,8 @@ public class ArrayInsertUserOperation extends UserOperation<ArrayStructure> {
     private final int index;
     private final int value;
 
-    public ArrayInsertUserOperation (ArrayStructure dataStructure, int index, int value) {
-        super(dataStructure);
+    public ArrayInsertUserOperation (ArrayStructure arrayStructure, int index, int value) {
+        super(arrayStructure);
         this.index = index;
         this.value = value;
         this.description = "Insert " + value + " at index " + index;

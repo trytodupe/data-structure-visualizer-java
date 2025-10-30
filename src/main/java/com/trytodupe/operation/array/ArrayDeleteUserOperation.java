@@ -7,8 +7,8 @@ public class ArrayDeleteUserOperation extends UserOperation<ArrayStructure> {
 
     private final int index;
 
-    public ArrayDeleteUserOperation (ArrayStructure dataStructure, int index) {
-        super(dataStructure);
+    public ArrayDeleteUserOperation (ArrayStructure arrayStructure, int index) {
+        super(arrayStructure);
         this.index = index;
         this.description = "Delete element at index " + index;
     }
