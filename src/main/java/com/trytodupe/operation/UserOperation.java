@@ -1,20 +1,22 @@
 package com.trytodupe.operation;
 
+import com.trytodupe.Main;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.serialization.ISerializable;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class UserOperation<T extends DataStructure> implements ISerializable {
 
-    protected T dataStructure;
+    protected transient T dataStructure;
 
     protected String description;
 
-    protected List<AtomicOperation<T>> atomicOperations;
+    protected transient List<AtomicOperation<T>> atomicOperations;
 
-    private boolean built = false;
+    private transient boolean built = false;
 
 
     public UserOperation(T dataStructure) {
@@ -47,6 +49,22 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
 
     public String getDescription() {
         return description;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Class<T> getDataStructureType() {
+        ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
+        return (Class<T>) superClass.getActualTypeArguments()[0];
+    }
+
+    @Override
+    public void postDeserialize() {
+        Class<T> type = getDataStructureType();
+        this.dataStructure = Main.getDataStructure(type);
+
+        if (this.atomicOperations == null) {
+            this.atomicOperations = new ArrayList<>();
+        }
     }
 
 }

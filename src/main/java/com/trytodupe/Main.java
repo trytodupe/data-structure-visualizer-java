@@ -1,20 +1,38 @@
 package com.trytodupe;
 
+import com.google.gson.JsonObject;
 import com.trytodupe.datastructure.ArrayStructure;
+import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.array.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.ArrayInitUserOperation;
 import com.trytodupe.operation.array.ArrayInsertUserOperation;
+import com.trytodupe.serialization.GsonProvider;
+import com.trytodupe.serialization.ISerializable;
 import imgui.ImGui;
 import imgui.app.Application;
 import imgui.app.Configuration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main extends Application {
 
     public static final boolean DEBUG = true;
+
+    private static final Map<Class<? extends DataStructure>, DataStructure> REGISTRY = new HashMap<>();
+
+    static {
+        REGISTRY.put(ArrayStructure.class, new ArrayStructure());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends DataStructure> T getDataStructure(Class<T> clazz) {
+        return (T) REGISTRY.get(clazz);
+    }
+
 
     @Override
     protected void configure(Configuration config) {
@@ -39,8 +57,22 @@ public class Main extends Application {
 
         // forward testing
         for (UserOperation<ArrayStructure> op : testOperations) {
-            System.out.println(op.getDescription());
-            op.execute();
+
+            JsonObject json = op.toJson(GsonProvider.get());
+
+            ISerializable deserialized = ISerializable.fromJson(GsonProvider.get(), json);
+
+            System.out.println(deserialized.getClass());
+
+            if (deserialized instanceof UserOperation<?>) {
+                ((UserOperation<?>) deserialized).execute();
+            }
+
+//            System.out.println(op.getDescription());
+//
+//            System.out.println(op.toJson(GsonProvider.get()));
+//
+//            op.execute();
             System.out.println();
         }
 
