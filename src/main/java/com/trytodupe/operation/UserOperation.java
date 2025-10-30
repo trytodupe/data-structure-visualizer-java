@@ -38,6 +38,10 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
     }
 
     public void undo() {
+		if (!built) {
+			throw new IllegalStateException("Operation instance has not been executed yet.");
+		}
+
         for (int i = atomicOperations.size() - 1; i >= 0; i--) {
             atomicOperations.get(i).undo(dataStructure);
         }
