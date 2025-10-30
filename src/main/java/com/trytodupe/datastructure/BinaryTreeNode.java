@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class BinaryTreeNode<E> {
 
-    private UUID uuid;
+    private final UUID uuid;
     private E value;
     private BinaryTreeNode<E> left;
     private BinaryTreeNode<E> right;
@@ -84,6 +84,6 @@ public class BinaryTreeNode<E> {
     public enum ChildType {
         LEFT,
         RIGHT
-    };
+    }
 
 }
