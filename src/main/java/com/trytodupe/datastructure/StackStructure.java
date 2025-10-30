@@ -38,7 +38,13 @@ public class StackStructure extends DataStructure {
         if (top == -1) {
             throw new IndexOutOfBoundsException("Stack is empty");
         }
-        return data[top--];
+
+		top--;
+
+		if (Main.DEBUG)
+			printValue();
+
+        return data[top+1];
     }
 
     public void draw() {
