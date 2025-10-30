@@ -7,6 +7,7 @@ import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.array.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.ArrayInitUserOperation;
 import com.trytodupe.operation.array.ArrayInsertUserOperation;
+import com.trytodupe.operation.stack.StackInitUserOperation;
 import com.trytodupe.operation.stack.StackPopUserOperation;
 import com.trytodupe.operation.stack.StackPushUserOperation;
 import com.trytodupe.test.OperationTestRunner;
@@ -60,10 +61,11 @@ public class Main extends Application {
 		List<UserOperation<StackStructure>> testStackOps = new ArrayList<>();
 		StackStructure stack = getDataStructure(StackStructure.class);
 
-		testStackOps.add(new StackPushUserOperation(stack, 1));
-		testStackOps.add(new StackPushUserOperation(stack, 2));
+        testStackOps.add(new StackInitUserOperation(stack, new int[]{1, 2, 3}));
+		testStackOps.add(new StackPushUserOperation(stack, 4));
+		testStackOps.add(new StackPushUserOperation(stack, 5));
 		testStackOps.add(new StackPopUserOperation(stack));
-		testStackOps.add(new StackPushUserOperation(stack, 3));
+		testStackOps.add(new StackPushUserOperation(stack, 6));
 
 		OperationTestRunner.runTestSuite(StackStructure.class, testStackOps);
 
