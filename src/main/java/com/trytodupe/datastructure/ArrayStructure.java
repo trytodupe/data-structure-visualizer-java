@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class ArrayStructure extends DataStructure {
 
-    private int[] data;
+    private final int[] data;
     private static final int MAX_SIZE = 100;
     private int currentSize;
 
