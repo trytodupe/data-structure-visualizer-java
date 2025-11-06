@@ -17,7 +17,7 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
 
     protected transient List<AtomicOperation<T>> atomicOperations;
 
-    private transient boolean built = false;
+    protected transient boolean built = false;
 
 
     public UserOperation(T dataStructure) {

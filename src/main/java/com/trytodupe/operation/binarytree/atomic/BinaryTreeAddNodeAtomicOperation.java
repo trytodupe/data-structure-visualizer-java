@@ -11,8 +11,12 @@ public class BinaryTreeAddNodeAtomicOperation<E> extends AtomicOperation<BinaryT
     // use String to avoid serialization issues
     private final String uuid;
 
-    public BinaryTreeAddNodeAtomicOperation () {
-        this.uuid = UUID.randomUUID().toString();
+    public BinaryTreeAddNodeAtomicOperation (String uuid) {
+        if (uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        } else {
+            this.uuid = uuid;
+        }
     }
 
     @Override

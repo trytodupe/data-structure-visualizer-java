@@ -8,7 +8,7 @@ import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
 import com.trytodupe.operation.array.user.ArrayInsertUserOperation;
-import com.trytodupe.operation.binarytree.user.BinaryTreeInitUserOperation;
+import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOperation;
 import com.trytodupe.operation.stack.user.StackInitUserOperation;
 import com.trytodupe.operation.stack.user.StackPopUserOperation;
 import com.trytodupe.operation.stack.user.StackPushUserOperation;
@@ -17,10 +17,7 @@ import imgui.ImGui;
 import imgui.app.Application;
 import imgui.app.Configuration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Main extends Application {
 
@@ -76,7 +73,8 @@ public class Main extends Application {
         List<UserOperation<BinaryTreeStructure<Integer>>> testBTreeOps = new ArrayList<>();
         BinaryTreeStructure<Integer> btree = getDataStructure(BinaryTreeStructure.class);
 
-        testBTreeOps.add(new BinaryTreeInitUserOperation(btree, new Integer[]{1, 2, 3, 4, 5, null, 7}));
+        Integer[] treeValues = {1, 2, 3, 4, 5, null, 7};
+        testBTreeOps.add(new BinaryTreeInitCompositeOperation(btree, treeValues));
 
         OperationTestRunner.runTestSuite(BinaryTreeStructure.class, testBTreeOps);
 
