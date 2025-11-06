@@ -15,7 +15,7 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
 
     protected String description;
 
-    protected transient List<AtomicOperation<T>> atomicOperations;
+    protected transient List<AtomicOperation<? super T>> atomicOperations;
 
     protected transient boolean built = false;
 
@@ -33,7 +33,7 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
             built = true;
         }
 
-        for (AtomicOperation<T> atomicOperation : atomicOperations) {
+        for (AtomicOperation<? super T> atomicOperation : atomicOperations) {
             atomicOperation.execute(dataStructure);
         }
     }

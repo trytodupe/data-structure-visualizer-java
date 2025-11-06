@@ -1,6 +1,7 @@
 package com.trytodupe;
 
 import com.trytodupe.datastructure.ArrayStructure;
+import com.trytodupe.datastructure.BinarySearchTreeStructure;
 import com.trytodupe.datastructure.BinaryTreeStructure;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
@@ -29,6 +30,7 @@ public class Main extends Application {
         REGISTRY.put(ArrayStructure.class, new ArrayStructure());
         REGISTRY.put(StackStructure.class, new StackStructure());
         REGISTRY.put(BinaryTreeStructure.class, new BinaryTreeStructure<Integer>());
+        REGISTRY.put(BinarySearchTreeStructure.class, new BinarySearchTreeStructure<Integer>());
     }
 
     @SuppressWarnings("unchecked")
@@ -57,8 +59,8 @@ public class Main extends Application {
 		testArrayOps.add(new ArrayInsertUserOperation(array, 1, 99));
 		testArrayOps.add(new ArrayDeleteUserOperation(array, 2));
 
-		OperationTestRunner.runTestSuite(ArrayStructure.class, testArrayOps);
-
+//		OperationTestRunner.runTestSuite(ArrayStructure.class, testArrayOps);
+//-----
 		List<UserOperation<StackStructure>> testStackOps = new ArrayList<>();
 		StackStructure stack = getDataStructure(StackStructure.class);
 
@@ -68,8 +70,8 @@ public class Main extends Application {
 		testStackOps.add(new StackPopUserOperation(stack));
 		testStackOps.add(new StackPushUserOperation(stack, 6));
 
-		OperationTestRunner.runTestSuite(StackStructure.class, testStackOps);
-
+//		OperationTestRunner.runTestSuite(StackStructure.class, testStackOps);
+//-----
         List<UserOperation<BinaryTreeStructure<Integer>>> testBTreeOps = new ArrayList<>();
         BinaryTreeStructure<Integer> btree = getDataStructure(BinaryTreeStructure.class);
 
@@ -77,6 +79,15 @@ public class Main extends Application {
         testBTreeOps.add(new BinaryTreeInitCompositeOperation(btree, treeValues));
 
         OperationTestRunner.runTestSuite(BinaryTreeStructure.class, testBTreeOps);
+//-----
+        List<UserOperation<BinarySearchTreeStructure<Integer>>> testBSTOps = new ArrayList<>();
+        BinarySearchTreeStructure<Integer> bst = getDataStructure(BinarySearchTreeStructure.class);
+
+        Integer[] bstValues = {5, 3, 7, 2, 4, 6, 8};
+        testBSTOps.add(new com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCompositeOperation(bst, bstValues));
+
+        OperationTestRunner.runTestSuite(BinarySearchTreeStructure.class, testBSTOps);
+
 
 
 //        launch(new Main());

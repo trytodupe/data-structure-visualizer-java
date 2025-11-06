@@ -42,19 +42,13 @@ public class BinaryTreeInitCompositeOperation extends CompositeUserOperation<Bin
                 // root node
                 insertOp = new BinaryTreeInsertUserOperation(super.dataStructure, null, value, null);
                 super.childOperations.add(insertOp);
-                // Update the UUID in the ValueUUIDPair
                 values.set(i, new ValueUUIDPair(value, insertOp.getUUID()));
                 continue;
             }
 
-            // Calculate parent index and child type for non-root nodes
-            // In a complete binary tree, for node at index i:
-            // parent index = (i - 1) / 2
-            // if i is odd, it's a left child; if i is even, it's a right child
             int parentIndex = (i - 1) / 2;
             BinaryTreeNode.ChildType childType = (i % 2 == 1) ? BinaryTreeNode.ChildType.LEFT : BinaryTreeNode.ChildType.RIGHT;
 
-            // Get parent UUID directly from the pair
             String parentUUID = values.get(parentIndex).getUUID();
 
             if (parentUUID != null) {
@@ -62,6 +56,8 @@ public class BinaryTreeInitCompositeOperation extends CompositeUserOperation<Bin
                 super.childOperations.add(insertOp);
                 // Update the UUID in the ValueUUIDPair
                 values.set(i, new ValueUUIDPair(value, insertOp.getUUID()));
+            } else {
+                throw new IllegalStateException("Parent UUID is null at index " + i);
             }
         }
     }

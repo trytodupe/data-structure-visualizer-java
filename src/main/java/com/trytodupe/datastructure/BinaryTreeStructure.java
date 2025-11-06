@@ -45,8 +45,8 @@ public class BinaryTreeStructure<E> extends DataStructure {
 
     public BinaryTreeNode<E> getNode (UUID uuid) {
         BinaryTreeNode<E> result = nodes.get(uuid);
-        if (result == null)
-            throw new IllegalArgumentException("Node not found: " + uuid );
+//        if (result == null)
+//            throw new IllegalArgumentException("Node not found: " + uuid );
 
         return result;
     }
@@ -60,13 +60,6 @@ public class BinaryTreeStructure<E> extends DataStructure {
         return node;
     }
 
-    public void traversePreOrder (BinaryTreeNode<E> node) {
-        if (node == null) return;
-        System.out.print(node.getValue() + " ");
-        traversePreOrder(node.getLeft());
-        traversePreOrder(node.getRight());
-    }
-
     @Override
     public void draw () {
 
@@ -74,7 +67,7 @@ public class BinaryTreeStructure<E> extends DataStructure {
 
     @Override
     public void printValue () {
-        traversePreOrder(root);
+        BinaryTreeNode.traversePreOrder(root);
         System.out.println();
     }
 }

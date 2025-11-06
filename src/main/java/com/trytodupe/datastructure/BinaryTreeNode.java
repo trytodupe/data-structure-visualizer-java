@@ -25,7 +25,14 @@ public class BinaryTreeNode<E> {
 
     public void setValue (E value) {
         this.value = value;
-        Main.getDataStructure(BinaryTreeStructure.class).printValue();
+        if (Main.DEBUG) {
+            if (Main.getDataStructure(BinaryTreeStructure.class).getNode(uuid) != null) {
+                traversePreOrder(Main.getDataStructure(BinaryTreeStructure.class).getRoot());
+            } else if (Main.getDataStructure(BinarySearchTreeStructure.class).getNode(uuid) != null) {
+                traversePreOrder(Main.getDataStructure(BinarySearchTreeStructure.class).getRoot());
+            }
+            System.out.println();
+        }
     }
 
     public BinaryTreeNode<E> getLeft () {
@@ -87,6 +94,13 @@ public class BinaryTreeNode<E> {
     public enum ChildType {
         LEFT,
         RIGHT
+    }
+
+    public static void traversePreOrder (BinaryTreeNode<?> node) {
+        if (node == null) return;
+        System.out.print(node.getValue() + " ");
+        traversePreOrder(node.getLeft());
+        traversePreOrder(node.getRight());
     }
 
 }
