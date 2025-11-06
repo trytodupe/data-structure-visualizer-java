@@ -19,7 +19,7 @@ public class ArrayInsertUserOperation extends UserOperation<ArrayStructure> {
     }
 
     @Override
-    protected void buildAtomicOperations () {
+    protected void buildOperations () {
         super.atomicOperations.add(new ArrayResizeAtomicOperation(ArrayResizeAtomicOperation.ResizeMode.INCREMENT));
 
         for (int i = super.dataStructure.getSize() - 1; i >= index; i--) {

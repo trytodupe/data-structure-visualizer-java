@@ -22,7 +22,7 @@ public class ArrayInitUserOperation extends UserOperation<ArrayStructure> {
     }
 
     @Override
-    protected void buildAtomicOperations () {
+    protected void buildOperations () {
         super.atomicOperations.add(new ArrayResizeAtomicOperation(initialValues.length));
 
         for (int i = 0; i < initialValues.length; i++) {

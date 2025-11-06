@@ -15,7 +15,7 @@ public class StackPushUserOperation extends UserOperation<StackStructure> {
     }
 
     @Override
-    protected void buildAtomicOperations () {
+    protected void buildOperations () {
         this.atomicOperations.add(new StackPushAtomicOperation(value));
     }
 }

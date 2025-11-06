@@ -21,7 +21,7 @@ public class StackInitUserOperation extends UserOperation<StackStructure> {
     }
 
     @Override
-    protected void buildAtomicOperations () {
+    protected void buildOperations () {
         for (int value : initialValues) {
             super.atomicOperations.add(new StackPushAtomicOperation(value));
         }

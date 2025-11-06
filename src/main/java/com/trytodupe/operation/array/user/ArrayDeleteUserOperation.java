@@ -16,7 +16,7 @@ public class ArrayDeleteUserOperation extends UserOperation<ArrayStructure> {
     }
 
     @Override
-    protected void buildAtomicOperations () {
+    protected void buildOperations () {
         for (int i = index + 1; i < super.dataStructure.getSize(); i++) {
             super.atomicOperations.add(new ArrayCopyAtomicOperation(i, i - 1));
         }

@@ -25,11 +25,11 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
         this.atomicOperations = new ArrayList<>();
     }
 
-    protected abstract void buildAtomicOperations();
+    protected abstract void buildOperations ();
 
     public void execute() {
         if (!built) {
-            buildAtomicOperations();
+            buildOperations();
             built = true;
         }
 
