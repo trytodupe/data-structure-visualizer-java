@@ -1,4 +1,4 @@
-package com.trytodupe.operation.stack;
+package com.trytodupe.operation.stack.atomic;
 
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.operation.AtomicOperation;

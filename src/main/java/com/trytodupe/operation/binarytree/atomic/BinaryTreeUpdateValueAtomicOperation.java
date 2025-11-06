@@ -1,4 +1,4 @@
-package com.trytodupe.operation.binarytree;
+package com.trytodupe.operation.binarytree.atomic;
 
 import com.trytodupe.datastructure.BinaryTreeNode;
 import com.trytodupe.datastructure.BinaryTreeStructure;

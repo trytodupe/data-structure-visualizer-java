@@ -1,4 +1,4 @@
-package com.trytodupe.operation.array;
+package com.trytodupe.operation.array.atomic;
 
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.operation.AtomicOperation;

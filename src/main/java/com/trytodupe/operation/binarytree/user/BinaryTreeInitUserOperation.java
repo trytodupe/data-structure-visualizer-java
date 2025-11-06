@@ -1,7 +1,10 @@
-package com.trytodupe.operation.binarytree;
+package com.trytodupe.operation.binarytree.user;
 
 import com.trytodupe.datastructure.BinaryTreeStructure;
 import com.trytodupe.operation.UserOperation;
+import com.trytodupe.operation.binarytree.atomic.BinaryTreeAddNodeAtomicOperation;
+import com.trytodupe.operation.binarytree.atomic.BinaryTreeConnectNodeAtomicOperation;
+import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOperation;
 
 import java.util.Arrays;
 
@@ -28,7 +31,7 @@ public class BinaryTreeInitUserOperation extends UserOperation<BinaryTreeStructu
         // 3) update node value
         // This ensures at most one temp (orphan) exists at any time.
 
-        BinaryTreeAddNodeAtomicOperation<java.lang.Integer>[] addOps = new BinaryTreeAddNodeAtomicOperation[values.length];
+        BinaryTreeAddNodeAtomicOperation<Integer>[] addOps = new BinaryTreeAddNodeAtomicOperation[values.length];
 
         for (int i = 0; i < values.length; i++) {
             java.lang.Integer v = values[i];
@@ -62,7 +65,7 @@ public class BinaryTreeInitUserOperation extends UserOperation<BinaryTreeStructu
 
                     // 3) update value of the newly created node
                     String childUUID = addOp.getUUID();
-                    BinaryTreeUpdateValueAtomicOperation<java.lang.Integer> updateOp =
+                    BinaryTreeUpdateValueAtomicOperation<Integer> updateOp =
                             new BinaryTreeUpdateValueAtomicOperation<>(childUUID, v);
                     super.atomicOperations.add(updateOp);
                 }

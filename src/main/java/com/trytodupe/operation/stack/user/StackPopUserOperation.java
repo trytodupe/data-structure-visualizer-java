@@ -1,7 +1,8 @@
-package com.trytodupe.operation.stack;
+package com.trytodupe.operation.stack.user;
 
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.operation.UserOperation;
+import com.trytodupe.operation.stack.atomic.StackPopAtomicOperation;
 
 public class StackPopUserOperation extends UserOperation<StackStructure> {
 

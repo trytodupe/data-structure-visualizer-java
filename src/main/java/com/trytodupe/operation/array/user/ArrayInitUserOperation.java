@@ -1,7 +1,9 @@
-package com.trytodupe.operation.array;
+package com.trytodupe.operation.array.user;
 
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.operation.UserOperation;
+import com.trytodupe.operation.array.atomic.ArrayResizeAtomicOperation;
+import com.trytodupe.operation.array.atomic.ArrayWriteAtomicOperation;
 
 import java.util.Arrays;
 
