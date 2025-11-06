@@ -1,7 +1,6 @@
 package com.trytodupe.test;
 
 import com.google.gson.JsonObject;
-import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.serialization.GsonProvider;
 import com.trytodupe.serialization.ISerializable;
@@ -11,15 +10,14 @@ import java.util.List;
 
 public class OperationTestRunner {
 
-	@SuppressWarnings("unchecked")
-	public static <T extends DataStructure> void runTestSuite (Class<T> clazz, List<UserOperation<T>> operations) {
+	public static void runTestSuite (Class<?> clazz, List<? extends UserOperation<?>> operations) {
 
-		List<UserOperation<T>> deserializedOperations = new ArrayList<>();
+		List<UserOperation<?>> deserializedOperations = new ArrayList<>();
 
 		System.out.println("=== Running test suite for " + clazz.getSimpleName() + " ===\n");
 
 		// forward testing
-		for (UserOperation<T> op : operations) {
+		for (UserOperation<?> op : operations) {
 			System.out.println("Executing: " + op.getDescription());
 
 			// serialize
@@ -33,7 +31,7 @@ public class OperationTestRunner {
 
 			// execute
 			if (deserialized instanceof UserOperation<?>) {
-				deserializedOperations.add((UserOperation<T>) deserialized);
+				deserializedOperations.add((UserOperation<?>) deserialized);
 				((UserOperation<?>) deserialized).execute();
 			}
 
@@ -42,7 +40,7 @@ public class OperationTestRunner {
 
 		// backward testing
 		for (int i = deserializedOperations.size() - 1; i >= 0; i--) {
-			UserOperation<T> op = deserializedOperations.get(i);
+			UserOperation<?> op = deserializedOperations.get(i);
 			System.out.println("Undoing: " + op.getDescription());
 			op.undo();
 			System.out.println();

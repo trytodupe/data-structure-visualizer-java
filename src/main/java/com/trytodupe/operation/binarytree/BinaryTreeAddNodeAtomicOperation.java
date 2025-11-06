@@ -30,4 +30,8 @@ public class BinaryTreeAddNodeAtomicOperation<E> extends AtomicOperation<BinaryT
     public String getDescription () {
         return "Create a new node at temp slot";
     }
+
+    public String getUUID() {
+        return this.uuid;
+    }
 }

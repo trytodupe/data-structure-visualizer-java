@@ -1,5 +1,7 @@
 package com.trytodupe.datastructure;
 
+import com.trytodupe.Main;
+
 import java.util.UUID;
 
 public class BinaryTreeNode<E> {
@@ -23,6 +25,7 @@ public class BinaryTreeNode<E> {
 
     public void setValue (E value) {
         this.value = value;
+        Main.getDataStructure(BinaryTreeStructure.class).printValue();
     }
 
     public BinaryTreeNode<E> getLeft () {

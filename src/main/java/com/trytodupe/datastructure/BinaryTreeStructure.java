@@ -13,6 +13,14 @@ public class BinaryTreeStructure<E> extends DataStructure {
     public BinaryTreeStructure () {
     }
 
+    public BinaryTreeNode<E> getRoot () {
+        return root;
+    }
+
+    public void setRoot (BinaryTreeNode<E> root) {
+        this.root = root;
+    }
+
     public BinaryTreeNode<E> getTempNode () {
         return tempNode;
     }
@@ -52,11 +60,11 @@ public class BinaryTreeStructure<E> extends DataStructure {
         return node;
     }
 
-    public void traverseInOrder(BinaryTreeNode<E> node) {
+    public void traversePreOrder (BinaryTreeNode<E> node) {
         if (node == null) return;
-        traverseInOrder(node.getLeft());
         System.out.print(node.getValue() + " ");
-        traverseInOrder(node.getRight());
+        traversePreOrder(node.getLeft());
+        traversePreOrder(node.getRight());
     }
 
     @Override
@@ -66,6 +74,7 @@ public class BinaryTreeStructure<E> extends DataStructure {
 
     @Override
     public void printValue () {
-        traverseInOrder(root);
+        traversePreOrder(root);
+        System.out.println();
     }
 }

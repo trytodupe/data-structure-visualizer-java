@@ -5,6 +5,7 @@ import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.serialization.ISerializable;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,15 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
     @SuppressWarnings("unchecked")
     protected Class<T> getDataStructureType() {
         ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
-        return (Class<T>) superClass.getActualTypeArguments()[0];
+        Type typeArg = superClass.getActualTypeArguments()[0];
+
+        if (typeArg instanceof Class<?>) {
+            return (Class<T>) typeArg;
+        } else if (typeArg instanceof ParameterizedType) {
+            return (Class<T>) ((ParameterizedType) typeArg).getRawType();
+        } else {
+            throw new IllegalStateException("Unsupported type argument: " + typeArg.getTypeName());
+        }
     }
 
     @Override

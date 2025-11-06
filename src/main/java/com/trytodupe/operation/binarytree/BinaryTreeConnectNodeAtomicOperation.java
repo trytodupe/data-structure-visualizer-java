@@ -7,7 +7,8 @@ import com.trytodupe.operation.AtomicOperation;
 import java.util.UUID;
 
 public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
-    
+
+    // a null string represents root node
     private final String parentUUID;
     private String childUUID;
     private final BinaryTreeNode.ChildType childType;
@@ -19,6 +20,13 @@ public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<Bin
 
     @Override
     public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
+        if (parentUUID == null) {
+            // pop temp slot into root node
+            BinaryTreeNode<E> node = binaryTreeStructure.popTempNode();
+            binaryTreeStructure.setRoot(node);
+            return;
+        }
+
         BinaryTreeNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
         BinaryTreeNode<E> child = binaryTreeStructure.popTempNode();
         childUUID = child.getUUID().toString();
@@ -36,6 +44,14 @@ public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<Bin
 
     @Override
     public void undo (BinaryTreeStructure<E> binaryTreeStructure) {
+        if (parentUUID == null) {
+            // push root node back to temp slot
+            BinaryTreeNode<E> node = binaryTreeStructure.getRoot();
+            binaryTreeStructure.pushTempNode(node);
+            binaryTreeStructure.setRoot(null);
+            return;
+        }
+
         BinaryTreeNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
         BinaryTreeNode<E> child = binaryTreeStructure.getNode(UUID.fromString(childUUID));
 

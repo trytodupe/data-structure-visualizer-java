@@ -1,12 +1,14 @@
 package com.trytodupe;
 
 import com.trytodupe.datastructure.ArrayStructure;
+import com.trytodupe.datastructure.BinaryTreeStructure;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.array.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.ArrayInitUserOperation;
 import com.trytodupe.operation.array.ArrayInsertUserOperation;
+import com.trytodupe.operation.binarytree.BinaryTreeInitUserOperation;
 import com.trytodupe.operation.stack.StackInitUserOperation;
 import com.trytodupe.operation.stack.StackPopUserOperation;
 import com.trytodupe.operation.stack.StackPushUserOperation;
@@ -29,6 +31,7 @@ public class Main extends Application {
     static {
         REGISTRY.put(ArrayStructure.class, new ArrayStructure());
         REGISTRY.put(StackStructure.class, new StackStructure());
+        REGISTRY.put(BinaryTreeStructure.class, new BinaryTreeStructure<Integer>());
     }
 
     @SuppressWarnings("unchecked")
@@ -44,9 +47,10 @@ public class Main extends Application {
 
     @Override
     public void process() {
-        ImGui.text("Hello, World!");
+            ImGui.text("Hello, World!");
     }
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
 		List<UserOperation<ArrayStructure>> testArrayOps = new ArrayList<>();
@@ -68,6 +72,13 @@ public class Main extends Application {
 		testStackOps.add(new StackPushUserOperation(stack, 6));
 
 		OperationTestRunner.runTestSuite(StackStructure.class, testStackOps);
+
+        List<UserOperation<BinaryTreeStructure<Integer>>> testBTreeOps = new ArrayList<>();
+        BinaryTreeStructure<Integer> btree = getDataStructure(BinaryTreeStructure.class);
+
+        testBTreeOps.add(new BinaryTreeInitUserOperation(btree, new Integer[]{1, 2, 3, 4, 5, null, 7}));
+
+        OperationTestRunner.runTestSuite(BinaryTreeStructure.class, testBTreeOps);
 
 
 //        launch(new Main());
