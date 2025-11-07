@@ -1,12 +1,8 @@
 package com.trytodupe.operation.binarysearchtree.composite;
 
-import com.trytodupe.datastructure.BinarySearchTreeStructure;
-import com.trytodupe.datastructure.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
 import com.trytodupe.operation.CompositeUserOperation;
 import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
-import com.trytodupe.utils.ValueUUIDPair;
-
-import java.util.List;
 
 public class BinarySearchTreeInitCompositeOperation extends CompositeUserOperation<BinarySearchTreeStructure<Integer>> {
 

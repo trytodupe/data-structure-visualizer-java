@@ -1,4 +1,4 @@
-package com.trytodupe.datastructure;
+package com.trytodupe.datastructure.tree;
 
 import com.trytodupe.Main;
 

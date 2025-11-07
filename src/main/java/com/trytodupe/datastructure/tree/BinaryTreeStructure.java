@@ -1,4 +1,6 @@
-package com.trytodupe.datastructure;
+package com.trytodupe.datastructure.tree;
+
+import com.trytodupe.datastructure.DataStructure;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

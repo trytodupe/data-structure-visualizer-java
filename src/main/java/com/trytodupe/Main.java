@@ -1,8 +1,8 @@
 package com.trytodupe;
 
 import com.trytodupe.datastructure.ArrayStructure;
-import com.trytodupe.datastructure.BinarySearchTreeStructure;
-import com.trytodupe.datastructure.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
+import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.operation.UserOperation;
@@ -16,7 +16,6 @@ import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOpera
 import com.trytodupe.operation.stack.user.StackInitUserOperation;
 import com.trytodupe.operation.stack.user.StackPopUserOperation;
 import com.trytodupe.operation.stack.user.StackPushUserOperation;
-import com.trytodupe.test.OperationTestRunner;
 import imgui.ImGui;
 import imgui.app.Application;
 import imgui.app.Configuration;

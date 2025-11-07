@@ -1,6 +1,6 @@
 package com.trytodupe.operation.binarytree.user;
 
-import com.trytodupe.datastructure.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOperation;
 
