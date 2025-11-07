@@ -60,6 +60,16 @@ public class BinaryTreeStructure<E> extends DataStructure {
         return node;
     }
 
+    public BinaryTreeNode<E> addNode (UUID uuid, E value) {
+        if (nodes.containsKey(uuid))
+            throw new IllegalArgumentException("Node already exists: " + uuid);
+
+        BinaryTreeNode<E> node = new BinaryTreeNode<>(uuid, value);
+        nodes.put(uuid, node);
+        return node;
+    }
+
+
     @Override
     public void draw () {
 

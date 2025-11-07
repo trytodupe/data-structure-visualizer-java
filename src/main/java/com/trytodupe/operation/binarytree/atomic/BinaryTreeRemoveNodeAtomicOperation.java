@@ -9,6 +9,7 @@ import java.util.UUID;
 public class BinaryTreeRemoveNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
     private String uuid;
+    private E value;
 
     public BinaryTreeRemoveNodeAtomicOperation () {
     }
@@ -16,11 +17,13 @@ public class BinaryTreeRemoveNodeAtomicOperation<E> extends AtomicOperation<Bina
     @Override
     public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
         uuid = binaryTreeStructure.popTempNode().getUUID().toString();
+        value = binaryTreeStructure.getNode(UUID.fromString(uuid)).getValue();
+        binaryTreeStructure.removeNode(UUID.fromString(uuid));
     }
 
     @Override
     public void undo (BinaryTreeStructure<E> binaryTreeStructure) {
-        BinaryTreeNode<E> node = binaryTreeStructure.addNode(UUID.fromString(uuid));
+        BinaryTreeNode<E> node = binaryTreeStructure.addNode(UUID.fromString(uuid), value);
         binaryTreeStructure.pushTempNode(node);
     }
 

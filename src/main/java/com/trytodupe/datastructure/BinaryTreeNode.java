@@ -15,6 +15,11 @@ public class BinaryTreeNode<E> {
         this.uuid = uuid;
     }
 
+    public BinaryTreeNode (UUID uuid, E value) {
+        this.uuid = uuid;
+        this.value = value;
+    }
+
     public UUID getUUID () {
         return uuid;
     }
