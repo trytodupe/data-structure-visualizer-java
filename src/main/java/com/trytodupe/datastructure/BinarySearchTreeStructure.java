@@ -1,5 +1,9 @@
 package com.trytodupe.datastructure;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class BinarySearchTreeStructure<E> extends BinaryTreeStructure<E> {
 
     public BinaryTreeNode<E> getInsertParent(E value) {
@@ -27,4 +31,52 @@ public class BinarySearchTreeStructure<E> extends BinaryTreeStructure<E> {
             }
         }
     }
+
+    public List<UUID> findSearchPath(BinaryTreeNode<E> target) {
+        List<UUID> path = new ArrayList<>();
+        BinaryTreeNode<E> current = root;
+        while (current != null) {
+            path.add(current.getUUID());
+            if (target == current.getValue()) break;
+
+            @SuppressWarnings("unchecked")
+            int comparison = ((Comparable<E>) target.getValue()).compareTo(current.getValue());
+
+            current = comparison < 0 ? current.getLeft() : current.getRight();
+        }
+        return path;
+    }
+
+
+    public BinaryTreeNode<E> getSuccessor(BinaryTreeNode<E> node) {
+        if (node == null) {
+            return null;
+        }
+
+        if (node.getRight() != null) {
+            BinaryTreeNode<E> current = node.getRight();
+            while (current.getLeft() != null) {
+                current = current.getLeft();
+            }
+            return current;
+        }
+
+        BinaryTreeNode<E> successor = null;
+        BinaryTreeNode<E> current = root;
+
+        while (current != null) {
+            @SuppressWarnings("unchecked")
+            int comparison = ((Comparable<E>) node.getValue()).compareTo(current.getValue());
+
+            if (comparison < 0) {
+                successor = current;
+                current = current.getLeft();
+            } else {
+                current = current.getRight();
+            }
+        }
+
+        return successor;
+    }
+
 }

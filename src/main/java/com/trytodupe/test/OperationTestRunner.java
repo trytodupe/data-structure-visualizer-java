@@ -35,6 +35,8 @@ public class OperationTestRunner {
 				((UserOperation<?>) deserialized).execute();
 			}
 
+//            op.execute();
+
 			System.out.println();
 		}
 

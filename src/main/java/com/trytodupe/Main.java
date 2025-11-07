@@ -9,6 +9,9 @@ import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
 import com.trytodupe.operation.array.user.ArrayInsertUserOperation;
+import com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCompositeOperation;
+import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeDeleteUserOperation;
+import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
 import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOperation;
 import com.trytodupe.operation.stack.user.StackInitUserOperation;
 import com.trytodupe.operation.stack.user.StackPopUserOperation;
@@ -78,16 +81,35 @@ public class Main extends Application {
         Integer[] treeValues = {1, 2, 3, 4, 5, null, 7};
         testBTreeOps.add(new BinaryTreeInitCompositeOperation(btree, treeValues));
 
-        OperationTestRunner.runTestSuite(BinaryTreeStructure.class, testBTreeOps);
+//        OperationTestRunner.runTestSuite(BinaryTreeStructure.class, testBTreeOps);
 //-----
         List<UserOperation<BinarySearchTreeStructure<Integer>>> testBSTOps = new ArrayList<>();
         BinarySearchTreeStructure<Integer> bst = getDataStructure(BinarySearchTreeStructure.class);
 
         Integer[] bstValues = {5, 3, 7, 2, 4, 6, 8};
-        testBSTOps.add(new com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCompositeOperation(bst, bstValues));
+        testBSTOps.add(new BinarySearchTreeInitCompositeOperation(bst, bstValues));
 
-        OperationTestRunner.runTestSuite(BinarySearchTreeStructure.class, testBSTOps);
 
+//        OperationTestRunner.runTestSuite(BinarySearchTreeStructure.class, testBSTOps);
+//-----
+
+         bst = getDataStructure(BinarySearchTreeStructure.class);
+        List<BinarySearchTreeInsertUserOperation> testBSTInsertOps = new ArrayList<>();
+
+        for (Integer value : bstValues) {
+            testBSTInsertOps.add(new BinarySearchTreeInsertUserOperation(bst, value));
+            testBSTInsertOps.get(testBSTInsertOps.size() - 1).execute();
+        }
+
+        UserOperation<BinarySearchTreeStructure<Integer>> deleteOp =
+                new BinarySearchTreeDeleteUserOperation(bst, testBSTInsertOps.get(0).getUUID());
+
+        deleteOp.execute();
+        bst.printValue();
+        System.out.println("done");
+
+        deleteOp.undo();
+        bst.printValue();
 
 
 //        launch(new Main());

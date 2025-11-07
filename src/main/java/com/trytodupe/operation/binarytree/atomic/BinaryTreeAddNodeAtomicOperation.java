@@ -27,7 +27,8 @@ public class BinaryTreeAddNodeAtomicOperation<E> extends AtomicOperation<BinaryT
 
     @Override
     public void undo (BinaryTreeStructure<E> binaryTreeStructure) {
-        binaryTreeStructure.popTempNode();
+        BinaryTreeNode<E> node = binaryTreeStructure.popTempNode();
+        binaryTreeStructure.removeNode(node.getUUID());
     }
 
     @Override
