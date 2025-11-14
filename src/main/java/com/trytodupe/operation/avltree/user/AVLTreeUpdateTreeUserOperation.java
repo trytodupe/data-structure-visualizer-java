@@ -28,10 +28,8 @@ public class AVLTreeUpdateTreeUserOperation<E extends Comparable<E>> extends Use
 
         // Traverse from inserted node to root, updating heights
         while (current != null) {
-            int newHeight = current.computeHeight();
-            super.atomicOperations.add(new AVLTreeUpdateNodeAtomicOperation<>(current.getUUID().toString(), newHeight));
-
-            current = (AVLTreeNode<Integer>) super.dataStructure.getParent(UUID.fromString(insertedUUID));
+            super.atomicOperations.add(new AVLTreeUpdateNodeAtomicOperation<>(current.getUUID().toString()));
+            current = super.dataStructure.getParent(current.getUUID());
         }
     }
 }

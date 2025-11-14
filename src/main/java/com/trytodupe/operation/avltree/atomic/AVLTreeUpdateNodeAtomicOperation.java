@@ -11,11 +11,10 @@ public class AVLTreeUpdateNodeAtomicOperation<E extends Comparable<E>> extends A
     
     private final String uuid;
     private int oldHeight;
-    private final int newHeight;
+    private int newHeight;
 
-    public AVLTreeUpdateNodeAtomicOperation (String uuid, int newHeight) {
+    public AVLTreeUpdateNodeAtomicOperation (String uuid) {
         this.uuid = uuid;
-        this.newHeight = newHeight;
     }
 
     @Override
@@ -23,6 +22,7 @@ public class AVLTreeUpdateNodeAtomicOperation<E extends Comparable<E>> extends A
         BinaryTreeNode<E> node = avlTreeStructure.getNode(UUID.fromString(uuid));
         AVLNodeExtension ext = (AVLNodeExtension) node.getExtension();
         oldHeight = ext.getHeight();
+        newHeight = avlTreeStructure.computeHeight(node);
         ext.setHeight(newHeight);
     }
 
