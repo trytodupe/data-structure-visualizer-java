@@ -1,23 +1,30 @@
 package com.trytodupe;
 
 import com.trytodupe.datastructure.ArrayStructure;
+import com.trytodupe.datastructure.tree.AVLTreeNode;
+import com.trytodupe.datastructure.tree.AVLTreeStructure;
+import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
 import com.trytodupe.datastructure.tree.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
+import com.trytodupe.datastructure.tree.HuffmanNode;
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
 import com.trytodupe.operation.array.user.ArrayInsertUserOperation;
+import com.trytodupe.operation.avltree.composite.AVLTreeInitCompositeOperation;
 import com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCompositeOperation;
+import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeDeleteUserOperation;
 import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
 import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOperation;
 import com.trytodupe.operation.huffmantree.composite.HuffmanTreeInitCompositeOperation;
 import com.trytodupe.operation.stack.user.StackInitUserOperation;
 import com.trytodupe.operation.stack.user.StackPopUserOperation;
 import com.trytodupe.operation.stack.user.StackPushUserOperation;
+import com.trytodupe.test.OperationTestRunner;
 import imgui.ImGui;
 import imgui.app.Application;
 import imgui.app.Configuration;
@@ -128,14 +135,11 @@ public class Main extends Application {
 //        huffmanOp.undo();
 //-----
 
-        HuffmanTreeInitCompositeOperation huffmanOp = new HuffmanTreeInitCompositeOperation(huffmanTree, string);
-        huffmanOp.execute();
+        AVLTreeStructure<Integer> avlTree = getDataStructure(AVLTreeStructure.class);
 
-        System.out.println(huffmanTree.getRoots());
-        BinaryTreeNode.printTree(huffmanTree.getRoots().get(0));
-
-        huffmanOp.undo();
-
+        Integer[] avlValues = {10, 20, 30, 40, 50, 25};
+        AVLTreeInitCompositeOperation avlInitOp = new AVLTreeInitCompositeOperation(avlTree, avlValues);
+        avlInitOp.execute();
 
 
 //        launch(new Main());

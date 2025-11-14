@@ -2,6 +2,7 @@ package com.trytodupe.operation;
 
 import com.trytodupe.Main;
 import com.trytodupe.datastructure.DataStructure;
+import com.trytodupe.datastructure.tree.AVLTreeStructure;
 import com.trytodupe.serialization.ISerializable;
 
 import java.lang.reflect.ParameterizedType;
@@ -38,6 +39,9 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
                 System.out.println(atomicOperation.getDescription());
             }
             atomicOperation.execute(dataStructure);
+            if (Main.DEBUG) {
+                Main.getDataStructure(AVLTreeStructure.class).printValue();
+            }
         }
     }
 

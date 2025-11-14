@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-// todo: make node type generic
 public class BinaryTreeStructure<T extends BinaryTreeNode<E, T>, E> extends DataStructure {
 
     private final Class<T> nodeClass;
