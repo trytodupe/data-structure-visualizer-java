@@ -52,7 +52,6 @@ public class Main extends Application {
         ImGui.text("Hello, World!");
     }
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         // ===== Binary Tree Test =====
 //        testBinaryTree();

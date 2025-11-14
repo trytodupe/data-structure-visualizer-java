@@ -5,6 +5,7 @@ import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.avltree.atomic.AVLTreeLeftRotateAtomicOperation;
 import com.trytodupe.operation.avltree.atomic.AVLTreeRightRotateAtomicOperation;
+import com.trytodupe.operation.avltree.atomic.AVLTreeUpdateNodeAtomicOperation;
 
 import java.util.UUID;
 
@@ -58,5 +59,13 @@ public class AVLTreeBalanceUserOperation<E extends Comparable<E>> extends UserOp
                 atomicOperations.add(new AVLTreeLeftRotateAtomicOperation<>(unbalancedUUID));
             }
         }
+
+        // Update heights from the unbalanced node up to the root
+        BinaryTreeNode<E> current = dataStructure.getNode(UUID.fromString(unbalancedUUID));
+        while (current != null) {
+            super.atomicOperations.add(new AVLTreeUpdateNodeAtomicOperation<>(current.getUUID().toString()));
+            current = super.dataStructure.getParent(current.getUUID());
+        }
+
     }
 }
