@@ -1,7 +1,6 @@
 package com.trytodupe.operation.binarytree.atomic;
 
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
-import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;

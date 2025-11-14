@@ -1,9 +1,7 @@
 package com.trytodupe.operation.binarysearchtree.user;
 
-import com.trytodupe.datastructure.tree.AVLTreeStructure;
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
-import com.trytodupe.datastructure.tree.BinaryTreeNode;
-import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeAddNodeAtomicOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeConnectNodeAtomicOperation;

@@ -1,7 +1,6 @@
 package com.trytodupe.utils;
 
 import com.trytodupe.Main;
-import com.trytodupe.datastructure.tree.HuffmanNode;
 
 import java.util.ArrayList;
 

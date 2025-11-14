@@ -1,30 +1,31 @@
 package com.trytodupe.datastructure.tree;
 
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
+import com.trytodupe.datastructure.tree.node.HuffmanNodeExtension;
 import com.trytodupe.utils.MyArrayList;
 
 import java.util.List;
 import java.util.UUID;
 
 // todo: generic node type
-public class HuffmanTreeStructure<E> extends BinaryTreeStructure<HuffmanNode<E>, E>{
-    protected List<HuffmanNode<E>> roots = new MyArrayList<>();
+public class HuffmanTreeStructure<E> extends BinaryTreeStructure<E>{
+    protected List<BinaryTreeNode<E>> roots = new MyArrayList<>();
 
-
-    public HuffmanTreeStructure (Class<HuffmanNode<E>> nodeClass) {
-        super(nodeClass);
+    public HuffmanTreeStructure () {
     }
 
     public void addRoot (UUID uuid, E value, int weight) {
         if (nodes.containsKey(uuid))
             throw new IllegalArgumentException("Node already exists: " + uuid);
 
-        HuffmanNode<E> node = new HuffmanNode<>(uuid, value, weight);
+        BinaryTreeNode<E> node = new BinaryTreeNode<>(uuid, value);
+        node.setExtension(new HuffmanNodeExtension(weight));
         nodes.put(uuid, node);
         roots.add(node);
     }
 
     public void removeRoot (UUID uuid) {
-        HuffmanNode<E> node = nodes.get(uuid);
+        BinaryTreeNode<E> node = nodes.get(uuid);
         if (node == null)
             throw new IllegalArgumentException("Node does not exist: " + uuid);
 
@@ -32,7 +33,7 @@ public class HuffmanTreeStructure<E> extends BinaryTreeStructure<HuffmanNode<E>,
         roots.remove(node);
     }
 
-    public List<HuffmanNode<E>> getRoots () {
+    public List<BinaryTreeNode<E>> getRoots () {
         return roots;
     }
 
@@ -41,14 +42,14 @@ public class HuffmanTreeStructure<E> extends BinaryTreeStructure<HuffmanNode<E>,
         if (roots.size() < 2)
             throw new IllegalStateException("Not enough roots to get smallest two.");
 
-        HuffmanNode<E> first = null;
-        HuffmanNode<E> second = null;
+        BinaryTreeNode<E> first = null;
+        BinaryTreeNode<E> second = null;
 
-        for (HuffmanNode<E> node : roots) {
-            if (first == null || node.getWeight() < first.getWeight()) {
+        for (BinaryTreeNode<E> node : roots) {
+            if (first == null || ((HuffmanNodeExtension) node.getExtension()).getWeight() < ((HuffmanNodeExtension) first.getExtension()).getWeight()) {
                 second = first;
                 first = node;
-            } else if (second == null || node.getWeight() < second.getWeight()) {
+            } else if (second == null || ((HuffmanNodeExtension) node.getExtension()).getWeight() < ((HuffmanNodeExtension) second.getExtension()).getWeight()) {
                 second = node;
             }
         }
@@ -58,12 +59,13 @@ public class HuffmanTreeStructure<E> extends BinaryTreeStructure<HuffmanNode<E>,
         return result;
     }
 
-    public void mergeNodes (UUID uuid, HuffmanNode<E> left, HuffmanNode<E> right) {
+    public void mergeNodes (UUID uuid, BinaryTreeNode<E> left, BinaryTreeNode<E> right) {
         if (nodes.containsKey(uuid))
             throw new IllegalArgumentException("Node already exists: " + uuid);
 
-        int mergedWeight = left.getWeight() + right.getWeight();
-        HuffmanNode<E> node = new HuffmanNode<>(uuid, null, mergedWeight);
+        int mergedWeight = ((HuffmanNodeExtension) left.getExtension()).getWeight() + ((HuffmanNodeExtension) right.getExtension()).getWeight();
+        BinaryTreeNode<E> node = new BinaryTreeNode<>(uuid, null);
+        node.setExtension(new HuffmanNodeExtension(mergedWeight));
         node.setLeft(left);
         node.setRight(right);
         nodes.put(uuid, node);
@@ -73,12 +75,12 @@ public class HuffmanTreeStructure<E> extends BinaryTreeStructure<HuffmanNode<E>,
     }
 
     public void unmergeNodes (UUID uuid) {
-        HuffmanNode<E> node = nodes.get(uuid);
+        BinaryTreeNode<E> node = nodes.get(uuid);
         if (node == null)
             throw new IllegalArgumentException("Node does not exist: " + uuid);
 
-        HuffmanNode<E> left = node.getLeft();
-        HuffmanNode<E> right = node.getRight();
+        BinaryTreeNode<E> left = node.getLeft();
+        BinaryTreeNode<E> right = node.getRight();
         nodes.remove(uuid);
         roots.remove(node);
         roots.add(left);

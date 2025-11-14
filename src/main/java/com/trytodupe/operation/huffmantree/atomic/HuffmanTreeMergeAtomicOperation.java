@@ -1,6 +1,5 @@
 package com.trytodupe.operation.huffmantree.atomic;
 
-import com.trytodupe.datastructure.tree.HuffmanNode;
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
 import com.trytodupe.operation.AtomicOperation;
 

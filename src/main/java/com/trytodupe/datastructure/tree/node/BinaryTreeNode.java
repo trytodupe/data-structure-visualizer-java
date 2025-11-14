@@ -1,16 +1,19 @@
-package com.trytodupe.datastructure.tree;
+package com.trytodupe.datastructure.tree.node;
 
 import com.trytodupe.Main;
+import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
+import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 
 import java.util.*;
 import java.util.UUID;
 
-public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
+public class BinaryTreeNode<E> {
 
     protected final UUID uuid;
     protected E value;
-    private N left;
-    private N right;
+    private BinaryTreeNode<E> left;
+    private BinaryTreeNode<E> right;
+    private INodeExtension extension;
 
     public BinaryTreeNode (UUID uuid) {
         this.uuid = uuid;
@@ -19,6 +22,14 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
     public BinaryTreeNode (UUID uuid, E value) {
         this.uuid = uuid;
         this.value = value;
+    }
+
+    public INodeExtension getExtension () {
+        return extension;
+    }
+
+    public void setExtension (INodeExtension extension) {
+        this.extension = extension;
     }
 
     public UUID getUUID () {
@@ -41,11 +52,11 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
         }
     }
 
-    public N getLeft () {
+    public BinaryTreeNode<E> getLeft () {
         return left;
     }
 
-    public void setLeft (N left) {
+    public void setLeft (BinaryTreeNode<E> left) {
         if (this.left != null)
             throw new IllegalStateException("Left child is already set.");
 
@@ -62,11 +73,11 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
         this.left = null;
     }
 
-    public N getRight () {
+    public BinaryTreeNode<E> getRight () {
         return right;
     }
 
-    public void setRight (N right) {
+    public void setRight (BinaryTreeNode<E> right) {
         if (this.right != null)
             throw new IllegalStateException("Right child is already set.");
 
@@ -95,7 +106,7 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
     }
 
 
-    public ChildType isChild (N child) {
+    public ChildType isChild (BinaryTreeNode<E> child) {
         if (this.getLeft() == child)
             return ChildType.LEFT;
         else if (this.getRight() == child)
@@ -104,7 +115,7 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
             throw new IllegalArgumentException("The specified node is not a child of the parent node.");
     }
 
-    public N getChildFromType (ChildType childType) {
+    public BinaryTreeNode<E> getChildFromType (ChildType childType) {
         switch (childType) {
             case LEFT:
                 return this.getLeft();
@@ -115,7 +126,7 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
         }
     }
 
-    public void setChildFromType (ChildType childType, N child) {
+    public void setChildFromType (ChildType childType, BinaryTreeNode<E> child) {
         switch (childType) {
             case LEFT:
                 this.setLeft(child);
@@ -133,7 +144,7 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
         RIGHT
     }
 
-    public static void traversePreOrder (BinaryTreeNode<?, ?> node) {
+    public static void traversePreOrder (BinaryTreeNode<?> node) {
         if (node == null) return;
         System.out.print(node.getValue() + " ");
         traversePreOrder(node.getLeft());
@@ -141,12 +152,12 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
     }
 
     // New method: printTree
-    public static void printTree(BinaryTreeNode<?, ?> node) {
+    public static void printTree(BinaryTreeNode<?> node) {
         if (node == null) return;
 
         // Collect nodes: compute inorder indices and depths, and track max widths
-        Map<BinaryTreeNode<?, ?>, Integer> indexMap = new IdentityHashMap<>();
-        Map<BinaryTreeNode<?, ?>, Integer> depthMap = new IdentityHashMap<>();
+        Map<BinaryTreeNode<?>, Integer> indexMap = new IdentityHashMap<>();
+        Map<BinaryTreeNode<?>, Integer> depthMap = new IdentityHashMap<>();
         int[] counter = new int[]{0};
         int[] maxDepth = new int[]{0};
         int[] maxValLen = new int[]{0};
@@ -164,11 +175,11 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
         for (int r = 0; r < rows; r++) Arrays.fill(canvas[r], ' ');
 
         // place nodes
-        List<BinaryTreeNode<?, ?>> allNodes = new ArrayList<>(indexMap.keySet());
+        List<BinaryTreeNode<?>> allNodes = new ArrayList<>(indexMap.keySet());
         // sort by depth ascending then index to make deterministic
         allNodes.sort(Comparator.comparingInt(depthMap::get).thenComparingInt(indexMap::get));
 
-        for (BinaryTreeNode<?, ?> n : allNodes) {
+        for (BinaryTreeNode<?> n : allNodes) {
             int idx = indexMap.get(n);
             int depth = depthMap.get(n);
             String s = String.valueOf(n.getValue());
@@ -181,7 +192,7 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
             }
 
             // draw connector to left child
-            BinaryTreeNode<?, ?> left = n.getLeft();
+            BinaryTreeNode<?> left = n.getLeft();
             if (left != null && indexMap.containsKey(left)) {
                 int childIdx = indexMap.get(left);
                 int childCol = childIdx * spacing + spacing / 2;
@@ -190,7 +201,7 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
                 if (mid >= 0 && mid < cols) canvas[connRow][mid] = '/';
             }
             // draw connector to right child
-            BinaryTreeNode<?, ?> right = n.getRight();
+            BinaryTreeNode<?> right = n.getRight();
             if (right != null && indexMap.containsKey(right)) {
                 int childIdx = indexMap.get(right);
                 int childCol = childIdx * spacing + spacing / 2;
@@ -210,11 +221,11 @@ public class BinaryTreeNode<E, N extends BinaryTreeNode<E, N>> {
     }
 
     // helper to assign inorder index and depth; updates counter, maps, and max values
-    private static void assignIndicesAndDepths(BinaryTreeNode<?, ?> node,
+    private static void assignIndicesAndDepths(BinaryTreeNode<?> node,
                                                int depth,
                                                int[] counter,
-                                               Map<BinaryTreeNode<?, ?>, Integer> indexMap,
-                                               Map<BinaryTreeNode<?, ?>, Integer> depthMap,
+                                               Map<BinaryTreeNode<?>, Integer> indexMap,
+                                               Map<BinaryTreeNode<?>, Integer> depthMap,
                                                int[] maxDepth,
                                                int[] maxValLen) {
         if (node == null) return;

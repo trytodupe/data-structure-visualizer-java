@@ -1,6 +1,5 @@
 package com.trytodupe.operation.avltree.atomic;
 
-import com.trytodupe.datastructure.tree.AVLTreeNode;
 import com.trytodupe.datastructure.tree.AVLTreeStructure;
 import com.trytodupe.operation.AtomicOperation;
 
