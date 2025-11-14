@@ -42,18 +42,18 @@ public class AVLTreeRightRotateAtomicOperation<E extends Comparable<E>> extends 
         BinaryTreeNode<E> newRootRightChild = newRoot.getRight();
 
         // Step 1: Move newRoot's right child to pivot's left
-        pivot.setLeft(newRootRightChild);
+        pivot.forceSetLeft(newRootRightChild);
 
         // Step 2: Move pivot to newRoot's right
-        newRoot.setRight(pivot);
+        newRoot.forceSetRight(pivot);
 
         // Step 3: Update parent's reference
         if (parent != null) {
             // Replace pivot with newRoot in parent
             if (pivotWasLeftChild) {
-                parent.setLeft(newRoot);
+                parent.forceSetLeft(newRoot);
             } else {
-                parent.setRight(newRoot);
+                parent.forceSetRight(newRoot);
             }
         } else {
             // pivot was the root, so newRoot becomes the new root
@@ -74,10 +74,10 @@ public class AVLTreeRightRotateAtomicOperation<E extends Comparable<E>> extends 
         BinaryTreeNode<E> pivotLeftChild = pivot.getLeft();
 
         // Step 1: Move pivot's left child back to newRoot's right
-        newRoot.setRight(pivotLeftChild);
+        newRoot.forceSetRight(pivotLeftChild);
 
         // Step 2: Move newRoot back to pivot's left
-        pivot.setLeft(newRoot);
+        pivot.forceSetLeft(newRoot);
 
         // Step 3: Update parent's reference
         BinaryTreeNode<E> parent = oldParentUUID != null ?
@@ -86,9 +86,9 @@ public class AVLTreeRightRotateAtomicOperation<E extends Comparable<E>> extends 
         if (parent != null) {
             // Restore pivot as parent's child
             if (pivotWasLeftChild) {
-                parent.setLeft(pivot);
+                parent.forceSetLeft(pivot);
             } else {
-                parent.setRight(pivot);
+                parent.forceSetRight(pivot);
             }
         } else {
             // pivot was the root, restore it

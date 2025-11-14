@@ -62,6 +62,9 @@ public class BinaryTreeNode<E> {
 
         this.left = left;
     }
+    public void forceSetLeft (BinaryTreeNode<E> left) {
+        this.left = left;
+    }
 
     public void clearLeft () {
         if (this.left == null)
@@ -75,6 +78,9 @@ public class BinaryTreeNode<E> {
 
     public BinaryTreeNode<E> getRight () {
         return right;
+    }
+    public void forceSetRight (BinaryTreeNode<E> right) {
+        this.right = right;
     }
 
     public void setRight (BinaryTreeNode<E> right) {
