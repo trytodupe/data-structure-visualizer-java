@@ -1,16 +1,17 @@
 package com.trytodupe.operation.binarytree.user;
 
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeDisconnectNodeAtomicOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeRemoveNodeAtomicOperation;
 
-public class BinaryTreeDeleteUserOperation extends UserOperation<BinaryTreeStructure<Integer>> {
+public class BinaryTreeDeleteUserOperation extends UserOperation<BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer>> {
 
     private final String parentUUID;
     private final String childUUID;
 
-    public BinaryTreeDeleteUserOperation(BinaryTreeStructure<Integer> binaryTreeStructure,
+    public BinaryTreeDeleteUserOperation(BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer> binaryTreeStructure,
                                         String parentUUID,
                                         String childUUID) {
         super(binaryTreeStructure);

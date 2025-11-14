@@ -11,7 +11,7 @@ public class MyArrayList<E> extends ArrayList<E> {
     public boolean add(E newElement) {
         boolean result = super.add(newElement);
         if (Main.DEBUG) {
-            System.out.println("addding: ");
+            System.out.println("adding: ");
             for (E e : this) {
                 if (e instanceof HuffmanNode) {
                     System.out.println(e);

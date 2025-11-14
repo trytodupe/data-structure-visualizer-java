@@ -2,11 +2,12 @@ package com.trytodupe.operation.binarytree.atomic;
 
 import com.trytodupe.datastructure.tree.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
 
-public class BinaryTreeDisconnectNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
+public class BinaryTreeDisconnectNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<SimpleBinarySearchNode<E>, E>> {
 
     private final String parentUUID;
     private final String childUUID;
@@ -18,17 +19,17 @@ public class BinaryTreeDisconnectNodeAtomicOperation<E> extends AtomicOperation<
     }
 
     @Override
-    public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
+    public void execute (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
         if (parentUUID == null) {
             // push root node back to temp slot
-            BinaryTreeNode<E> node = binaryTreeStructure.getRoot();
+            SimpleBinarySearchNode<E> node = binaryTreeStructure.getRoot();
             binaryTreeStructure.pushTempNode(node);
             binaryTreeStructure.setRoot(null);
             return;
         }
 
-        BinaryTreeNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
-        BinaryTreeNode<E> child = binaryTreeStructure.getNode(UUID.fromString(childUUID));
+        SimpleBinarySearchNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
+        SimpleBinarySearchNode<E> child = binaryTreeStructure.getNode(UUID.fromString(childUUID));
 
         childType = parent.isChild(child);
 
@@ -46,16 +47,16 @@ public class BinaryTreeDisconnectNodeAtomicOperation<E> extends AtomicOperation<
     }
 
     @Override
-    public void undo (BinaryTreeStructure<E> binaryTreeStructure) {
+    public void undo (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
         if (parentUUID == null) {
             // pop temp slot into root node
-            BinaryTreeNode<E> node = binaryTreeStructure.popTempNode();
+            SimpleBinarySearchNode<E> node = binaryTreeStructure.popTempNode();
             binaryTreeStructure.setRoot(node);
             return;
         }
 
-        BinaryTreeNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
-        BinaryTreeNode<E> child = binaryTreeStructure.popTempNode();
+        SimpleBinarySearchNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
+        SimpleBinarySearchNode<E> child = binaryTreeStructure.popTempNode();
 
         switch (this.childType) {
             case LEFT:

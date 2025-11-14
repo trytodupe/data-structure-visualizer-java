@@ -2,6 +2,7 @@ package com.trytodupe.operation.binarytree.user;
 
 import com.trytodupe.datastructure.tree.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeAddNodeAtomicOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeConnectNodeAtomicOperation;
@@ -9,14 +10,14 @@ import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOper
 
 import java.util.UUID;
 
-public class BinaryTreeInsertUserOperation extends UserOperation<BinaryTreeStructure<Integer>> {
+public class BinaryTreeInsertUserOperation extends UserOperation<BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer>> {
 
     private final String parentUUID;
     private final String uuid;
     private final Integer value;
     private final BinaryTreeNode.ChildType childType;
 
-    public BinaryTreeInsertUserOperation(BinaryTreeStructure<Integer> binaryTreeStructure,
+    public BinaryTreeInsertUserOperation(BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer> binaryTreeStructure,
                                         String parentUUID,
                                         Integer value,
                                         BinaryTreeNode.ChildType childType) {

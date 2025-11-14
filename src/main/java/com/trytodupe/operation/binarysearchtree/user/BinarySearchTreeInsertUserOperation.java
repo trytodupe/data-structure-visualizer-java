@@ -1,7 +1,9 @@
 package com.trytodupe.operation.binarysearchtree.user;
 
+import com.trytodupe.datastructure.tree.AVLTreeStructure;
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
 import com.trytodupe.datastructure.tree.BinaryTreeNode;
+import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeAddNodeAtomicOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeConnectNodeAtomicOperation;
@@ -28,7 +30,7 @@ public class BinarySearchTreeInsertUserOperation extends UserOperation<BinarySea
 
         // check if initialised
         if (parentUUID == null) {
-            BinaryTreeNode<Integer> parent = super.dataStructure.getInsertParent(value);
+            SimpleBinarySearchNode<Integer> parent = super.dataStructure.getInsertParent(value);
 
             // check if is root
             if (parent != null) {

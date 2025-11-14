@@ -1,7 +1,7 @@
 package com.trytodupe.operation.binarysearchtree.user;
 
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
-import com.trytodupe.datastructure.tree.BinaryTreeNode;
+import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeDisconnectNodeAtomicOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeRemoveNodeAtomicOperation;
@@ -16,7 +16,6 @@ public class BinarySearchTreeDeleteUserOperation extends UserOperation<BinarySea
     private String parentUUID;
     private int childCount = -1;
 
-
     public BinarySearchTreeDeleteUserOperation (BinarySearchTreeStructure<Integer> dataStructure, String uuid) {
         super(dataStructure);
         this.uuid = uuid;
@@ -24,12 +23,12 @@ public class BinarySearchTreeDeleteUserOperation extends UserOperation<BinarySea
 
     @Override
     protected void buildOperations () {
-        BinaryTreeNode<Integer> node = super.dataStructure.getNode(UUID.fromString(uuid));
+        SimpleBinarySearchNode<Integer> node = super.dataStructure.getNode(UUID.fromString(uuid));
         if (childCount == -1) {
             childCount = node.getChildCount();
         }
 
-        BinaryTreeNode<Integer> parent = super.dataStructure.getParent(UUID.fromString(uuid));
+        SimpleBinarySearchNode<Integer> parent = super.dataStructure.getParent(UUID.fromString(uuid));
         parentUUID = (parent == null) ? null : parent.getUUID().toString();
 
         switch (childCount) {
@@ -38,16 +37,16 @@ public class BinarySearchTreeDeleteUserOperation extends UserOperation<BinarySea
                 atomicOperations.add(new BinaryTreeRemoveNodeAtomicOperation<>());
                 break;
             case 1:
-                BinaryTreeNode<Integer> child = node.getLeft() != null ? node.getLeft() : node.getRight();
+                SimpleBinarySearchNode<Integer> child = node.getLeft() != null ? node.getLeft() : node.getRight();
 
                 atomicOperations.add(new BinaryTreeReplaceSubtreeAtomicOperation<>(uuid, child.getUUID().toString()));
                 atomicOperations.add(new BinaryTreeDisconnectNodeAtomicOperation<>(parentUUID, uuid));
                 atomicOperations.add(new BinaryTreeRemoveNodeAtomicOperation<>());
                 break;
             case 2:
-                BinaryTreeNode<Integer> successor = super.dataStructure.getSuccessor(node);
+                SimpleBinarySearchNode<Integer> successor = super.dataStructure.getSuccessor(node);
                 String successorUUID = successor.getUUID().toString();
-                BinaryTreeNode<Integer> successorParent = super.dataStructure.getParent(UUID.fromString(successorUUID));
+                SimpleBinarySearchNode<Integer> successorParent = super.dataStructure.getParent(UUID.fromString(successorUUID));
 
                 // todo: animation
                 atomicOperations.add(new BinaryTreeSwapValueAtomicOperation<>(uuid, successor.getUUID().toString()));

@@ -1,12 +1,12 @@
 package com.trytodupe.operation.binarytree.atomic;
 
-import com.trytodupe.datastructure.tree.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
 
-public class BinaryTreeSwapValueAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
+public class BinaryTreeSwapValueAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<SimpleBinarySearchNode<E>, E>> {
 
     private final String uuid1, uuid2;
 
@@ -16,16 +16,16 @@ public class BinaryTreeSwapValueAtomicOperation<E> extends AtomicOperation<Binar
     }
 
     @Override
-    public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
-        BinaryTreeNode<E> node1 = binaryTreeStructure.getNode(UUID.fromString(uuid1));
-        BinaryTreeNode<E> node2 = binaryTreeStructure.getNode(UUID.fromString(uuid2));
+    public void execute (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
+        SimpleBinarySearchNode<E> node1 = binaryTreeStructure.getNode(UUID.fromString(uuid1));
+        SimpleBinarySearchNode<E> node2 = binaryTreeStructure.getNode(UUID.fromString(uuid2));
         E tmp = node1.getValue();
         node1.setValue(node2.getValue());
         node2.setValue(tmp);
     }
 
     @Override
-    public void undo (BinaryTreeStructure<E> binaryTreeStructure) {
+    public void undo (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
         execute(binaryTreeStructure); // swapping again will revert to original
     }
 

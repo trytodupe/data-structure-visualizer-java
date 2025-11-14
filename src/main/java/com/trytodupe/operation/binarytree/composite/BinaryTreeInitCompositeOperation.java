@@ -2,6 +2,7 @@ package com.trytodupe.operation.binarytree.composite;
 
 import com.trytodupe.datastructure.tree.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.SimpleBinarySearchNode;
 import com.trytodupe.utils.ValueUUIDPair;
 import com.trytodupe.operation.CompositeUserOperation;
 import com.trytodupe.operation.binarytree.user.BinaryTreeInsertUserOperation;
@@ -9,12 +10,12 @@ import com.trytodupe.operation.binarytree.user.BinaryTreeInsertUserOperation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BinaryTreeInitCompositeOperation extends CompositeUserOperation<BinaryTreeStructure<Integer>> {
+public class BinaryTreeInitCompositeOperation extends CompositeUserOperation<BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer>> {
 
     // List of <value, uuid> pairs where value is null for placeholder
     private final List<ValueUUIDPair> values;
 
-    public BinaryTreeInitCompositeOperation (BinaryTreeStructure<Integer> dataStructure, Integer[] values) {
+    public BinaryTreeInitCompositeOperation (BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer> dataStructure, Integer[] values) {
         super(dataStructure);
 
         List<ValueUUIDPair> valuesList = new ArrayList<>();

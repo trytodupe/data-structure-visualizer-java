@@ -2,25 +2,16 @@ package com.trytodupe.datastructure.tree;
 
 import com.trytodupe.utils.MyArrayList;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 // todo: generic node type
-public class HuffmanTreeStructure<E> extends BinaryTreeStructure<E>{
-    protected final Map<UUID, HuffmanNode<E>> nodes = new HashMap<>();
+public class HuffmanTreeStructure<E> extends BinaryTreeStructure<HuffmanNode<E>, E>{
     protected List<HuffmanNode<E>> roots = new MyArrayList<>();
 
-    public HuffmanTreeStructure () {
-    }
 
-    public List<HuffmanNode<E>> getRoots () {
-        return roots;
-    }
-
-    public HuffmanNode<E> getNode (UUID uuid) {
-        return nodes.get(uuid);
+    public HuffmanTreeStructure (Class<HuffmanNode<E>> nodeClass) {
+        super(nodeClass);
     }
 
     public void addRoot (UUID uuid, E value, int weight) {
@@ -39,6 +30,10 @@ public class HuffmanTreeStructure<E> extends BinaryTreeStructure<E>{
 
         nodes.remove(uuid);
         roots.remove(node);
+    }
+
+    public List<HuffmanNode<E>> getRoots () {
+        return roots;
     }
 
     public UUID[] getSmallestTwoRoots () {
@@ -82,8 +77,8 @@ public class HuffmanTreeStructure<E> extends BinaryTreeStructure<E>{
         if (node == null)
             throw new IllegalArgumentException("Node does not exist: " + uuid);
 
-        HuffmanNode<E> left = (HuffmanNode<E>) node.getLeft();
-        HuffmanNode<E> right = (HuffmanNode<E>) node.getRight();
+        HuffmanNode<E> left = node.getLeft();
+        HuffmanNode<E> right = node.getRight();
         nodes.remove(uuid);
         roots.remove(node);
         roots.add(left);

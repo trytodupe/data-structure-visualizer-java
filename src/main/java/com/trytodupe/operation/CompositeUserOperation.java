@@ -8,7 +8,7 @@ import java.util.List;
 
 public abstract class CompositeUserOperation<T extends DataStructure> extends UserOperation<T> {
 
-    protected transient List<UserOperation<T>> childOperations;
+    protected transient List<UserOperation<?>> childOperations;
 
     public CompositeUserOperation (T dataStructure) {
         super(dataStructure);
@@ -24,7 +24,7 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
             built = true;
         }
 
-        for (UserOperation<T> childOperation : childOperations) {
+        for (UserOperation<?> childOperation : childOperations) {
             childOperation.execute();
         }
     }

@@ -9,30 +9,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class BinaryTreeStructure<E> extends DataStructure {
+// todo: make node type generic
+public class BinaryTreeStructure<T extends BinaryTreeNode<E, T>, E> extends DataStructure {
 
-    protected final Map<UUID, BinaryTreeNode<E>> nodes = new HashMap<>();
-    protected BinaryTreeNode<E> root;
-    protected BinaryTreeNode<E> tempNode;
-    protected List<BinaryTreeNode<E>> detactchedRoots = new ArrayList<>();
+    private final Class<T> nodeClass;
 
-    public BinaryTreeStructure () {
+    protected final Map<UUID, T> nodes = new HashMap<>();
+    protected T root;
+    protected T tempNode;
+    protected List<T> detactchedRoots = new ArrayList<>();
+
+    public BinaryTreeStructure(Class<T> nodeClass) {
+        this.nodeClass = nodeClass;
     }
 
-    public BinaryTreeNode<E> getRoot () {
+    public T getRoot () {
         return root;
     }
 
-    public void setRoot (BinaryTreeNode<E> root) {
+    public void setRoot (T root) {
         this.root = root;
     }
 
-    public BinaryTreeNode<E> getTempNode () {
+    public T getTempNode () {
         return tempNode;
     }
 
     // state of temp node: null -> not null
-    public void pushTempNode (BinaryTreeNode<E> node) {
+    public void pushTempNode (T node) {
         if (this.tempNode != null)
             throw new IllegalStateException("Temp node is already set.");
 
@@ -40,33 +44,45 @@ public class BinaryTreeStructure<E> extends DataStructure {
     }
 
     // state of temp node: not null -> null
-     public BinaryTreeNode<E> popTempNode () {
+     public T popTempNode () {
         if (this.tempNode == null)
             throw new IllegalStateException("Temp node is not set.");
 
-        BinaryTreeNode<E> node = this.tempNode;
+        T node = this.tempNode;
         this.tempNode = null;
         return node;
     }
 
-    public BinaryTreeNode<E> getNode (UUID uuid) {
+    public T getNode (UUID uuid) {
         return nodes.get(uuid);
     }
 
-    public BinaryTreeNode<E> addNode (UUID uuid) {
+    public T createNodeInstance(UUID uuid, E value) {
+        try {
+            if (value == null) {
+                return nodeClass.getConstructor(UUID.class).newInstance(uuid);
+            } else {
+                return nodeClass.getConstructor(UUID.class, Object.class).newInstance(uuid, value);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create node instance", e);
+        }
+    }
+
+    public T addNode (UUID uuid) {
         if (nodes.containsKey(uuid))
             throw new IllegalArgumentException("Node already exists: " + uuid);
 
-        BinaryTreeNode<E> node = new BinaryTreeNode<>(uuid);
+        T node = createNodeInstance(uuid, null);
         nodes.put(uuid, node);
         return node;
     }
 
-    public BinaryTreeNode<E> addNode (UUID uuid, E value) {
+    public T addNode (UUID uuid, E value) {
         if (nodes.containsKey(uuid))
             throw new IllegalArgumentException("Node already exists: " + uuid);
 
-        BinaryTreeNode<E> node = new BinaryTreeNode<>(uuid, value);
+        T node = createNodeInstance(uuid, value);
         nodes.put(uuid, node);
         return node;
     }
@@ -75,7 +91,7 @@ public class BinaryTreeStructure<E> extends DataStructure {
         nodes.remove(uuid);
     }
 
-    public BinaryTreeNode<E> getParent (UUID childUUID) {
+    public T getParent (UUID childUUID) {
         if (childUUID == null) throw new IllegalArgumentException("childUUID must not be null");
 
         // If there's no root or the child is the root, there is no parent.
@@ -83,13 +99,13 @@ public class BinaryTreeStructure<E> extends DataStructure {
         if (root.getUUID().equals(childUUID)) return null;
 
         // Iterative traversal from root using a stack (pre-order style).
-        ArrayDeque<BinaryTreeNode<E>> stack = new java.util.ArrayDeque<>();
+        ArrayDeque<T> stack = new java.util.ArrayDeque<>();
         stack.push(root);
 
         while (!stack.isEmpty()) {
-            BinaryTreeNode<E> node = stack.pop();
-            BinaryTreeNode<E> left = node.getLeft();
-            BinaryTreeNode<E> right = node.getRight();
+            T node = stack.pop();
+            T left = node.getLeft();
+            T right = node.getRight();
 
             if (left != null && left.getUUID().equals(childUUID)) return node;
             if (right != null && right.getUUID().equals(childUUID)) return node;
@@ -102,15 +118,15 @@ public class BinaryTreeStructure<E> extends DataStructure {
         return null;
     }
 
-    public void addDetatchedRoot (BinaryTreeNode<E> node) {
+    public void addDetatchedRoot (T node) {
         detactchedRoots.add(node);
     }
 
-    public void removeDetatchedRoot (BinaryTreeNode<E> node) {
+    public void removeDetatchedRoot (T node) {
         detactchedRoots.remove(node);
     }
 
-    public List<BinaryTreeNode<E>> getDetatchedRoots () {
+    public List<T> getDetatchedRoots () {
         return detactchedRoots;
     }
 

@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class BinarySearchTreeStructure<E> extends BinaryTreeStructure<E> {
+public class BinarySearchTreeStructure<E> extends BinaryTreeStructure<SimpleBinarySearchNode<E>, E> {
+    
+    public BinarySearchTreeStructure(Class<SimpleBinarySearchNode<E>> nodeClass) {
+        super(nodeClass);
+    }
 
-    public BinaryTreeNode<E> getInsertParent(E value) {
+    public SimpleBinarySearchNode<E> getInsertParent(E value) {
         if (root == null) {
             return null;
         }
 
-        BinaryTreeNode<E> current = root;
+        SimpleBinarySearchNode<E> current = root;
         while (true) {
             @SuppressWarnings("unchecked")
             int comparison = ((Comparable<E>) value).compareTo(current.getValue());
@@ -32,9 +36,9 @@ public class BinarySearchTreeStructure<E> extends BinaryTreeStructure<E> {
         }
     }
 
-    public List<UUID> findSearchPath(BinaryTreeNode<E> target) {
+    public List<UUID> findSearchPath(SimpleBinarySearchNode<E> target) {
         List<UUID> path = new ArrayList<>();
-        BinaryTreeNode<E> current = root;
+        SimpleBinarySearchNode<E> current = root;
         while (current != null) {
             path.add(current.getUUID());
             if (target == current.getValue()) break;
@@ -48,21 +52,21 @@ public class BinarySearchTreeStructure<E> extends BinaryTreeStructure<E> {
     }
 
 
-    public BinaryTreeNode<E> getSuccessor(BinaryTreeNode<E> node) {
+    public SimpleBinarySearchNode<E> getSuccessor(SimpleBinarySearchNode<E> node) {
         if (node == null) {
             return null;
         }
 
         if (node.getRight() != null) {
-            BinaryTreeNode<E> current = node.getRight();
+            SimpleBinarySearchNode<E> current = node.getRight();
             while (current.getLeft() != null) {
                 current = current.getLeft();
             }
             return current;
         }
 
-        BinaryTreeNode<E> successor = null;
-        BinaryTreeNode<E> current = root;
+        SimpleBinarySearchNode<E> successor = null;
+        SimpleBinarySearchNode<E> current = root;
 
         while (current != null) {
             @SuppressWarnings("unchecked")
