@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class HuffmanTreeMergeUserOperation<E> extends UserOperation<HuffmanTreeStructure<E>> {
 
-    private String mergedUUID;
+    private final String mergedUUID;
     private String leftUUID;
     private String rightUUID;
     private int mergedWeight;
