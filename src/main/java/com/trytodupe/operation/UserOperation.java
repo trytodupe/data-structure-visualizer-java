@@ -34,6 +34,9 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
         }
 
         for (AtomicOperation<? super T> atomicOperation : atomicOperations) {
+            if (Main.DEBUG) {
+                System.out.println(atomicOperation.getDescription());
+            }
             atomicOperation.execute(dataStructure);
         }
     }

@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class BinaryTreeNode<E> {
 
-    private final UUID uuid;
-    private E value;
+    protected final UUID uuid;
+    protected E value;
     private BinaryTreeNode<E> left;
     private BinaryTreeNode<E> right;
 

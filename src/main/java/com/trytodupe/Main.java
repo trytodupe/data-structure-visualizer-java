@@ -2,9 +2,11 @@ package com.trytodupe;
 
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
+import com.trytodupe.datastructure.tree.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
+import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
@@ -13,9 +15,12 @@ import com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCo
 import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeDeleteUserOperation;
 import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
 import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOperation;
+import com.trytodupe.operation.huffmantree.atomic.HuffmanTreeAddAtomicOperation;
+import com.trytodupe.operation.huffmantree.composite.HuffmanTreeInitCompositeOperation;
 import com.trytodupe.operation.stack.user.StackInitUserOperation;
 import com.trytodupe.operation.stack.user.StackPopUserOperation;
 import com.trytodupe.operation.stack.user.StackPushUserOperation;
+import com.trytodupe.test.OperationTestRunner;
 import imgui.ImGui;
 import imgui.app.Application;
 import imgui.app.Configuration;
@@ -33,6 +38,7 @@ public class Main extends Application {
         REGISTRY.put(StackStructure.class, new StackStructure());
         REGISTRY.put(BinaryTreeStructure.class, new BinaryTreeStructure<Integer>());
         REGISTRY.put(BinarySearchTreeStructure.class, new BinarySearchTreeStructure<Integer>());
+        REGISTRY.put(HuffmanTreeStructure.class, new HuffmanTreeStructure<Character>());
     }
 
     @SuppressWarnings("unchecked")
@@ -92,23 +98,37 @@ public class Main extends Application {
 //        OperationTestRunner.runTestSuite(BinarySearchTreeStructure.class, testBSTOps);
 //-----
 
-         bst = getDataStructure(BinarySearchTreeStructure.class);
+        bst = getDataStructure(BinarySearchTreeStructure.class);
         List<BinarySearchTreeInsertUserOperation> testBSTInsertOps = new ArrayList<>();
 
-        for (Integer value : bstValues) {
-            testBSTInsertOps.add(new BinarySearchTreeInsertUserOperation(bst, value));
-            testBSTInsertOps.get(testBSTInsertOps.size() - 1).execute();
-        }
+//        for (Integer value : bstValues) {
+//            testBSTInsertOps.add(new BinarySearchTreeInsertUserOperation(bst, value));
+//            testBSTInsertOps.get(testBSTInsertOps.size() - 1).execute();
+//        }
 
-        UserOperation<BinarySearchTreeStructure<Integer>> deleteOp =
-                new BinarySearchTreeDeleteUserOperation(bst, testBSTInsertOps.get(0).getUUID());
+//        UserOperation<BinarySearchTreeStructure<Integer>> deleteOp =
+//                new BinarySearchTreeDeleteUserOperation(bst, testBSTInsertOps.get(0).getUUID());
 
-        deleteOp.execute();
-        bst.printValue();
-        System.out.println("done");
+//        deleteOp.execute();
+//        bst.printValue();
+//        System.out.println("done");
+//
+//        deleteOp.undo();
+//        bst.printValue();
+//-----
 
-        deleteOp.undo();
-        bst.printValue();
+        HuffmanTreeStructure<Character> huffmanTree = getDataStructure(HuffmanTreeStructure.class);
+
+        String string = "abcaba";
+
+        HuffmanTreeInitCompositeOperation huffmanOp = new HuffmanTreeInitCompositeOperation(huffmanTree, string);
+        huffmanOp.execute();
+
+        System.out.println(huffmanTree.getRoots());
+        BinaryTreeNode.printTree(huffmanTree.getRoots().get(0));
+
+        huffmanOp.undo();
+
 
 
 //        launch(new Main());
