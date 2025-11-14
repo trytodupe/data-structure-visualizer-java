@@ -6,7 +6,7 @@ import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
 
-public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<SimpleBinarySearchNode<E>, E>> {
+public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
     // parent1 -> subTree1; parent2 -> subTree2
     // to
@@ -25,14 +25,14 @@ public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<
     }
 
     @Override
-    public void execute (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
+    public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
         String rootUUID = binaryTreeStructure.getRoot().getUUID().toString();
         if (rootUUID.equals(subTree2UUID)) {
             throw new IllegalArgumentException("Cannot replace a subtree with the root of the tree");
         }
 
-        SimpleBinarySearchNode<E> subTree1 = binaryTreeStructure.getNode(UUID.fromString(subTree1UUID));
-        SimpleBinarySearchNode<E> subTree2 = binaryTreeStructure.getNode(UUID.fromString(subTree2UUID));
+        BinaryTreeNode<E> subTree1 = binaryTreeStructure.getNode(UUID.fromString(subTree1UUID));
+        BinaryTreeNode<E> subTree2 = binaryTreeStructure.getNode(UUID.fromString(subTree2UUID));
 
         if (rootUUID.equals(subTree1UUID)) {
             binaryTreeStructure.addDetatchedRoot(subTree1);
@@ -41,8 +41,8 @@ public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<
         }
 
 
-        SimpleBinarySearchNode<E> parent1 = binaryTreeStructure.getParent(UUID.fromString(subTree1UUID));
-        SimpleBinarySearchNode<E> parent2 = binaryTreeStructure.getParent(UUID.fromString(subTree2UUID));
+        BinaryTreeNode<E> parent1 = binaryTreeStructure.getParent(subTree1.getUUID());
+        BinaryTreeNode<E> parent2 = binaryTreeStructure.getParent(subTree2.getUUID());
 
         parent1UUID = parent1.getUUID().toString();
         parent2UUID = parent2.getUUID().toString();
@@ -58,10 +58,10 @@ public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<
     }
 
     @Override
-    public void undo (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
+    public void undo (BinaryTreeStructure<E> binaryTreeStructure) {
         String rootUUID = binaryTreeStructure.getRoot().getUUID().toString();
-        SimpleBinarySearchNode<E> subTree1 = binaryTreeStructure.getNode(UUID.fromString(subTree1UUID));
-        SimpleBinarySearchNode<E> subTree2 = binaryTreeStructure.getNode(UUID.fromString(subTree2UUID));
+        BinaryTreeNode<E> subTree1 = binaryTreeStructure.getNode(UUID.fromString(subTree1UUID));
+        BinaryTreeNode<E> subTree2 = binaryTreeStructure.getNode(UUID.fromString(subTree2UUID));
 
         if (rootUUID.equals(subTree2UUID)) {
             binaryTreeStructure.setRoot(subTree1);
@@ -69,8 +69,8 @@ public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<
             return;
         }
 
-        SimpleBinarySearchNode<E> parent1 = binaryTreeStructure.getParent(UUID.fromString(subTree1UUID));
-        SimpleBinarySearchNode<E> parent2 = binaryTreeStructure.getParent(UUID.fromString(subTree2UUID));
+        BinaryTreeNode<E> parent1 = binaryTreeStructure.getParent(subTree1.getUUID());
+        BinaryTreeNode<E> parent2 = binaryTreeStructure.getParent(subTree2.getUUID());
 
         parent2.setChildFromType(childType2, subTree2);
         parent1.setChildFromType(childType1, subTree1);

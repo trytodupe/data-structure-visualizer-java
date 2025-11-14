@@ -1,60 +1,62 @@
 package com.trytodupe.operation.avltree.user;
 
 import com.trytodupe.datastructure.tree.AVLTreeStructure;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.avltree.atomic.AVLTreeLeftRotateAtomicOperation;
 import com.trytodupe.operation.avltree.atomic.AVLTreeRightRotateAtomicOperation;
-import com.trytodupe.operation.avltree.atomic.AVLTreeUpdateNodeAtomicOperation;
 
 import java.util.UUID;
 
-public class AVLTreeBalanceUserOperation extends UserOperation<AVLTreeStructure<Integer>> {
+/**
+ * Rebalance AVL tree after insertion by finding unbalanced nodes and performing rotations.
+ * Handles LL, LR, RR, and RL cases.
+ */
+public class AVLTreeBalanceUserOperation<E extends Comparable<E>> extends UserOperation<AVLTreeStructure<E>> {
 
     private final String insertedUUID;
     private String unbalancedUUID;
 
-    public AVLTreeBalanceUserOperation (AVLTreeStructure<Integer> avlTreeStructure, String insertedUUID) {
+    public AVLTreeBalanceUserOperation(AVLTreeStructure<E> avlTreeStructure, String insertedUUID) {
         super(avlTreeStructure);
         this.insertedUUID = insertedUUID;
+        this.description = "Rebalance tree after inserting " + insertedUUID;
     }
 
     @Override
-    protected void buildOperations () {
-        AVLTreeNode<Integer> insertedNode = dataStructure.getNode(UUID.fromString(insertedUUID));
-        AVLTreeNode<Integer> unbalancedNode = dataStructure.findFirstUnbalancedNode(insertedNode);
+    protected void buildOperations() {
+        BinaryTreeNode<E> insertedNode = dataStructure.getNode(UUID.fromString(insertedUUID));
+        BinaryTreeNode<E> unbalancedNode = dataStructure.findFirstUnbalancedNode(insertedNode);
 
-        if (unbalancedNode == null) return; // 树已经平衡，无需旋转
-        unbalancedUUID = UUID.randomUUID().toString();
+        if (unbalancedNode == null) {
+            return; // Tree is already balanced
+        }
 
-        int balance = dataStructure.getBalance(UUID.fromString(unbalancedUUID));
+        unbalancedUUID = unbalancedNode.getUUID().toString();
+        int balance = dataStructure.getBalance(unbalancedNode.getUUID());
 
-        if (balance > 1) { // 左子树过高
-            AVLTreeNode<Integer> leftChild = unbalancedNode.getLeft();
+        if (balance > 1) {
+            // Left subtree is too high
+            BinaryTreeNode<E> leftChild = unbalancedNode.getLeft();
             if (dataStructure.getBalance(leftChild.getUUID()) >= 0) {
-                // LL 情况
+                // LL case: single right rotation
                 atomicOperations.add(new AVLTreeRightRotateAtomicOperation<>(unbalancedUUID));
             } else {
-                // LR 情况
+                // LR case: left-right rotation
                 atomicOperations.add(new AVLTreeLeftRotateAtomicOperation<>(leftChild.getUUID().toString()));
                 atomicOperations.add(new AVLTreeRightRotateAtomicOperation<>(unbalancedUUID));
             }
-        } else if (balance < -1) { // 右子树过高
-            AVLTreeNode<Integer> rightChild = unbalancedNode.getRight();
+        } else if (balance < -1) {
+            // Right subtree is too high
+            BinaryTreeNode<E> rightChild = unbalancedNode.getRight();
             if (dataStructure.getBalance(rightChild.getUUID()) <= 0) {
-                // RR 情况
+                // RR case: single left rotation
                 atomicOperations.add(new AVLTreeLeftRotateAtomicOperation<>(unbalancedUUID));
             } else {
-                // RL 情况
+                // RL case: right-left rotation
                 atomicOperations.add(new AVLTreeRightRotateAtomicOperation<>(rightChild.getUUID().toString()));
                 atomicOperations.add(new AVLTreeLeftRotateAtomicOperation<>(unbalancedUUID));
             }
-        }
-        // 高度更新操作
-        AVLTreeNode<Integer> current = unbalancedNode;
-        while (current != null) {
-            int newHeight = current.computeHeight();
-            atomicOperations.add(new AVLTreeUpdateNodeAtomicOperation<>(current.getUUID().toString(), newHeight));
-            current = (AVLTreeNode<Integer>) super.dataStructure.getParent(UUID.fromString(insertedUUID));
         }
     }
 }

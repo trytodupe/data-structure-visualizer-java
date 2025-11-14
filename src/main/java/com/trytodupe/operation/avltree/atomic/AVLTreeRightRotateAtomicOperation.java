@@ -1,11 +1,12 @@
 package com.trytodupe.operation.avltree.atomic;
 
 import com.trytodupe.datastructure.tree.AVLTreeStructure;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
 
-public class AVLTreeRightRotateAtomicOperation<E> extends AtomicOperation<AVLTreeStructure<E>> {
+public class AVLTreeRightRotateAtomicOperation<E extends Comparable<E>> extends AtomicOperation<AVLTreeStructure<E>> {
 
     private final String pivotUUID;
     private String oldParentUUID;
@@ -18,15 +19,15 @@ public class AVLTreeRightRotateAtomicOperation<E> extends AtomicOperation<AVLTre
 
     @Override
     public void execute (AVLTreeStructure<E> avlTreeStructure) {
-        AVLTreeNode<E> pivot = avlTreeStructure.getNode(UUID.fromString(pivotUUID));
-        AVLTreeNode<E> newRoot = pivot.getLeft();
+        BinaryTreeNode<E> pivot = avlTreeStructure.getNode(UUID.fromString(pivotUUID));
+        BinaryTreeNode<E> newRoot = pivot.getLeft();
         if (newRoot == null) {
             throw new IllegalStateException("Cannot rotate right because left child is null");
         }
 
         // Store state for undo
         newRootUUID = newRoot.getUUID().toString();
-        AVLTreeNode<E> parent = avlTreeStructure.getParent(UUID.fromString(pivotUUID));
+        BinaryTreeNode<E> parent = avlTreeStructure.getParent(pivot.getUUID());
 
         if (parent != null) {
             oldParentUUID = parent.getUUID().toString();
@@ -38,7 +39,7 @@ public class AVLTreeRightRotateAtomicOperation<E> extends AtomicOperation<AVLTre
         }
 
         // Perform the rotation
-        AVLTreeNode<E> newRootRightChild = newRoot.getRight();
+        BinaryTreeNode<E> newRootRightChild = newRoot.getRight();
 
         // Step 1: Move newRoot's right child to pivot's left
         pivot.setLeft(newRootRightChild);
@@ -62,15 +63,15 @@ public class AVLTreeRightRotateAtomicOperation<E> extends AtomicOperation<AVLTre
 
     @Override
     public void undo (AVLTreeStructure<E> avlTreeStructure) {
-        AVLTreeNode<E> newRoot = avlTreeStructure.getNode(UUID.fromString(newRootUUID));
-        AVLTreeNode<E> pivot = newRoot.getRight();
+        BinaryTreeNode<E> newRoot = avlTreeStructure.getNode(UUID.fromString(newRootUUID));
+        BinaryTreeNode<E> pivot = newRoot.getRight();
 
         if (pivot == null) {
             throw new IllegalStateException("Cannot undo rotation: pivot node is null");
         }
 
         // Reverse the rotation
-        AVLTreeNode<E> pivotLeftChild = pivot.getLeft();
+        BinaryTreeNode<E> pivotLeftChild = pivot.getLeft();
 
         // Step 1: Move pivot's left child back to newRoot's right
         newRoot.setRight(pivotLeftChild);
@@ -79,7 +80,7 @@ public class AVLTreeRightRotateAtomicOperation<E> extends AtomicOperation<AVLTre
         pivot.setLeft(newRoot);
 
         // Step 3: Update parent's reference
-        AVLTreeNode<E> parent = oldParentUUID != null ?
+        BinaryTreeNode<E> parent = oldParentUUID != null ?
             avlTreeStructure.getNode(UUID.fromString(oldParentUUID)) : null;
 
         if (parent != null) {

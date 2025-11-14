@@ -9,13 +9,18 @@ import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOper
 
 import java.util.UUID;
 
-public class BinarySearchTreeInsertUserOperation extends UserOperation<BinarySearchTreeStructure<Integer>> {
+/**
+ * BST-specific insert operation.
+ * Automatically finds the correct parent and child type based on BST properties.
+ */
+public class BinarySearchTreeInsertUserOperation<E extends Comparable<E>> extends UserOperation<BinarySearchTreeStructure<E>> {
 
     private final String uuid;
-    private final Integer value;
+    private final E value;
     private String parentUUID;
     private BinaryTreeNode.ChildType childType;
-    public BinarySearchTreeInsertUserOperation(BinarySearchTreeStructure<Integer> binarySearchTreeStructure, Integer value) {
+
+    public BinarySearchTreeInsertUserOperation(BinarySearchTreeStructure<E> binarySearchTreeStructure, E value) {
         super(binarySearchTreeStructure);
         this.uuid = UUID.randomUUID().toString();
         this.value = value;
@@ -26,14 +31,14 @@ public class BinarySearchTreeInsertUserOperation extends UserOperation<BinarySea
     protected void buildOperations () {
         super.atomicOperations.add(new BinaryTreeAddNodeAtomicOperation<>(uuid));
 
-        // check if initialised
+        // Resolve parent and child type for BST insertion
         if (parentUUID == null) {
-            SimpleBinarySearchNode<Integer> parent = super.dataStructure.getInsertParent(value);
+            BinaryTreeNode<E> parent = super.dataStructure.getInsertParent(value);
 
             // check if is root
             if (parent != null) {
                 parentUUID = parent.getUUID().toString();
-                childType = value < super.dataStructure.getNode(UUID.fromString(parentUUID)).getValue()
+                childType = value.compareTo(super.dataStructure.getNode(UUID.fromString(parentUUID)).getValue()) < 0
                         ? BinaryTreeNode.ChildType.LEFT : BinaryTreeNode.ChildType.RIGHT;
             } else {
                 parentUUID = null;

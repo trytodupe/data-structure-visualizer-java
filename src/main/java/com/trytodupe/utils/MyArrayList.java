@@ -1,6 +1,7 @@
 package com.trytodupe.utils;
 
 import com.trytodupe.Main;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ public class MyArrayList<E> extends ArrayList<E> {
         if (Main.DEBUG) {
             System.out.println("adding: ");
             for (E e : this) {
-                if (e instanceof HuffmanNode) {
+                if (e instanceof BinaryTreeNode) {
                     System.out.println(e);
 
                 } else {
@@ -29,14 +30,14 @@ public class MyArrayList<E> extends ArrayList<E> {
         boolean result = super.remove(e);
         if (Main.DEBUG) {
 
-            if (e instanceof HuffmanNode) {
+            if (e instanceof BinaryTreeNode) {
                 System.out.println("removing: " + e);
             } else {
                 System.out.println("removing: ");
             }
 
             for (Object o : this) {
-                if (o instanceof HuffmanNode) {
+                if (o instanceof BinaryTreeNode) {
                     System.out.println(o);
                 } else  {
                     System.out.println(this);
@@ -47,4 +48,3 @@ public class MyArrayList<E> extends ArrayList<E> {
         return result;
     }
 }
-

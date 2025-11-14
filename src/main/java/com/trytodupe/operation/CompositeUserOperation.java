@@ -2,11 +2,12 @@ package com.trytodupe.operation;
 
 import com.trytodupe.Main;
 import com.trytodupe.datastructure.DataStructure;
+import com.trytodupe.serialization.ISerializable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CompositeUserOperation<T extends DataStructure> extends UserOperation<T> {
+public abstract class CompositeUserOperation<T extends DataStructure> extends UserOperation<T> implements ISerializable {
 
     protected transient List<UserOperation<?>> childOperations;
 

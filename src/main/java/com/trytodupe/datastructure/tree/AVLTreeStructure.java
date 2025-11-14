@@ -10,6 +10,28 @@ public class AVLTreeStructure<E> extends BinarySearchTreeStructure<E>  {
     public AVLTreeStructure () {
     }
 
+    @Override
+    public BinaryTreeNode<E> addNode (UUID uuid) {
+        if (nodes.containsKey(uuid))
+            throw new IllegalArgumentException("Node already exists: " + uuid);
+
+        BinaryTreeNode<E> node = new BinaryTreeNode<>(uuid);
+        node.setExtension(new AVLNodeExtension(0));
+        nodes.put(uuid, node);
+        return node;
+    }
+
+    @Override
+    public BinaryTreeNode<E> addNode (UUID uuid, E value) {
+        if (nodes.containsKey(uuid))
+            throw new IllegalArgumentException("Node already exists: " + uuid);
+
+        BinaryTreeNode<E> node = new BinaryTreeNode<>(uuid, value);
+        node.setExtension(new AVLNodeExtension(0));
+        nodes.put(uuid, node);
+        return node;
+    }
+
     public int getBalance(UUID uuid) {
         BinaryTreeNode<E> n = getNode(uuid);
         return height(n.getLeft()) - height(n.getRight());
@@ -20,6 +42,9 @@ public class AVLTreeStructure<E> extends BinarySearchTreeStructure<E>  {
     }
 
     public static int height(BinaryTreeNode<?> node) {
+        if (node == null) {
+            return 0;
+        }
         AVLNodeExtension ext = (AVLNodeExtension) node.getExtension();
         return ext == null ? 0 : ext.getHeight();
     }

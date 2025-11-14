@@ -1,6 +1,7 @@
 package com.trytodupe.operation.huffmantree.atomic;
 
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
@@ -21,8 +22,8 @@ public class HuffmanTreeMergeAtomicOperation<E> extends AtomicOperation<HuffmanT
 
     @Override
     public void execute (HuffmanTreeStructure<E> huffmanTreeStructure) {
-        HuffmanNode<E> leftNode = huffmanTreeStructure.getNode(UUID.fromString(leftUUID));
-        HuffmanNode<E> rightNode = huffmanTreeStructure.getNode(UUID.fromString(rightUUID));
+        BinaryTreeNode<E> leftNode = huffmanTreeStructure.getNode(UUID.fromString(leftUUID));
+        BinaryTreeNode<E> rightNode = huffmanTreeStructure.getNode(UUID.fromString(rightUUID));
 
         huffmanTreeStructure.mergeNodes(UUID.fromString(mergedUUID), leftNode, rightNode);
     }

@@ -6,7 +6,7 @@ import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
 
-public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<SimpleBinarySearchNode<E>, E>> {
+public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
     // a null string represents root node
     private final String parentUUID;
@@ -19,16 +19,16 @@ public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<Bin
     }
 
     @Override
-    public void execute (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
+    public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
         if (parentUUID == null) {
             // pop temp slot into root node
-            SimpleBinarySearchNode<E> node = binaryTreeStructure.popTempNode();
+            BinaryTreeNode<E> node = binaryTreeStructure.popTempNode();
             binaryTreeStructure.setRoot(node);
             return;
         }
 
-        SimpleBinarySearchNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
-        SimpleBinarySearchNode<E> child = binaryTreeStructure.popTempNode();
+        BinaryTreeNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
+        BinaryTreeNode<E> child = binaryTreeStructure.popTempNode();
         childUUID = child.getUUID().toString();
 
         // no need to store original child since it should be null
@@ -43,17 +43,17 @@ public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<Bin
     }
 
     @Override
-    public void undo (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
+    public void undo (BinaryTreeStructure<E> binaryTreeStructure) {
         if (parentUUID == null) {
             // push root node back to temp slot
-            SimpleBinarySearchNode<E> node = binaryTreeStructure.getRoot();
+            BinaryTreeNode<E> node = binaryTreeStructure.getRoot();
             binaryTreeStructure.pushTempNode(node);
             binaryTreeStructure.setRoot(null);
             return;
         }
 
-        SimpleBinarySearchNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
-        SimpleBinarySearchNode<E> child = binaryTreeStructure.getNode(UUID.fromString(childUUID));
+        BinaryTreeNode<E> parent = binaryTreeStructure.getNode(UUID.fromString(parentUUID));
+        BinaryTreeNode<E> child = binaryTreeStructure.getNode(UUID.fromString(childUUID));
 
         switch (this.childType) {
             case LEFT:

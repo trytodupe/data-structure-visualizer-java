@@ -1,11 +1,13 @@
 package com.trytodupe.operation.avltree.atomic;
 
 import com.trytodupe.datastructure.tree.AVLTreeStructure;
+import com.trytodupe.datastructure.tree.node.AVLNodeExtension;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
 
-public class AVLTreeUpdateNodeAtomicOperation<E> extends AtomicOperation<AVLTreeStructure<E>> {
+public class AVLTreeUpdateNodeAtomicOperation<E extends Comparable<E>> extends AtomicOperation<AVLTreeStructure<E>> {
     
     private final String uuid;
     private int oldHeight;
@@ -18,19 +20,21 @@ public class AVLTreeUpdateNodeAtomicOperation<E> extends AtomicOperation<AVLTree
 
     @Override
     public void execute (AVLTreeStructure<E> avlTreeStructure) {
-        AVLTreeNode<E> node = avlTreeStructure.getNode(UUID.fromString(uuid));
-        oldHeight = node.getHeight();
-        node.setHeight(newHeight);
+        BinaryTreeNode<E> node = avlTreeStructure.getNode(UUID.fromString(uuid));
+        AVLNodeExtension ext = (AVLNodeExtension) node.getExtension();
+        oldHeight = ext.getHeight();
+        ext.setHeight(newHeight);
     }
 
     @Override
     public void undo (AVLTreeStructure<E> avlTreeStructure) {
-        AVLTreeNode<E> node = avlTreeStructure.getNode(UUID.fromString(uuid));
-        node.setHeight(oldHeight);
+        BinaryTreeNode<E> node = avlTreeStructure.getNode(UUID.fromString(uuid));
+        AVLNodeExtension ext = (AVLNodeExtension) node.getExtension();
+        ext.setHeight(oldHeight);
     }
 
     @Override
     public String getDescription () {
-        return "Update weight for node " + uuid;
+        return "Update height for node " + uuid;
     }
 }

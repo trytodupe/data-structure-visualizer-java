@@ -5,7 +5,7 @@ import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
 
-public class BinaryTreeAddNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<SimpleBinarySearchNode<E>, E>> {
+public class BinaryTreeAddNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
     // use String to avoid serialization issues
     private final String uuid;
@@ -19,15 +19,15 @@ public class BinaryTreeAddNodeAtomicOperation<E> extends AtomicOperation<BinaryT
     }
 
     @Override
-    public void execute (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
-        SimpleBinarySearchNode<E> node = binaryTreeStructure.addNode(UUID.fromString(uuid));
-        binaryTreeStructure.pushTempNode(node);
+    public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
+        binaryTreeStructure.addNode(UUID.fromString(uuid));
+        binaryTreeStructure.pushTempNode(binaryTreeStructure.getNode(UUID.fromString(uuid)));
     }
 
     @Override
-    public void undo (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> binaryTreeStructure) {
-        SimpleBinarySearchNode<E> node = binaryTreeStructure.popTempNode();
-        binaryTreeStructure.removeNode(node.getUUID());
+    public void undo (BinaryTreeStructure<E> binaryTreeStructure) {
+        binaryTreeStructure.popTempNode();
+        binaryTreeStructure.removeNode(UUID.fromString(uuid));
     }
 
     @Override

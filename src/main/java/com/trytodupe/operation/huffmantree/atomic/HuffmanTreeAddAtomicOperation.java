@@ -28,7 +28,7 @@ public class HuffmanTreeAddAtomicOperation<E> extends AtomicOperation<HuffmanTre
     }
 
     @Override
-    public void undo (HuffmanTreeStructure<E>huffmanTreeStructure) {
+    public void undo (HuffmanTreeStructure<E> huffmanTreeStructure) {
         huffmanTreeStructure.removeRoot(UUID.fromString(uuid));
     }
 

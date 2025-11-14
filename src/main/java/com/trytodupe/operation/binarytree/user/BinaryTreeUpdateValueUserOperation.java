@@ -4,14 +4,14 @@ import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOperation;
 
-public class BinaryTreeUpdateValueUserOperation extends UserOperation<BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer>> {
+public class BinaryTreeUpdateValueUserOperation<E> extends UserOperation<BinaryTreeStructure<E>> {
 
     private final String nodeUUID;
-    private final Integer newValue;
+    private final E newValue;
 
-    public BinaryTreeUpdateValueUserOperation(BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer> binaryTreeStructure,
+    public BinaryTreeUpdateValueUserOperation(BinaryTreeStructure<E> binaryTreeStructure,
                                               String nodeUUID,
-                                              Integer newValue) {
+                                              E newValue) {
         super(binaryTreeStructure);
         this.nodeUUID = nodeUUID;
         this.newValue = newValue;

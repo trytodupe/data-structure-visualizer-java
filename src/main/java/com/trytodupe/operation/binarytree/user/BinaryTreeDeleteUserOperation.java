@@ -5,12 +5,12 @@ import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeDisconnectNodeAtomicOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeRemoveNodeAtomicOperation;
 
-public class BinaryTreeDeleteUserOperation extends UserOperation<BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer>> {
+public class BinaryTreeDeleteUserOperation<E> extends UserOperation<BinaryTreeStructure<E>> {
 
     private final String parentUUID;
     private final String childUUID;
 
-    public BinaryTreeDeleteUserOperation(BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer> binaryTreeStructure,
+    public BinaryTreeDeleteUserOperation(BinaryTreeStructure<E> binaryTreeStructure,
                                         String parentUUID,
                                         String childUUID) {
         super(binaryTreeStructure);

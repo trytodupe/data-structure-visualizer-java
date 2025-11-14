@@ -7,8 +7,14 @@ import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.avltree.composite.AVLTreeInitCompositeOperation;
+import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOperation;
+import com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCompositeOperation;
+import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeDeleteUserOperation;
+import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
+import com.trytodupe.operation.huffmantree.composite.HuffmanTreeInitCompositeOperation;
 import com.trytodupe.test.OperationTestRunner;
 import imgui.ImGui;
 import imgui.app.Application;
@@ -25,17 +31,16 @@ public class Main extends Application {
     static {
         REGISTRY.put(ArrayStructure.class, new ArrayStructure());
         REGISTRY.put(StackStructure.class, new StackStructure());
-        REGISTRY.put(BinaryTreeStructure.class, new BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer>((Class<SimpleBinarySearchNode<Integer>>) (Class<?>) SimpleBinarySearchNode.class));
-        REGISTRY.put(BinarySearchTreeStructure.class, new BinarySearchTreeStructure<Integer>((Class<SimpleBinarySearchNode<Integer>>) (Class<?>) SimpleBinarySearchNode.class));
-        REGISTRY.put(HuffmanTreeStructure.class, new HuffmanTreeStructure<Character>((Class<HuffmanNode<Character>>) (Class<?>) HuffmanNode.class));
-        REGISTRY.put(AVLTreeStructure.class, new AVLTreeStructure<Integer>((Class<AVLTreeNode<Integer>>) (Class<?>)AVLTreeNode.class));
+        REGISTRY.put(BinaryTreeStructure.class, new BinaryTreeStructure<>());
+        REGISTRY.put(BinarySearchTreeStructure.class, new BinarySearchTreeStructure<>());
+        REGISTRY.put(HuffmanTreeStructure.class, new HuffmanTreeStructure<>());
+        REGISTRY.put(AVLTreeStructure.class, new AVLTreeStructure<>());
     }
 
     @SuppressWarnings("unchecked")
     public static <T extends DataStructure> T getDataStructure(Class<T> clazz) {
         return (T) REGISTRY.get(clazz);
     }
-
 
     @Override
     protected void configure(Configuration config) {
@@ -44,89 +49,123 @@ public class Main extends Application {
 
     @Override
     public void process() {
-            ImGui.text("Hello, World!");
+        ImGui.text("Hello, World!");
     }
 
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
+        // ===== Binary Tree Test =====
+//        testBinaryTree();
 
-//		List<UserOperation<ArrayStructure>> testArrayOps = new ArrayList<>();
-//		ArrayStructure array = getDataStructure(ArrayStructure.class);
-//
-//		testArrayOps.add(new ArrayInitUserOperation(array, new int[]{1, 2, 3}));
-//		testArrayOps.add(new ArrayInsertUserOperation(array, 1, 99));
-//		testArrayOps.add(new ArrayDeleteUserOperation(array, 2));
-//
-//		OperationTestRunner.runTestSuite(ArrayStructure.class, testArrayOps);
-//-----
-//		List<UserOperation<StackStructure>> testStackOps = new ArrayList<>();
-//		StackStructure stack = getDataStructure(StackStructure.class);
-//
-//        testStackOps.add(new StackInitUserOperation(stack, new int[]{1, 2, 3}));
-//		testStackOps.add(new StackPushUserOperation(stack, 4));
-//		testStackOps.add(new StackPushUserOperation(stack, 5));
-//		testStackOps.add(new StackPopUserOperation(stack));
-//		testStackOps.add(new StackPushUserOperation(stack, 6));
-//
-//		OperationTestRunner.runTestSuite(StackStructure.class, testStackOps);
-//-----
-        List<UserOperation<BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer>>> testBTreeOps = new ArrayList<>();
-        BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer> btree = getDataStructure(BinaryTreeStructure.class);
+        // ===== Binary Search Tree Test =====
+//        testBinarySearchTree();
+
+        // ===== Huffman Tree Test =====
+//        testHuffmanTree();
+
+        // ===== AVL Tree Test =====
+        testAVLTree();
+
+        // Uncomment to launch GUI
+        // launch(new Main());
+    }
+
+    /**
+     * Test unbalanced binary tree with array-based level-order construction.
+     */
+    private static void testBinaryTree() {
+        System.out.println("\n===== Binary Tree Test =====");
+        List<UserOperation<BinaryTreeStructure<Integer>>> testOps = new ArrayList<>();
+        BinaryTreeStructure<Integer> btree = getDataStructure(BinaryTreeStructure.class);
 
         Integer[] treeValues = {1, 2, 3, 4, 5, null, 7};
-        testBTreeOps.add(new BinaryTreeInitCompositeOperation(btree, treeValues));
+        testOps.add(new BinaryTreeInitCompositeOperation<>(btree, treeValues));
 
-        OperationTestRunner.runTestSuite(BinaryTreeStructure.class, testBTreeOps);
-//-----
-        List<UserOperation<BinarySearchTreeStructure<Integer>>> testBSTOps = new ArrayList<>();
+        OperationTestRunner.runTestSuite(BinaryTreeStructure.class, testOps);
+    }
+
+    /**
+     * Test binary search tree with insertion and deletion operations.
+     */
+    private static void testBinarySearchTree() {
+        System.out.println("\n===== Binary Search Tree Test =====");
+
+        // Test 1: Initialization with multiple values
+        List<UserOperation<BinarySearchTreeStructure<Integer>>> testOps = new ArrayList<>();
         BinarySearchTreeStructure<Integer> bst = getDataStructure(BinarySearchTreeStructure.class);
 
         Integer[] bstValues = {10, 20, 30, 40, 50, 25};
-        testBSTOps.add(new BinarySearchTreeInitCompositeOperation(bst, bstValues));
+        testOps.add(new BinarySearchTreeInitCompositeOperation<>(bst, bstValues));
+        OperationTestRunner.runTestSuite(BinarySearchTreeStructure.class, testOps);
 
-
-        OperationTestRunner.runTestSuite(BinarySearchTreeStructure.class, testBSTOps);
-//-----
-//
+        // Test 2: Individual operations
+        System.out.println("\n--- BST Individual Operations ---");
         bst = getDataStructure(BinarySearchTreeStructure.class);
-        List<BinarySearchTreeInsertUserOperation> testBSTInsertOps = new ArrayList<>();
 
+        // Insert values individually and demonstrate operations
+        List<BinarySearchTreeInsertUserOperation<Integer>> insertOps = new ArrayList<>();
         for (Integer value : bstValues) {
-            testBSTInsertOps.add(new BinarySearchTreeInsertUserOperation(bst, value));
-            testBSTInsertOps.get(testBSTInsertOps.size() - 1).execute();
+            BinarySearchTreeInsertUserOperation<Integer> insertOp = new BinarySearchTreeInsertUserOperation<>(bst, value);
+            insertOp.execute();
+            insertOps.add(insertOp);
         }
-
-        UserOperation<BinarySearchTreeStructure<Integer>> deleteOp =
-                new BinarySearchTreeDeleteUserOperation(bst, testBSTInsertOps.get(0).getUUID());
-
-        deleteOp.execute();
+        System.out.println("After insertions:");
         bst.printValue();
-        System.out.println("done");
 
-        deleteOp.undo();
-        bst.printValue();
-//-----
+        // Test deletion
+        if (!insertOps.isEmpty()) {
+            String deleteUUID = insertOps.get(0).getUUID();
+            UserOperation<BinarySearchTreeStructure<Integer>> deleteOp =
+                    new BinarySearchTreeDeleteUserOperation<>(bst, deleteUUID);
+
+            deleteOp.execute();
+            System.out.println("After deletion:");
+            bst.printValue();
+
+            deleteOp.undo();
+            System.out.println("After undo:");
+            bst.printValue();
+        }
+    }
+
+    /**
+     * Test Huffman tree construction from a string.
+     */
+    private static void testHuffmanTree() {
+        System.out.println("\n===== Huffman Tree Test =====");
 
         HuffmanTreeStructure<Character> huffmanTree = getDataStructure(HuffmanTreeStructure.class);
+        String testString = "abcaba";
 
-        String string = "abcaba";
-
-        HuffmanTreeInitCompositeOperation huffmanOp = new HuffmanTreeInitCompositeOperation(huffmanTree, string);
+        HuffmanTreeInitCompositeOperation<Character> huffmanOp = new HuffmanTreeInitCompositeOperation<>(huffmanTree, testString);
         huffmanOp.execute();
 
-        System.out.println(huffmanTree.getRoots());
-        BinaryTreeNode.printTree(huffmanTree.getRoots().get(0));
+        System.out.println("Huffman roots after initialization: " + huffmanTree.getRoots().size());
+        if (!huffmanTree.getRoots().isEmpty()) {
+            BinaryTreeNode.printTree(huffmanTree.getRoots().get(0));
+        }
 
         huffmanOp.undo();
-//-----
+        System.out.println("Huffman roots after undo: " + huffmanTree.getRoots().size());
+    }
+
+    /**
+     * Test AVL tree with automatic balancing.
+     */
+    private static void testAVLTree() {
+        System.out.println("\n===== AVL Tree Test =====");
 
         AVLTreeStructure<Integer> avlTree = getDataStructure(AVLTreeStructure.class);
-
         Integer[] avlValues = {10, 20, 30, 40, 50, 25};
-        AVLTreeInitCompositeOperation avlInitOp = new AVLTreeInitCompositeOperation(avlTree, avlValues);
+
+        AVLTreeInitCompositeOperation<Integer> avlInitOp = new AVLTreeInitCompositeOperation<>(avlTree, avlValues);
         avlInitOp.execute();
 
+        System.out.println("AVL tree after initialization and balancing:");
+        avlTree.printValue();
 
-//        launch(new Main());
+        avlInitOp.undo();
+        System.out.println("AVL tree after undo:");
+        avlTree.printValue();
     }
 }

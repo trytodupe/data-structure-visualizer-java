@@ -4,21 +4,27 @@ import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
 import com.trytodupe.operation.CompositeUserOperation;
 import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
 
-public class BinarySearchTreeInitCompositeOperation extends CompositeUserOperation<BinarySearchTreeStructure<Integer>> {
+import java.util.Arrays;
+import java.util.List;
 
-    // values should not contain nulls for BST
-    private final Integer[] values;
+/**
+ * Initialize binary search tree with given values.
+ * Values are inserted in order using BST insertion logic.
+ */
+public class BinarySearchTreeInitCompositeOperation<E extends Comparable<E>> extends CompositeUserOperation<BinarySearchTreeStructure<E>> {
 
-    public BinarySearchTreeInitCompositeOperation (BinarySearchTreeStructure<Integer> dataStructure, Integer[] values) {
+    private final List<E> values;
+
+    public BinarySearchTreeInitCompositeOperation(BinarySearchTreeStructure<E> dataStructure, E[] values) {
         super(dataStructure);
-
-        this.values = values;
+        this.values = Arrays.asList(values);
     }
 
     @Override
-    protected void buildOperations () {
-        for (Integer value : values) {
-            super.childOperations.add(new BinarySearchTreeInsertUserOperation(dataStructure, value));
+    protected void buildOperations() {
+
+        for (E value : values) {
+            super.childOperations.add(new BinarySearchTreeInsertUserOperation<>(dataStructure, value));
         }
     }
 

@@ -1,12 +1,12 @@
 package com.trytodupe.operation.binarytree.atomic;
 
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
 
 import java.util.UUID;
 
-public class BinaryTreeUpdateValueAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<SimpleBinarySearchNode<E>, E>> {
-
+public class BinaryTreeUpdateValueAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
     private final String uuid;
     private E oldValue;
@@ -18,15 +18,15 @@ public class BinaryTreeUpdateValueAtomicOperation<E> extends AtomicOperation<Bin
     }
 
     @Override
-    public void execute (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> dataStructure) {
-        SimpleBinarySearchNode<E> node = dataStructure.getNode(UUID.fromString(uuid));
+    public void execute (BinaryTreeStructure<E> dataStructure) {
+        BinaryTreeNode<E> node = dataStructure.getNode(UUID.fromString(uuid));
         oldValue = node.getValue();
         node.setValue(newValue);
     }
 
     @Override
-    public void undo (BinaryTreeStructure<SimpleBinarySearchNode<E>, E> dataStructure) {
-        SimpleBinarySearchNode<E> node = dataStructure.getNode(UUID.fromString(uuid));
+    public void undo (BinaryTreeStructure<E> dataStructure) {
+        BinaryTreeNode<E> node = dataStructure.getNode(UUID.fromString(uuid));
         node.setValue(oldValue);
     }
 

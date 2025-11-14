@@ -6,27 +6,35 @@ import com.trytodupe.operation.avltree.user.AVLTreeBalanceUserOperation;
 import com.trytodupe.operation.avltree.user.AVLTreeUpdateTreeUserOperation;
 import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
 
-public class AVLTreeInitCompositeOperation extends CompositeUserOperation<AVLTreeStructure<Integer>> {
+import java.util.Arrays;
+import java.util.List;
 
-    private final Integer[] values;
+/**
+ * Initialize AVL tree with given values.
+ * Each insertion is followed by tree update and balancing.
+ */
+public class AVLTreeInitCompositeOperation<E extends Comparable<E>> extends CompositeUserOperation<AVLTreeStructure<E>> {
 
-    public AVLTreeInitCompositeOperation (AVLTreeStructure<Integer> avlTreeStructure, Integer[] values) {
+    private final List<E> values;
+
+    public AVLTreeInitCompositeOperation(AVLTreeStructure<E> avlTreeStructure, E[] values) {
         super(avlTreeStructure);
-
-        this.values = values;
+        this.values = Arrays.asList(values);
     }
 
     @Override
-    protected void buildOperations () {
-        for (Integer value : values) {
-            BinarySearchTreeInsertUserOperation insertOp = new BinarySearchTreeInsertUserOperation(super.dataStructure, value);
+    protected void buildOperations() {
+        for (E value : values) {
+            // Insert using BST logic (AVL is a BST)
+            BinarySearchTreeInsertUserOperation<E> insertOp = new BinarySearchTreeInsertUserOperation<>(dataStructure, value);
             String insertedUUID = insertOp.getUUID();
             super.childOperations.add(insertOp);
 
-            super.childOperations.add(new AVLTreeUpdateTreeUserOperation(dataStructure, insertedUUID));
+            // Update heights from inserted node to root
+            super.childOperations.add(new AVLTreeUpdateTreeUserOperation<>(dataStructure, insertedUUID));
 
-            AVLTreeBalanceUserOperation balanceOp = new AVLTreeBalanceUserOperation(dataStructure, insertedUUID);
-            super.childOperations.add(balanceOp);
+            // Rebalance the tree if necessary
+            super.childOperations.add(new AVLTreeBalanceUserOperation<>(dataStructure, insertedUUID));
         }
     }
 

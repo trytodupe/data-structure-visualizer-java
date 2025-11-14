@@ -7,20 +7,26 @@ import com.trytodupe.utils.CharFreqencyPair;
 
 import java.util.List;
 
-public class HuffmanTreeInitUserOperation extends UserOperation<HuffmanTreeStructure<Character>> {
+/**
+ * Initialize Huffman tree leaf nodes with frequency information.
+ * Each character-frequency pair becomes a separate root node.
+ */
+public class HuffmanTreeInitUserOperation<E> extends UserOperation<HuffmanTreeStructure<E>> {
 
     private final List<CharFreqencyPair> freqPairs;
 
-    public HuffmanTreeInitUserOperation (HuffmanTreeStructure<Character> dataStructure, List<CharFreqencyPair> freqPairs) {
+    public HuffmanTreeInitUserOperation(HuffmanTreeStructure<E> dataStructure, List<CharFreqencyPair> freqPairs) {
         super(dataStructure);
         this.freqPairs = freqPairs;
+        this.description = "Initialize Huffman tree with " + freqPairs.size() + " leaf nodes";
     }
 
     @Override
-    protected void buildOperations () {
+    protected void buildOperations() {
         for (CharFreqencyPair pair : freqPairs) {
-            super.atomicOperations.add(new HuffmanTreeAddAtomicOperation<>(null, pair.getCharacter(), pair.getFreqency()));
+            @SuppressWarnings("unchecked")
+            E value = (E) (Object) pair.getCharacter();
+            super.atomicOperations.add(new HuffmanTreeAddAtomicOperation<>(null, value, pair.getFreqency()));
         }
     }
-
 }

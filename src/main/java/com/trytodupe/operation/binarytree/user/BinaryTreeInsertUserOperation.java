@@ -9,16 +9,24 @@ import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOper
 
 import java.util.UUID;
 
-public class BinaryTreeInsertUserOperation extends UserOperation<BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer>> {
+/**
+ * Generic insert operation for binary trees.
+ * Can be used directly for unbalanced binary trees.
+ * Subclasses can override to provide specialized behavior (BST, AVL, etc.)
+ */
+public class BinaryTreeInsertUserOperation<E> extends UserOperation<BinaryTreeStructure<E>> {
 
-    private final String parentUUID;
-    private final String uuid;
-    private final Integer value;
-    private final BinaryTreeNode.ChildType childType;
+    protected String parentUUID;
+    protected final String uuid;
+    protected final E value;
+    protected BinaryTreeNode.ChildType childType;
 
-    public BinaryTreeInsertUserOperation(BinaryTreeStructure<SimpleBinarySearchNode<Integer>, Integer> binaryTreeStructure,
+    /**
+     * Insert with explicit parent and child type (for manual tree construction)
+     */
+    public BinaryTreeInsertUserOperation(BinaryTreeStructure<E> binaryTreeStructure,
                                         String parentUUID,
-                                        Integer value,
+                                        E value,
                                         BinaryTreeNode.ChildType childType) {
         super(binaryTreeStructure);
         this.parentUUID = parentUUID;
@@ -31,9 +39,7 @@ public class BinaryTreeInsertUserOperation extends UserOperation<BinaryTreeStruc
     @Override
     protected void buildOperations () {
         super.atomicOperations.add(new BinaryTreeAddNodeAtomicOperation<>(uuid));
-
         super.atomicOperations.add(new BinaryTreeConnectNodeAtomicOperation<>(parentUUID, childType));
-
         super.atomicOperations.add(new BinaryTreeUpdateValueAtomicOperation<>(uuid, value));
     }
 
@@ -41,4 +47,3 @@ public class BinaryTreeInsertUserOperation extends UserOperation<BinaryTreeStruc
         return this.uuid;
     }
 }
-
