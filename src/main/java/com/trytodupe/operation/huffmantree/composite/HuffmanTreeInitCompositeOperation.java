@@ -36,7 +36,7 @@ public class HuffmanTreeInitCompositeOperation extends CompositeUserOperation<Hu
 
         // n leaf requires n-1 merges
         for (int i = 1; i < result.size(); i++) {
-            super.childOperations.add(new HuffmanTreeMergeUserOperation<>(super.dataStructure));
+            super.childOperations.add(new HuffmanTreeMergeUserOperation(super.dataStructure));
         }
 
     }

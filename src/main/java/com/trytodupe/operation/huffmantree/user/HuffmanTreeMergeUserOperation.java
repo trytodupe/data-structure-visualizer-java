@@ -7,14 +7,14 @@ import com.trytodupe.operation.huffmantree.atomic.HuffmanTreeMergeAtomicOperatio
 
 import java.util.UUID;
 
-public class HuffmanTreeMergeUserOperation<E> extends UserOperation<HuffmanTreeStructure<E>> {
+public class HuffmanTreeMergeUserOperation extends UserOperation<HuffmanTreeStructure<Character>> {
 
     private final String mergedUUID;
     private String leftUUID;
     private String rightUUID;
     private int mergedWeight;
 
-    public HuffmanTreeMergeUserOperation (HuffmanTreeStructure<E> huffmanTreeStructure) {
+    public HuffmanTreeMergeUserOperation (HuffmanTreeStructure<Character> huffmanTreeStructure) {
         super(huffmanTreeStructure);
         this.mergedUUID = UUID.randomUUID().toString();
     }
@@ -24,8 +24,8 @@ public class HuffmanTreeMergeUserOperation<E> extends UserOperation<HuffmanTreeS
         UUID[] tempNodeUUIDs = super.dataStructure.getSmallestTwoRoots();
         leftUUID = tempNodeUUIDs[0].toString();
         rightUUID = tempNodeUUIDs[1].toString();
-        HuffmanNode<E> leftNode = super.dataStructure.getNode(tempNodeUUIDs[0]);
-        HuffmanNode<E> rightNode = super.dataStructure.getNode(tempNodeUUIDs[1]);
+        HuffmanNode<Character> leftNode = super.dataStructure.getNode(tempNodeUUIDs[0]);
+        HuffmanNode<Character> rightNode = super.dataStructure.getNode(tempNodeUUIDs[1]);
         mergedWeight = leftNode.getWeight() + rightNode.getWeight();
 
         super.atomicOperations.add(new HuffmanTreeMergeAtomicOperation<>(mergedUUID, leftUUID, rightUUID, mergedWeight));
