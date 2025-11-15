@@ -21,6 +21,14 @@ public class HuffmanTreeMergeAtomicOperation<E> extends AtomicOperation<HuffmanT
         this.mergedWeight = mergedWeight;
     }
 
+    public String getRightUUID () {
+        return rightUUID;
+    }
+
+    public String getLeftUUID () {
+        return leftUUID;
+    }
+
     @Override
     public void execute (HuffmanTreeStructure<E> huffmanTreeStructure) {
         BinaryTreeNode<E> leftNode = huffmanTreeStructure.getNode(UUID.fromString(leftUUID));

@@ -17,6 +17,7 @@ import com.trytodupe.operation.huffmantree.atomic.HuffmanTreeAddAtomicOperation;
 import com.trytodupe.operation.huffmantree.atomic.HuffmanTreeMergeAtomicOperation;
 import com.trytodupe.operation.stack.atomic.StackPopAtomicOperation;
 import com.trytodupe.operation.stack.atomic.StackPushAtomicOperation;
+import com.trytodupe.operation.utils.VisualizePathAtomicOperation;
 
 public interface IOperationVisitor {
     void visit(ArrayCopyAtomicOperation op);
@@ -36,4 +37,5 @@ public interface IOperationVisitor {
     void visit(HuffmanTreeMergeAtomicOperation<?> op);
     void visit(StackPopAtomicOperation op);
     void visit(StackPushAtomicOperation op);
+    void visit(VisualizePathAtomicOperation op);
 }
