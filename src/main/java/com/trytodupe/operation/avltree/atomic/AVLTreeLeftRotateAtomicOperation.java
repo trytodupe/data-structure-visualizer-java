@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class AVLTreeLeftRotateAtomicOperation<E extends Comparable<E>> extends AtomicOperation<AVLTreeStructure<E>> {
 
-    private final String pivotUUID;
+    private final String pivotUUID; // highlight
     private String oldParentUUID;
     private String newRootUUID;
     private boolean pivotWasLeftChild;

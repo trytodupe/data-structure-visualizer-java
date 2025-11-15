@@ -11,7 +11,7 @@ public class ArrayResizeAtomicOperation extends AtomicOperation<ArrayStructure> 
         DECREMENT
     }
 
-    private final ResizeMode mode;
+    private final ResizeMode mode; // highlight
     private int oldSize;
     private int newSize;
 

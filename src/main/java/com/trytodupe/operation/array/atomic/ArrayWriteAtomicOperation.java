@@ -5,7 +5,7 @@ import com.trytodupe.operation.AtomicOperation;
 
 public class ArrayWriteAtomicOperation extends AtomicOperation<ArrayStructure> {
 
-    private final int index;
+    private final int index; // highlight
     private int oldValue;
     private final int newValue;
 

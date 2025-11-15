@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class BinaryTreeSwapValueAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
-    private final String uuid1, uuid2;
+    private final String uuid1, uuid2; // highlight
 
     public BinaryTreeSwapValueAtomicOperation (String uuid1, String uuid2) {
         this.uuid1 = uuid1;

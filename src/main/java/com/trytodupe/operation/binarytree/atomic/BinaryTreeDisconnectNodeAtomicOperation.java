@@ -8,8 +8,8 @@ import java.util.UUID;
 
 public class BinaryTreeDisconnectNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
-    private final String parentUUID;
-    private final String childUUID;
+    private final String parentUUID; // highlight
+    private final String childUUID; // highlight
     private BinaryTreeNode.ChildType childType;
 
     public BinaryTreeDisconnectNodeAtomicOperation (String parentUUID, String childUUID) {

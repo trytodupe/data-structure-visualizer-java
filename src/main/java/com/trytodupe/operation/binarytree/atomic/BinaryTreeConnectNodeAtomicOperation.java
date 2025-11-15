@@ -9,7 +9,7 @@ import java.util.UUID;
 public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
     // a null string represents root node
-    private final String parentUUID;
+    private final String parentUUID; // highlight
     private String childUUID;
     private final BinaryTreeNode.ChildType childType;
 

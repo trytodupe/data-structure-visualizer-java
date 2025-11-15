@@ -5,8 +5,8 @@ import com.trytodupe.operation.AtomicOperation;
 
 public class ArrayCopyAtomicOperation extends AtomicOperation<ArrayStructure> {
 
-    private final int fromIndex;
-    private final int toIndex;
+    private final int fromIndex; // highlight
+    private final int toIndex; // highlight
 
     private int oldValue; // old value from toIndex
     private int newValue; // value from fromIndex

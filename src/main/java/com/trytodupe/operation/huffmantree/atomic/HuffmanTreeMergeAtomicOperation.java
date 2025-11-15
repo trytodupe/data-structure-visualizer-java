@@ -9,8 +9,8 @@ import java.util.UUID;
 public class HuffmanTreeMergeAtomicOperation<E> extends AtomicOperation<HuffmanTreeStructure<E>> {
 
     private final String mergedUUID;
-    private final String leftUUID;
-    private final String rightUUID;
+    private final String leftUUID; // highlight
+    private final String rightUUID; // highlight
     private final int mergedWeight;
 
     public HuffmanTreeMergeAtomicOperation (String mergedUUID, String leftUUID, String rightUUID, int mergedWeight) {

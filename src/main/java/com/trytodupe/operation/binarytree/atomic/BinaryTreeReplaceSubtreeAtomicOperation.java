@@ -14,8 +14,8 @@ public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<
 
     private String parent1UUID;
     private String parent2UUID;
-    private final String subTree1UUID;
-    private final String subTree2UUID;
+    private final String subTree1UUID; // highlight
+    private final String subTree2UUID; // highlight
     private BinaryTreeNode.ChildType childType1;
     private BinaryTreeNode.ChildType childType2;
 

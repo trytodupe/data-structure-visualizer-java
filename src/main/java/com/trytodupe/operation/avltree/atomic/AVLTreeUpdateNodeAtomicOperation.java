@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class AVLTreeUpdateNodeAtomicOperation<E extends Comparable<E>> extends AtomicOperation<AVLTreeStructure<E>> {
     
-    private final String uuid;
+    private final String uuid; // highlight
     private int oldHeight;
     private int newHeight;
 

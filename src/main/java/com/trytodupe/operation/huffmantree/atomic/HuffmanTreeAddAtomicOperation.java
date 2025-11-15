@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class HuffmanTreeAddAtomicOperation<E> extends AtomicOperation<HuffmanTreeStructure<E>> {
 
-    private final String uuid;
+    private final String uuid; // highlight
     private final E value;
     private final int weight;
 

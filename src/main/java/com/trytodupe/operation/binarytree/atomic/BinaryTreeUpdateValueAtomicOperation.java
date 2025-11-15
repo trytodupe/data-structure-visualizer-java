@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class BinaryTreeUpdateValueAtomicOperation<E> extends AtomicOperation<BinaryTreeStructure<E>> {
 
-    private final String uuid;
+    private final String uuid; // highlight
     private E oldValue;
     private final E newValue;
 
