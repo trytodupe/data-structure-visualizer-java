@@ -3,6 +3,7 @@ package com.trytodupe.operation.huffmantree.atomic;
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -36,6 +37,11 @@ public class HuffmanTreeMergeAtomicOperation<E> extends AtomicOperation<HuffmanT
     @Override
     public String getDescription () {
         return "Merge to create a new node with weight " + mergedWeight;
+    }
+
+    @Override
+    public void accept (IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 
 }

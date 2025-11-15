@@ -2,6 +2,7 @@ package com.trytodupe.operation.binarytree.atomic;
 
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -37,5 +38,10 @@ public class BinaryTreeAddNodeAtomicOperation<E> extends AtomicOperation<BinaryT
 
     public String getUUID() {
         return this.uuid;
+    }
+
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

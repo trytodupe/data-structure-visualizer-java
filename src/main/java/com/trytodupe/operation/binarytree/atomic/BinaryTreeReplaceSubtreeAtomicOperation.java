@@ -3,6 +3,7 @@ package com.trytodupe.operation.binarytree.atomic;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -80,5 +81,10 @@ public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<
     @Override
     public String getDescription () {
         return "Replace subtree " + subTree1UUID + " with subtree " + subTree2UUID;
+    }
+
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

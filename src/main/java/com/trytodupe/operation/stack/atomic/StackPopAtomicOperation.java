@@ -2,6 +2,7 @@ package com.trytodupe.operation.stack.atomic;
 
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 public class StackPopAtomicOperation extends AtomicOperation<StackStructure> {
 
@@ -20,5 +21,10 @@ public class StackPopAtomicOperation extends AtomicOperation<StackStructure> {
     @Override
     public String getDescription () {
         return "Pop top element from stack";
+    }
+
+    @Override
+    public void accept (IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

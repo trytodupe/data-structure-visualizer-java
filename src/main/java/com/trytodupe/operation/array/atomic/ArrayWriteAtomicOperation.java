@@ -2,6 +2,7 @@ package com.trytodupe.operation.array.atomic;
 
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 public class ArrayWriteAtomicOperation extends AtomicOperation<ArrayStructure> {
 
@@ -29,5 +30,9 @@ public class ArrayWriteAtomicOperation extends AtomicOperation<ArrayStructure> {
     public String getDescription () {
         return "Set array[" + index + "] = " + newValue;
     }
-}
 
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
+    }
+}

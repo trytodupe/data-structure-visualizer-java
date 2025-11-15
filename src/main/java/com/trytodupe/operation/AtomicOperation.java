@@ -9,4 +9,6 @@ public abstract class AtomicOperation<T extends DataStructure> {
     public abstract void undo(T dataStructure);
 
     public abstract String getDescription();
+
+    public abstract void accept(IOperationVisitor visitor);
 }

@@ -3,6 +3,7 @@ package com.trytodupe.operation.binarytree.atomic;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -32,5 +33,10 @@ public class BinaryTreeSwapValueAtomicOperation<E> extends AtomicOperation<Binar
     @Override
     public String getDescription () {
         return "Swap values between nodes " + uuid1 + " and " + uuid2;
+    }
+
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

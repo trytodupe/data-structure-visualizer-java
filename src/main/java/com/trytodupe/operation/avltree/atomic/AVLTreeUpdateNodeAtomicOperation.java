@@ -4,6 +4,7 @@ import com.trytodupe.datastructure.tree.AVLTreeStructure;
 import com.trytodupe.datastructure.tree.node.AVLNodeExtension;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -36,5 +37,10 @@ public class AVLTreeUpdateNodeAtomicOperation<E extends Comparable<E>> extends A
     @Override
     public String getDescription () {
         return "Update height for node " + uuid;
+    }
+
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

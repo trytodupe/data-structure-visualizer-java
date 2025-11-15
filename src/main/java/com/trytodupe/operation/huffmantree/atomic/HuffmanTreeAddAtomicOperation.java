@@ -2,6 +2,7 @@ package com.trytodupe.operation.huffmantree.atomic;
 
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -35,5 +36,10 @@ public class HuffmanTreeAddAtomicOperation<E> extends AtomicOperation<HuffmanTre
     @Override
     public String getDescription () {
         return "Add a new Huffman node with value " + value + " and weight " + weight;
+    }
+
+    @Override
+    public void accept (IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

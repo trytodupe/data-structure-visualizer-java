@@ -3,6 +3,7 @@ package com.trytodupe.operation.avltree.atomic;
 import com.trytodupe.datastructure.tree.AVLTreeStructure;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -99,5 +100,10 @@ public class AVLTreeRightRotateAtomicOperation<E extends Comparable<E>> extends 
     @Override
     public String getDescription () {
         return "AVL Tree Right Rotation on pivot: " + pivotUUID;
+    }
+
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

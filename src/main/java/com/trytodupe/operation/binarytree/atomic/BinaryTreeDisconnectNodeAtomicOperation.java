@@ -3,6 +3,7 @@ package com.trytodupe.operation.binarytree.atomic;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -70,5 +71,10 @@ public class BinaryTreeDisconnectNodeAtomicOperation<E> extends AtomicOperation<
     @Override
     public String getDescription () {
         return "Disconnect child node " + childUUID + " from parent node " + parentUUID + " and store it in temp slot";
+    }
+
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

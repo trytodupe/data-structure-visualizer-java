@@ -3,6 +3,7 @@ package com.trytodupe.operation.binarytree.atomic;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -33,5 +34,10 @@ public class BinaryTreeUpdateValueAtomicOperation<E> extends AtomicOperation<Bin
     @Override
     public String getDescription () {
         return "Update value of node " + uuid + " to " + newValue;
+    }
+
+    @Override
+    public void accept (IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

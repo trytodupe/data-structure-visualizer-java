@@ -2,6 +2,7 @@ package com.trytodupe.operation.array.atomic;
 
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 public class ArrayCopyAtomicOperation extends AtomicOperation<ArrayStructure> {
 
@@ -33,4 +34,8 @@ public class ArrayCopyAtomicOperation extends AtomicOperation<ArrayStructure> {
         return "Copy element from index " + fromIndex + " to index " + toIndex;
     }
 
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
+    }
 }

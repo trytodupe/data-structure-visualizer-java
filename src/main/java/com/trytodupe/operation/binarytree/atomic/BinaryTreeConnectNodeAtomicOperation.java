@@ -3,6 +3,7 @@ package com.trytodupe.operation.binarytree.atomic;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 import java.util.UUID;
 
@@ -71,5 +72,10 @@ public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<Bin
     @Override
     public String getDescription () {
         return "Connect temp node to parent node " + parentUUID;
+    }
+
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }

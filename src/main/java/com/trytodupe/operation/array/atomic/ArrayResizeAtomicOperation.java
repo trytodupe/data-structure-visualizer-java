@@ -2,6 +2,7 @@ package com.trytodupe.operation.array.atomic;
 
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.operation.AtomicOperation;
+import com.trytodupe.operation.IOperationVisitor;
 
 public class ArrayResizeAtomicOperation extends AtomicOperation<ArrayStructure> {
 
@@ -44,5 +45,10 @@ public class ArrayResizeAtomicOperation extends AtomicOperation<ArrayStructure> 
     @Override
     public String getDescription () {
         return "Resize array to " + newSize;
+    }
+
+    @Override
+    public void accept(IOperationVisitor visitor) {
+        visitor.visit(this);
     }
 }
