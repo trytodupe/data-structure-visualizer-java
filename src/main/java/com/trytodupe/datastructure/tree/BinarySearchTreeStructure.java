@@ -11,13 +11,14 @@ public class BinarySearchTreeStructure<E> extends BinaryTreeStructure<E> {
     public BinarySearchTreeStructure() {
     }
 
-    public BinaryTreeNode<E> getInsertParent(E value) {
+    public BinaryTreeNode<E> getInsertParent(E value, List<String> path) {
         if (root == null) {
             return null;
         }
 
         BinaryTreeNode<E> current = root;
         while (true) {
+            path.add(current.getUUID().toString());
             @SuppressWarnings("unchecked")
             int comparison = ((Comparable<E>) value).compareTo(current.getValue());
 

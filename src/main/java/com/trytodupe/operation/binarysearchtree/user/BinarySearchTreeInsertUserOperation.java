@@ -6,7 +6,10 @@ import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeAddNodeAtomicOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeConnectNodeAtomicOperation;
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOperation;
+import com.trytodupe.operation.utils.VisualizePathAtomicOperation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,12 +32,14 @@ public class BinarySearchTreeInsertUserOperation<E extends Comparable<E>> extend
 
     @Override
     protected void buildOperations () {
+        // Find the insertion path and parent
+        List<String> path = new ArrayList<>();
+        BinaryTreeNode<E> parent = super.dataStructure.getInsertParent(value, path);
+
         super.atomicOperations.add(new BinaryTreeAddNodeAtomicOperation<>(uuid));
 
         // Resolve parent and child type for BST insertion
         if (parentUUID == null) {
-            BinaryTreeNode<E> parent = super.dataStructure.getInsertParent(value);
-
             // check if is root
             if (parent != null) {
                 parentUUID = parent.getUUID().toString();
@@ -44,6 +49,8 @@ public class BinarySearchTreeInsertUserOperation<E extends Comparable<E>> extend
                 parentUUID = null;
             }
         }
+
+        super.atomicOperations.add(new VisualizePathAtomicOperation(path));
 
         super.atomicOperations.add(new BinaryTreeConnectNodeAtomicOperation<>(parentUUID, childType));
 
