@@ -25,6 +25,14 @@ public class BinaryTreeReplaceSubtreeAtomicOperation<E> extends AtomicOperation<
         this.subTree2UUID = newUUID;
     }
 
+    public String getSubTree1UUID () {
+        return subTree1UUID;
+    }
+
+    public String getSubTree2UUID () {
+        return subTree2UUID;
+    }
+
     @Override
     public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
         String rootUUID = binaryTreeStructure.getRoot().getUUID().toString();

@@ -18,6 +18,10 @@ public class AVLTreeRightRotateAtomicOperation<E extends Comparable<E>> extends 
         this.pivotUUID = pivotUUID;
     }
 
+    public String getPivotUUID () {
+        return pivotUUID;
+    }
+
     @Override
     public void execute (AVLTreeStructure<E> avlTreeStructure) {
         BinaryTreeNode<E> pivot = avlTreeStructure.getNode(UUID.fromString(pivotUUID));

@@ -19,6 +19,10 @@ public class BinaryTreeConnectNodeAtomicOperation<E> extends AtomicOperation<Bin
         this.childType = childType;
     }
 
+    public String getParentUUID () {
+        return parentUUID;
+    }
+
     @Override
     public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
         if (parentUUID == null) {

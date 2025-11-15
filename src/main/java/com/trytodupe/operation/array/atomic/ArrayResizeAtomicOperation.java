@@ -21,6 +21,10 @@ public class ArrayResizeAtomicOperation extends AtomicOperation<ArrayStructure> 
         this.newSize = newSize;
     }
 
+    public ResizeMode getMode () {
+        return mode;
+    }
+
     public ArrayResizeAtomicOperation (ResizeMode mode) {
         if (mode == ResizeMode.ABSOLUTE)
             throw new IllegalArgumentException("Use the (int newSize) constructor for ABSOLUTE mode.");

@@ -17,6 +17,14 @@ public class ArrayCopyAtomicOperation extends AtomicOperation<ArrayStructure> {
         this.toIndex = toIndex;
     }
 
+    public int getFromIndex () {
+        return fromIndex;
+    }
+
+    public int getToIndex () {
+        return toIndex;
+    }
+
     @Override
     public void execute(ArrayStructure arrayStructure) {
         oldValue = arrayStructure.getData(toIndex);

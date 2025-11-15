@@ -18,6 +18,14 @@ public class BinaryTreeDisconnectNodeAtomicOperation<E> extends AtomicOperation<
         this.childUUID = childUUID;
     }
 
+    public String getParentUUID () {
+        return parentUUID;
+    }
+
+    public String getChildUUID () {
+        return childUUID;
+    }
+
     @Override
     public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
         if (parentUUID == null) {

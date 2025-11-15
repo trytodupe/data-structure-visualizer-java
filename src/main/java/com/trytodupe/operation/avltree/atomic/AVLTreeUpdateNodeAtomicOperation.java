@@ -18,6 +18,10 @@ public class AVLTreeUpdateNodeAtomicOperation<E extends Comparable<E>> extends A
         this.uuid = uuid;
     }
 
+    public String getUuid () {
+        return uuid;
+    }
+
     @Override
     public void execute (AVLTreeStructure<E> avlTreeStructure) {
         BinaryTreeNode<E> node = avlTreeStructure.getNode(UUID.fromString(uuid));

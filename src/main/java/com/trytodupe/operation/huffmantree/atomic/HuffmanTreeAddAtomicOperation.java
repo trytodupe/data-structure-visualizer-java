@@ -23,6 +23,10 @@ public class HuffmanTreeAddAtomicOperation<E> extends AtomicOperation<HuffmanTre
         this.weight = weight;
     }
 
+    public String getUuid () {
+        return uuid;
+    }
+
     @Override
     public void execute (HuffmanTreeStructure<E> huffmanTreeStructure) {
         huffmanTreeStructure.addRoot(UUID.fromString(uuid), value, weight);

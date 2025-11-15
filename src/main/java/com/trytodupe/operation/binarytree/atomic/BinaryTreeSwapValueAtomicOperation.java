@@ -16,6 +16,14 @@ public class BinaryTreeSwapValueAtomicOperation<E> extends AtomicOperation<Binar
         this.uuid2 = uuid2;
     }
 
+    public String getUuid1 () {
+        return uuid1;
+    }
+
+    public String getUuid2 () {
+        return uuid2;
+    }
+
     @Override
     public void execute (BinaryTreeStructure<E> binaryTreeStructure) {
         BinaryTreeNode<E> node1 = binaryTreeStructure.getNode(UUID.fromString(uuid1));

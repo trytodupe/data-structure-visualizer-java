@@ -15,6 +15,10 @@ public class ArrayWriteAtomicOperation extends AtomicOperation<ArrayStructure> {
         this.newValue = newValue;
     }
 
+    public int getIndex () {
+        return index;
+    }
+
     @Override
     public void execute (ArrayStructure arrayStructure) {
         oldValue = arrayStructure.getData(index);

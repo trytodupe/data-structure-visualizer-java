@@ -18,6 +18,10 @@ public class BinaryTreeUpdateValueAtomicOperation<E> extends AtomicOperation<Bin
         this.newValue = newValue;
     }
 
+    public String getUuid () {
+        return uuid;
+    }
+
     @Override
     public void execute (BinaryTreeStructure<E> dataStructure) {
         BinaryTreeNode<E> node = dataStructure.getNode(UUID.fromString(uuid));
