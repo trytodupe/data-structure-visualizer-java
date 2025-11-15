@@ -47,10 +47,6 @@ public class StackStructure extends DataStructure {
         return data[top+1];
     }
 
-    public void draw() {
-
-    }
-
     public void printValue() {
         System.out.println("data = " + Arrays.toString(Arrays.copyOf(data, top + 1)));
     }

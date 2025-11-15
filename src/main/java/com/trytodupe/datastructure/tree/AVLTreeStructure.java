@@ -66,11 +66,6 @@ public class AVLTreeStructure<E> extends BinarySearchTreeStructure<E>  {
     }
 
     @Override
-    public void draw () {
-
-    }
-
-    @Override
     public void printValue () {
         BinaryTreeNode.printTree(root);
         System.out.println();

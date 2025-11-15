@@ -55,10 +55,6 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
         }
     }
 
-//    public void drawOverlay(int currentStep) {
-//        atomicOperations.get(currentStep).drawOverlay();
-//    }
-
     public String getDescription() {
         return description;
     }

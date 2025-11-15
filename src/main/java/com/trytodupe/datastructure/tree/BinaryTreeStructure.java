@@ -115,11 +115,6 @@ public class BinaryTreeStructure<E> extends DataStructure {
     }
 
     @Override
-    public void draw () {
-
-    }
-
-    @Override
     public void printValue () {
         BinaryTreeNode.printTree(root);
         System.out.println();

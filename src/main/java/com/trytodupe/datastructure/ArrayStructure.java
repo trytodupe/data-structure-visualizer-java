@@ -47,11 +47,6 @@ public class ArrayStructure extends DataStructure {
     }
 
     @Override
-    public void draw () {
-
-    }
-
-    @Override
     public void printValue () {
         System.out.println("data = " + Arrays.toString(Arrays.copyOf(data, currentSize)));
     }
