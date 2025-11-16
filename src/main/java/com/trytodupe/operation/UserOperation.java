@@ -59,6 +59,10 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
         return description;
     }
 
+    public List<AtomicOperation<? super T>> getAtomicOperations() {
+        return atomicOperations;
+    }
+
     @SuppressWarnings("unchecked")
     protected Class<T> getDataStructureType() {
         ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
