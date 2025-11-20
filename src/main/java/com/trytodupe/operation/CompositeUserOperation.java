@@ -19,6 +19,24 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
     }
 
     @Override
+    public void build() {
+        if (!built) {
+            buildOperations();
+
+            // build atomic operations
+            for (UserOperation<?> childOperation : childOperations) {
+                childOperation.build();
+
+                for (AtomicOperation<?> atomicOperation : childOperation.atomicOperations) {
+                    atomicOperations.add((AtomicOperation<? super T>) atomicOperation);
+                }
+            }
+
+            built = true;
+        }
+    }
+
+    @Override
     public void execute() {
         this.build();
 
@@ -38,17 +56,18 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         }
     }
 
-    public List<UserOperation<?>> getChildOperations () {
-        return childOperations;
-    }
-
     @Override
     public void postDeserialize() {
         Class<T> type = getDataStructureType();
         this.dataStructure = Main.getDataStructure(type);
 
+        if (this.atomicOperations == null) {
+            this.atomicOperations = new ArrayList<>();
+        }
+
         if (this.childOperations == null) {
             this.childOperations = new ArrayList<>();
         }
+
     }
 }
