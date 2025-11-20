@@ -36,14 +36,6 @@ public class ArrayStructure extends DataStructure {
         return currentSize;
     }
 
-    public int size() {
-        return currentSize;
-    }
-
-    public int capacity() {
-        return MAX_SIZE;
-    }
-
     public void resize(int size) {
         if (size < 0 || size > MAX_SIZE) {
             throw new IllegalArgumentException("Size must be between 0 and " + MAX_SIZE);

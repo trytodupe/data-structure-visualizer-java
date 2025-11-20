@@ -8,11 +8,7 @@ import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
-import com.trytodupe.gui.HighlightInfo;
-import com.trytodupe.gui.HighlightVisitor;
-import com.trytodupe.gui.UIPanelManager;
 import com.trytodupe.operation.UserOperation;
-import com.trytodupe.operation.AtomicOperation;
 import com.trytodupe.operation.avltree.composite.AVLTreeInitCompositeOperation;
 import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOperation;
 import com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCompositeOperation;
@@ -46,155 +42,14 @@ public class Main extends Application {
         return (T) REGISTRY.get(clazz);
     }
 
-    // ImGui UI fields
-    private List<AtomicOperation<?>> animationTimeline = new ArrayList<>();
-    private int currentStep = 0;
-    private HighlightVisitor highlightVisitor = new HighlightVisitor();
-    private boolean isPlaying = false;
-    private float playbackSpeed = 1.0f;
-    private UIPanelManager uiPanelManager;
-    private boolean initialized = false;
-
-    // Operation history stack
-    private List<String> operationStack = new ArrayList<>();
-    private UserOperation<?> lastExecutedOperation = null;
-
     @Override
     protected void configure(Configuration config) {
-        config.setTitle("Data Structure Visualizer");
-        config.setWidth(1600);
-        config.setHeight(900);
+        config.setTitle("Dear ImGui is Awesome!");
     }
 
     @Override
     public void process() {
-        // Initialize on first run
-        if (!initialized) {
-            uiPanelManager = new UIPanelManager(this);
-            initialized = true;
-        }
-
-        // Render ImGui windows
-        uiPanelManager.render();
-
-        // Update animation
-        if (isPlaying && !animationTimeline.isEmpty()) {
-            if (currentStep < animationTimeline.size()) {
-                currentStep++;
-            }
-        }
-
-        // Update highlight info
-        if (currentStep > 0 && currentStep <= animationTimeline.size()) {
-            highlightVisitor.reset();
-            animationTimeline.get(currentStep - 1).accept(highlightVisitor);
-        }
-    }
-
-    // ... Getter and Setter methods ...
-    public int getCurrentStep() {
-        return currentStep;
-    }
-
-    public void setCurrentStep(int step) {
-        this.currentStep = Math.max(0, Math.min(step, animationTimeline.size()));
-    }
-
-    public int getAnimationTimelineSize() {
-        return animationTimeline.size();
-    }
-
-    public boolean isPlaying() {
-        return isPlaying;
-    }
-
-    public void setPlaying(boolean playing) {
-        this.isPlaying = playing;
-    }
-
-    public float getPlaybackSpeed() {
-        return playbackSpeed;
-    }
-
-    public void setPlaybackSpeed(float speed) {
-        this.playbackSpeed = speed;
-    }
-
-    public HighlightInfo getCurrentHighlightInfo() {
-        return highlightVisitor.getHighlightInfo();
-    }
-
-    public List<String> getOperationStack() {
-        return operationStack;
-    }
-
-    public void resetAnimation() {
-        currentStep = 0;
-        isPlaying = false;
-        highlightVisitor.reset();
-    }
-
-    /**
-     * Step forward by executing the next atomic operation
-     */
-    public void stepForward() {
-        if (currentStep < animationTimeline.size()) {
-            // Execute the next atomic operation
-            AtomicOperation<?> operation = animationTimeline.get(currentStep);
-            operation.accept(highlightVisitor);
-            currentStep++;
-        }
-    }
-
-    /**
-     * Step backward by undoing the previous atomic operation
-     */
-    public void stepBackward() {
-        if (currentStep > 0) {
-            currentStep--;
-            // Undo the current atomic operation
-            AtomicOperation<?> operation = animationTimeline.get(currentStep);
-            operation.accept(highlightVisitor);
-        }
-    }
-
-    /**
-     * Jump to a specific step by executing or undoing operations as needed
-     */
-    public void jumpToStep(int targetStep) {
-        targetStep = Math.max(0, Math.min(targetStep, animationTimeline.size()));
-
-        if (targetStep > currentStep) {
-            // Step forward
-            while (currentStep < targetStep) {
-                stepForward();
-            }
-        } else if (targetStep < currentStep) {
-            // Step backward
-            while (currentStep > targetStep) {
-                stepBackward();
-            }
-        }
-    }
-
-    /**
-     * Set animation timeline from a UserOperation
-     */
-    @SuppressWarnings("unchecked")
-    public void setAnimationTimeline(UserOperation<?> userOperation) {
-        // Build operations first if not already built
-        userOperation.execute();
-
-        // Extract atomic operations from user operation
-        animationTimeline.clear();
-        animationTimeline.addAll((List<AtomicOperation<?>>) (List<?>) userOperation.getAtomicOperations());
-        currentStep = 0;
-        isPlaying = false;
-        highlightVisitor.reset();
-
-        // Record operation in the stack
-        lastExecutedOperation = userOperation;
-        operationStack.add(userOperation.getDescription());
+        ImGui.text("Hello, World!");
     }
 
     public static void main(String[] args) {
@@ -211,7 +66,7 @@ public class Main extends Application {
         testAVLTree();
 
         // Uncomment to launch GUI
-        launch(new Main());
+        // launch(new Main());
     }
 
     /**
