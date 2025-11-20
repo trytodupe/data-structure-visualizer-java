@@ -17,13 +17,9 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         this.childOperations = new ArrayList<>();
     }
 
-
     @Override
     public void execute() {
-        if (!built) {
-            buildOperations();
-            built = true;
-        }
+        this.build();
 
         for (UserOperation<?> childOperation : childOperations) {
             childOperation.execute();

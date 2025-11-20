@@ -28,11 +28,15 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
 
     protected abstract void buildOperations ();
 
-    public void execute() {
+    public void build() {
         if (!built) {
             buildOperations();
             built = true;
         }
+    }
+
+    public void execute() {
+        this.build();
 
         for (AtomicOperation<? super T> atomicOperation : atomicOperations) {
             if (Main.DEBUG) {
