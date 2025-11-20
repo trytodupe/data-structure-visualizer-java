@@ -5,6 +5,7 @@ import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.serialization.ISerializable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class CompositeUserOperation<T extends DataStructure> extends UserOperation<T> implements ISerializable {
@@ -35,6 +36,10 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         for (int i = childOperations.size() - 1; i >= 0; i--) {
             childOperations.get(i).undo();
         }
+    }
+
+    public List<UserOperation<?>> getChildOperations () {
+        return childOperations;
     }
 
     @Override

@@ -19,6 +19,7 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
     protected transient List<AtomicOperation<? super T>> atomicOperations;
 
     protected transient boolean built = false;
+    protected transient int currentStep = -1; // ranges from -1 to atomicOperations.size() - 1 (last executed step)
 
 
     public UserOperation(T dataStructure) {
@@ -57,6 +58,31 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
         for (int i = atomicOperations.size() - 1; i >= 0; i--) {
             atomicOperations.get(i).undo(dataStructure);
         }
+    }
+
+    public void stepFoward() {
+        if (currentStep >= atomicOperations.size()) {
+            throw new IllegalStateException("No more steps to execute.");
+        }
+
+        this.build();
+        atomicOperations.get(currentStep++).execute(dataStructure);
+    }
+
+    public void stepBackward() {
+        if (currentStep <= -1) {
+            throw new IllegalStateException("No more steps to undo.");
+        }
+
+        atomicOperations.get(currentStep--).undo(dataStructure);
+    }
+
+    public int getCurrentStep () {
+        return currentStep;
+    }
+
+    public int getTotalStep () {
+        return atomicOperations.size();
     }
 
     public String getDescription() {
