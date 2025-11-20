@@ -56,6 +56,14 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         }
     }
 
+    public List<Integer> getTotalStepList() {
+        List<Integer> steps = new ArrayList<>();
+        for (UserOperation<?> childOperation : childOperations) {
+            steps.add(childOperation.getTotalStep());
+        }
+        return steps;
+    }
+
     @Override
     public void postDeserialize() {
         Class<T> type = getDataStructureType();
