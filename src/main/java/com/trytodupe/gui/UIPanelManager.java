@@ -368,7 +368,8 @@ public class UIPanelManager {
         ImGui.text("Status: " + playbackController.getState().name());
         ImGui.textWrapped(operation.getDescription());
 
-        if (operation instanceof CompositeUserOperation<?> composite) {
+        if (operation instanceof CompositeUserOperation<?>) {
+            CompositeUserOperation<?> composite = (CompositeUserOperation<?>) operation;
             ImGui.separator();
             List<UserOperation<?>> children = composite.getChildOperations();
             int childCount = children.size();
