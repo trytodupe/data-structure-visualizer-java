@@ -123,12 +123,11 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
             borderColor = 0xFF00FFFF;
         }
         ImGui.getWindowDrawList().addCircle(pos.x, pos.y, NODE_RADIUS, borderColor, 32, 2f);
-        if (highlight || hoveredForPick) {
-            int fillColor = hoveredForPick ? 0x4000FFFF : 0x4000FF00;
-            ImGui.getWindowDrawList().addCircleFilled(pos.x, pos.y, NODE_RADIUS - 2f, fillColor);
-        }
+        int fillColor = hoveredForPick ? 0x4000FFFF : (highlight ? 0x4000FF00 : 0x80000000);
+        ImGui.getWindowDrawList().addCircleFilled(pos.x, pos.y, NODE_RADIUS - 2f, fillColor);
         String value = node.getValue() == null ? "null" : node.getValue().toString();
         ImVec2 text = ImGui.calcTextSize(value);
+        ImGui.getWindowDrawList().addCircleFilled(pos.x, pos.y, NODE_RADIUS - 6f, 0xFF000000);
         ImGui.getWindowDrawList().addText(pos.x - text.x / 2f, pos.y - text.y / 2f, 0xFFFFFFFF, value);
 
         drawNodes(node.getLeft(), highlightInfo);
