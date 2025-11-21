@@ -13,12 +13,14 @@ import com.trytodupe.gui.renderer.ArrayStructureRenderer;
 import com.trytodupe.gui.renderer.BinaryTreeStructureRenderer;
 import com.trytodupe.gui.renderer.StackStructureRenderer;
 import com.trytodupe.operation.UserOperation;
+import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
 import com.trytodupe.operation.array.user.ArrayInsertUserOperation;
 import com.trytodupe.operation.stack.user.StackInitUserOperation;
 import com.trytodupe.operation.stack.user.StackPopUserOperation;
 import com.trytodupe.operation.stack.user.StackPushUserOperation;
 import imgui.ImGui;
+import imgui.type.ImString;
 
 import java.util.Locale;
 
@@ -36,12 +38,15 @@ public class UIPanelManager {
     private int selectedStructureTab = 0;
     private int selectedVisualization = 0;
 
-    private final int[] arraySize = {5};
     private final int[] arrayInsertValue = {10};
     private final int[] arrayInsertIndex = {0};
+    private final int[] arrayDeleteIndex = {0};
 
-    private final int[] stackCapacity = {5};
     private final int[] stackValue = {1};
+    private final ImString arrayInitInput = new ImString(128);
+    private final ImString stackInitInput = new ImString(128);
+
+    private String builderErrorMessage = "";
 
     public UIPanelManager(PlaybackController playbackController, OperationHistoryManager historyManager) {
         this.playbackController = playbackController;
@@ -83,6 +88,11 @@ public class UIPanelManager {
             ImGui.endTabBar();
         }
 
+        if (!builderErrorMessage.isEmpty()) {
+            ImGui.separator();
+            ImGui.textColored(0xFFCC3333, builderErrorMessage);
+        }
+
         if (locked) {
             ImGui.endDisabled();
         }
@@ -91,46 +101,65 @@ public class UIPanelManager {
     }
 
     private void renderArrayBuilder() {
-        ImGui.sliderInt("Initial Size", arraySize, 1, 20);
+        ArrayStructure array = Main.getDataStructure(ArrayStructure.class);
+        ImGui.inputTextWithHint("Initial Values", "e.g. 1,2,3", arrayInitInput);
         if (ImGui.button("Initialize Array")) {
-            ArrayStructure array = Main.getDataStructure(ArrayStructure.class);
-            int[] values = new int[arraySize[0]];
-            for (int i = 0; i < values.length; i++) {
-                values[i] = i + 1;
+            int[] values = parseCommaSeparatedInts(arrayInitInput.get(), "Array initial values");
+            if (values != null) {
+                if (values.length > array.capacity()) {
+                    setBuilderError("Array initial values exceed capacity (" + array.capacity() + ").");
+                } else {
+                    startNewOperation(new ArrayInitUserOperation(array, values));
+                }
             }
-            startNewOperation(new ArrayInitUserOperation(array, values));
         }
 
         ImGui.separator();
+        int insertMax = Math.max(array.getSize(), 0);
         ImGui.sliderInt("Insert Value", arrayInsertValue, -99, 99);
-        ImGui.sliderInt("Insert Index", arrayInsertIndex, 0, 20);
+        ImGui.sliderInt("Insert Index", arrayInsertIndex, 0, insertMax);
         if (ImGui.button("Insert Into Array")) {
-            ArrayStructure array = Main.getDataStructure(ArrayStructure.class);
-            startNewOperation(new ArrayInsertUserOperation(array, arrayInsertIndex[0], arrayInsertValue[0]));
+            if (ensureArrayCanInsert(array, arrayInsertIndex[0]) && ensureArrayHasCapacity(array)) {
+                startNewOperation(new ArrayInsertUserOperation(array, arrayInsertIndex[0], arrayInsertValue[0]));
+            }
+        }
+
+        ImGui.separator();
+        int deleteMax = Math.max(array.getSize() - 1, 0);
+        ImGui.sliderInt("Delete Index", arrayDeleteIndex, 0, Math.max(deleteMax, 0));
+        if (ImGui.button("Delete From Array")) {
+            if (ensureArrayCanDelete(array, arrayDeleteIndex[0])) {
+                startNewOperation(new ArrayDeleteUserOperation(array, arrayDeleteIndex[0]));
+            }
         }
     }
 
     private void renderStackBuilder() {
-        ImGui.sliderInt("Initial Size", stackCapacity, 0, 10);
+        StackStructure stack = Main.getDataStructure(StackStructure.class);
+        ImGui.inputTextWithHint("Initial Values", "e.g. 5,4,3", stackInitInput);
         if (ImGui.button("Initialize Stack")) {
-            StackStructure stack = Main.getDataStructure(StackStructure.class);
-            int[] values = new int[stackCapacity[0]];
-            for (int i = 0; i < values.length; i++) {
-                values[i] = i + 1;
+            int[] values = parseCommaSeparatedInts(stackInitInput.get(), "Stack initial values");
+            if (values != null) {
+                if (values.length > stack.capacity()) {
+                    setBuilderError("Stack initial values exceed capacity (" + stack.capacity() + ").");
+                } else {
+                    startNewOperation(new StackInitUserOperation(stack, values));
+                }
             }
-            startNewOperation(new StackInitUserOperation(stack, values));
         }
 
         ImGui.separator();
         ImGui.sliderInt("Value", stackValue, -99, 99);
         if (ImGui.button("Push")) {
-            StackStructure stack = Main.getDataStructure(StackStructure.class);
-            startNewOperation(new StackPushUserOperation(stack, stackValue[0]));
+            if (ensureStackHasCapacity(stack)) {
+                startNewOperation(new StackPushUserOperation(stack, stackValue[0]));
+            }
         }
         ImGui.sameLine();
         if (ImGui.button("Pop")) {
-            StackStructure stack = Main.getDataStructure(StackStructure.class);
-            startNewOperation(new StackPopUserOperation(stack));
+            if (ensureStackNotEmpty(stack)) {
+                startNewOperation(new StackPopUserOperation(stack));
+            }
         }
     }
 
@@ -282,6 +311,7 @@ public class UIPanelManager {
             return;
         }
 
+        clearBuilderError();
         OperationHistoryEntry entry = historyManager.add(operation);
         activeHistoryEntry = entry;
         playbackController.start(operation);
@@ -327,5 +357,82 @@ public class UIPanelManager {
 
     private boolean isUiLocked() {
         return playbackController.getState() == PlaybackState.IN_PROGRESS;
+    }
+
+    private void setBuilderError(String message) {
+        this.builderErrorMessage = message;
+    }
+
+    private void clearBuilderError() {
+        this.builderErrorMessage = "";
+    }
+
+    private int[] parseCommaSeparatedInts(String raw, String contextLabel) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return new int[0];
+        }
+
+        String[] tokens = raw.split(",");
+        int[] values = new int[tokens.length];
+        for (int i = 0; i < tokens.length; i++) {
+            String token = tokens[i].trim();
+            if (token.isEmpty()) {
+                setBuilderError(contextLabel + ": empty value at position " + (i + 1));
+                return null;
+            }
+            try {
+                values[i] = Integer.parseInt(token);
+            } catch (NumberFormatException ex) {
+                setBuilderError(contextLabel + ": '" + token + "' is not a valid integer.");
+                return null;
+            }
+        }
+        return values;
+    }
+
+    private boolean ensureArrayHasCapacity(ArrayStructure array) {
+        if (array.getSize() >= array.capacity()) {
+            setBuilderError("Array is full (capacity " + array.capacity() + ").");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean ensureArrayCanInsert(ArrayStructure array, int index) {
+        int size = array.getSize();
+        if (index < 0 || index > size) {
+            setBuilderError("Insert index must be between 0 and " + size + ".");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean ensureArrayCanDelete(ArrayStructure array, int index) {
+        int size = array.getSize();
+        if (size == 0) {
+            setBuilderError("Array is empty; nothing to delete.");
+            return false;
+        }
+        if (index < 0 || index >= size) {
+            setBuilderError("Delete index must be between 0 and " + (size - 1) + ".");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean ensureStackHasCapacity(StackStructure stack) {
+        if (stack.size() >= stack.capacity()) {
+            setBuilderError("Stack is full (capacity " + stack.capacity() + ").");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean ensureStackNotEmpty(StackStructure stack) {
+        if (stack.size() <= 0) {
+            setBuilderError("Stack is empty; cannot pop.");
+            return false;
+        }
+        return true;
     }
 }

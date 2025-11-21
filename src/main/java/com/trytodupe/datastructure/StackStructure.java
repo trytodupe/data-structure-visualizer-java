@@ -28,6 +28,10 @@ public class StackStructure extends DataStructure {
         return top + 1;
     }
 
+    public int capacity() {
+        return MAX_SIZE;
+    }
+
     public void push(int value) {
         if (top == MAX_SIZE - 1) {
             throw new IndexOutOfBoundsException("Stack is full");
