@@ -46,10 +46,10 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
         }
 
         float margin = 80f;
-        float availableWidth = Math.max(200f, canvasSize.x - margin * 2f);
-        float startX = canvasPos.x + margin + availableWidth / 2f;
+        float minX = canvasPos.x + margin;
+        float maxX = canvasPos.x + Math.max(200f, canvasSize.x - margin);
         float startY = canvasPos.y + 60f;
-        layoutNode(root, startX, startY, availableWidth);
+        layoutNode(root, minX, maxX, startY);
         drawEdges(root);
         drawNodes(root, highlightInfo);
 
@@ -58,14 +58,18 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
         }
     }
 
-    private void layoutNode(BinaryTreeNode<?> node, float x, float y, float offset) {
+    private void layoutNode(BinaryTreeNode<?> node, float minX, float maxX, float y) {
+        float x = (minX + maxX) * 0.5f;
         nodePositions.put(node.getUUID().toString(), new NodePosition(x, y));
-        float childOffset = Math.max(offset / 2f, MIN_HORIZONTAL_SPACING);
+        float nextY = y + LEVEL_HEIGHT;
+        float halfGap = MIN_HORIZONTAL_SPACING * 0.5f;
         if (node.getLeft() != null) {
-            layoutNode(node.getLeft(), x - childOffset, y + LEVEL_HEIGHT, childOffset);
+            float childMax = Math.min(x - halfGap, maxX);
+            layoutNode(node.getLeft(), minX, childMax, nextY);
         }
         if (node.getRight() != null) {
-            layoutNode(node.getRight(), x + childOffset, y + LEVEL_HEIGHT, childOffset);
+            float childMin = Math.max(x + halfGap, minX);
+            layoutNode(node.getRight(), childMin, maxX, nextY);
         }
     }
 
