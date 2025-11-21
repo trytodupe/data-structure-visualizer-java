@@ -1,18 +1,20 @@
 package com.trytodupe;
 
-import com.trytodupe.datastructure.ArrayStructure;
-import com.trytodupe.datastructure.tree.AVLTreeStructure;
-import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
-import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
+import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
-import com.trytodupe.test.OperationTestRunner;
-import imgui.ImGui;
+import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
+import com.trytodupe.datastructure.tree.AVLTreeStructure;
+import com.trytodupe.gui.UIPanelManager;
+import com.trytodupe.gui.history.OperationHistoryManager;
+import com.trytodupe.gui.playback.PlaybackController;
 import imgui.app.Application;
 import imgui.app.Configuration;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main extends Application {
 
@@ -34,20 +36,26 @@ public class Main extends Application {
         return (T) REGISTRY.get(clazz);
     }
 
+    private final PlaybackController playbackController = new PlaybackController();
+    private final OperationHistoryManager historyManager = new OperationHistoryManager();
+    private UIPanelManager uiPanelManager;
+
     @Override
     protected void configure(Configuration config) {
-        config.setTitle("Dear ImGui is Awesome!");
+        config.setTitle("Data Structure Visualizer");
+        config.setWidth(1600);
+        config.setHeight(900);
     }
 
     @Override
     public void process() {
-        ImGui.text("Hello, World!");
+        if (uiPanelManager == null) {
+            uiPanelManager = new UIPanelManager(playbackController, historyManager);
+        }
+        uiPanelManager.render();
     }
 
     public static void main(String[] args) {
-        OperationTestRunner.runTests();
-
-        // Uncomment to launch GUI
-        // launch(new Main());
+        launch(new Main());
     }
 }

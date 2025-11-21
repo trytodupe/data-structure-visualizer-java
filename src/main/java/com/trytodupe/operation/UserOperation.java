@@ -8,6 +8,7 @@ import com.trytodupe.serialization.ISerializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class UserOperation<T extends DataStructure> implements ISerializable {
@@ -60,21 +61,41 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
         }
     }
 
-    public void stepFoward() {
-        if (currentStep >= atomicOperations.size()) {
+    public int stepForward() {
+        this.build();
+
+        if (atomicOperations.isEmpty()) {
+            throw new IllegalStateException("Operation contains no atomic steps.");
+        }
+
+        if (currentStep >= atomicOperations.size() - 1) {
             throw new IllegalStateException("No more steps to execute.");
         }
 
-        this.build();
-        atomicOperations.get(currentStep++).execute(dataStructure);
+        currentStep++;
+        AtomicOperation<? super T> atomicOperation = atomicOperations.get(currentStep);
+        atomicOperation.execute(dataStructure);
+        return currentStep;
     }
 
-    public void stepBackward() {
-        if (currentStep <= -1) {
+    /**
+     * Kept for backward compatibility with older callers.
+     * Prefer {@link #stepForward()}.
+     */
+    @Deprecated
+    public int stepFoward() {
+        return stepForward();
+    }
+
+    public int stepBackward() {
+        if (currentStep < 0) {
             throw new IllegalStateException("No more steps to undo.");
         }
 
-        atomicOperations.get(currentStep--).undo(dataStructure);
+        AtomicOperation<? super T> atomicOperation = atomicOperations.get(currentStep);
+        atomicOperation.undo(dataStructure);
+        currentStep--;
+        return currentStep;
     }
 
     public int getCurrentStep () {
@@ -83,6 +104,45 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
 
     public int getTotalStep () {
         return atomicOperations.size();
+    }
+
+    public List<AtomicOperation<? super T>> getAtomicOperations() {
+        this.build();
+        return Collections.unmodifiableList(atomicOperations);
+    }
+
+    public AtomicOperation<? super T> peekNextAtomic() {
+        this.build();
+        int nextIndex = currentStep + 1;
+        if (nextIndex >= atomicOperations.size()) {
+            return null;
+        }
+        return atomicOperations.get(nextIndex);
+    }
+
+    public void previewNext(IOperationVisitor visitor) {
+        if (visitor == null) {
+            return;
+        }
+        AtomicOperation<? super T> next = peekNextAtomic();
+        if (next != null) {
+            next.accept(visitor);
+        }
+    }
+
+    public int jumpTo(int targetStep) {
+        this.build();
+        int maxStep = atomicOperations.size() - 1;
+        int clamped = Math.max(-1, Math.min(targetStep, maxStep));
+
+        while (currentStep < clamped) {
+            stepForward();
+        }
+        while (currentStep > clamped) {
+            stepBackward();
+        }
+
+        return currentStep;
     }
 
     public String getDescription() {

@@ -1,0 +1,123 @@
+package com.trytodupe.gui.renderer;
+
+import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
+import com.trytodupe.gui.HighlightInfo;
+import imgui.ImGui;
+import imgui.ImVec2;
+import imgui.flag.ImDrawFlags;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTreeStructure<?>> {
+
+    private static final float NODE_RADIUS = 20f;
+    private static final float LEVEL_HEIGHT = 80f;
+
+    private final Map<String, NodePosition> nodePositions = new HashMap<>();
+
+    @Override
+    public void render(BinaryTreeStructure<?> treeStructure, HighlightInfo highlightInfo) {
+        ImGui.begin("Tree Visualization");
+        renderContent(treeStructure, highlightInfo);
+        ImGui.end();
+    }
+
+    @Override
+    public void renderContent(BinaryTreeStructure<?> treeStructure, HighlightInfo highlightInfo) {
+        ImVec2 cursorPos = ImGui.getCursorPos();
+        ImVec2 windowPos = ImGui.getWindowPos();
+        ImVec2 canvasSize = ImGui.getContentRegionAvail();
+
+        nodePositions.clear();
+        BinaryTreeNode<?> root = treeStructure.getRoot();
+        if (root == null) {
+            ImGui.text("Tree is empty.");
+            return;
+        }
+
+        float startX = windowPos.x + cursorPos.x + canvasSize.x / 2f;
+        float startY = windowPos.y + cursorPos.y + 40f;
+        layoutNode(root, startX, startY, canvasSize.x / 2f);
+        drawEdges(root);
+        drawNodes(root, highlightInfo);
+
+        if (highlightInfo != null && highlightInfo.highlightTempSlot) {
+            drawTempSlot(windowPos.x + cursorPos.x + 20f, windowPos.y + cursorPos.y + 20f);
+        }
+    }
+
+    private void layoutNode(BinaryTreeNode<?> node, float x, float y, float offset) {
+        nodePositions.put(node.getUUID().toString(), new NodePosition(x, y));
+        if (node.getLeft() != null) {
+            layoutNode(node.getLeft(), x - offset, y + LEVEL_HEIGHT, offset / 2f);
+        }
+        if (node.getRight() != null) {
+            layoutNode(node.getRight(), x + offset, y + LEVEL_HEIGHT, offset / 2f);
+        }
+    }
+
+    private void drawEdges(BinaryTreeNode<?> node) {
+        if (node == null) {
+            return;
+        }
+        NodePosition parent = nodePositions.get(node.getUUID().toString());
+        if (parent == null) {
+            return;
+        }
+        if (node.getLeft() != null) {
+            NodePosition left = nodePositions.get(node.getLeft().getUUID().toString());
+            if (left != null) {
+                ImGui.getWindowDrawList().addLine(parent.x, parent.y, left.x, left.y, 0xFFFFFFFF, 2f);
+            }
+            drawEdges(node.getLeft());
+        }
+        if (node.getRight() != null) {
+            NodePosition right = nodePositions.get(node.getRight().getUUID().toString());
+            if (right != null) {
+                ImGui.getWindowDrawList().addLine(parent.x, parent.y, right.x, right.y, 0xFFFFFFFF, 2f);
+            }
+            drawEdges(node.getRight());
+        }
+    }
+
+    private void drawNodes(BinaryTreeNode<?> node, HighlightInfo highlightInfo) {
+        if (node == null) {
+            return;
+        }
+        NodePosition pos = nodePositions.get(node.getUUID().toString());
+        if (pos == null) {
+            return;
+        }
+        boolean highlight = highlightInfo != null && highlightInfo.nodeUUIDs.contains(UUID.fromString(node.getUUID().toString()));
+        int borderColor = highlight ? 0xFF00FF00 : 0xFFFFFFFF;
+        ImGui.getWindowDrawList().addCircle(pos.x, pos.y, NODE_RADIUS, borderColor, 32, 2f);
+        if (highlight) {
+            ImGui.getWindowDrawList().addCircleFilled(pos.x, pos.y, NODE_RADIUS - 2f, 0x4000FF00);
+        }
+        String value = node.getValue() == null ? "null" : node.getValue().toString();
+        ImVec2 text = ImGui.calcTextSize(value);
+        ImGui.getWindowDrawList().addText(pos.x - text.x / 2f, pos.y - text.y / 2f, 0xFF000000, value);
+
+        drawNodes(node.getLeft(), highlightInfo);
+        drawNodes(node.getRight(), highlightInfo);
+    }
+
+    private void drawTempSlot(float x, float y) {
+        ImGui.getWindowDrawList().addRect(x, y, x + 60f, y + 60f, 0xFF00FF00, 0f, ImDrawFlags.None, 2f);
+        ImGui.getWindowDrawList().addRectFilled(x, y, x + 60f, y + 60f, 0x4000FF00);
+        ImGui.getWindowDrawList().addText(x + 10f, y + 20f, 0xFF000000, "Temp");
+    }
+
+    private static class NodePosition {
+        final float x;
+        final float y;
+
+        NodePosition(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+}
