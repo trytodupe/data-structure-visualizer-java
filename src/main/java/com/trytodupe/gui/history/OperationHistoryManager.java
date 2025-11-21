@@ -82,4 +82,10 @@ public class OperationHistoryManager {
     public OperationHistoryEntry getInProgressEntry() {
         return inProgressEntry;
     }
+
+    public void clearAll() {
+        entries.clear();
+        lastDoneIndex = -1;
+        inProgressEntry = null;
+    }
 }

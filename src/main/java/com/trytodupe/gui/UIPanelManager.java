@@ -102,11 +102,13 @@ public class UIPanelManager {
         if (ImGui.beginTabBar("BuilderTabs")) {
             if (ImGui.beginTabItem("Array")) {
                 selectedStructureTab = 0;
+                activeVisualizationClass = ArrayStructure.class;
                 renderArrayBuilder();
                 ImGui.endTabItem();
             }
             if (ImGui.beginTabItem("Stack")) {
                 selectedStructureTab = 1;
+                activeVisualizationClass = StackStructure.class;
                 renderStackBuilder();
                 ImGui.endTabItem();
             }
@@ -140,6 +142,7 @@ public class UIPanelManager {
                     setBuilderError("Array initial values exceed capacity (" + array.capacity() + ").");
                 } else {
                     array.clear();
+                    resetHistoryState();
                     startNewOperation(new ArrayInitUserOperation(array, values));
                 }
             }
@@ -175,6 +178,7 @@ public class UIPanelManager {
                     setBuilderError("Stack initial values exceed capacity (" + stack.capacity() + ").");
                 } else {
                     stack.clear();
+                    resetHistoryState();
                     startNewOperation(new StackInitUserOperation(stack, values));
                 }
             }
@@ -198,10 +202,12 @@ public class UIPanelManager {
     private void renderTreeBuilder() {
         if (ImGui.beginTabBar("TreeBuilderTabs")) {
             if (ImGui.beginTabItem("Binary Tree")) {
+                activeVisualizationClass = BinaryTreeStructure.class;
                 renderBinaryTreeBuilder();
                 ImGui.endTabItem();
             }
             if (ImGui.beginTabItem("BST")) {
+                activeVisualizationClass = BinarySearchTreeStructure.class;
                 renderBstBuilder();
                 ImGui.endTabItem();
             }
@@ -218,6 +224,7 @@ public class UIPanelManager {
             Integer[] values = parseNullableIntegerArray(binaryTreeInitInput.get(), "Binary tree values");
             if (values != null) {
                 tree.clear();
+                resetHistoryState();
                 startNewOperation(new BinaryTreeInitCompositeOperation<>(tree, values));
             }
         }
@@ -240,7 +247,9 @@ public class UIPanelManager {
                     : (binaryTreeChildTypeSelection.get() == 0
                         ? BinaryTreeNode.ChildType.LEFT
                         : BinaryTreeNode.ChildType.RIGHT);
-                startNewOperation(new BinaryTreeInsertUserOperation<>(tree, parentUUID, value, childType));
+                if (parentUUID == null || ensureChildSlotAvailable(tree, parentUUID, childType)) {
+                    startNewOperation(new BinaryTreeInsertUserOperation<>(tree, parentUUID, value, childType));
+                }
             }
         }
 
@@ -292,6 +301,7 @@ public class UIPanelManager {
             if (raw != null) {
                 Integer[] values = boxIntegers(raw);
                 bst.clear();
+                resetHistoryState();
                 startNewOperation(new BinarySearchTreeInitCompositeOperation<>(bst, values));
             }
         }
@@ -409,10 +419,8 @@ public class UIPanelManager {
 
         boolean disableActions = isUiLocked();
 
-        if (disableActions) {
-            ImGui.beginDisabled();
-        }
-        if (!historyManager.canUndo()) {
+        boolean undoDisabled = disableActions || !historyManager.canUndo();
+        if (undoDisabled) {
             ImGui.beginDisabled();
         }
         if (ImGui.button("Undo##Global")) {
@@ -423,11 +431,12 @@ public class UIPanelManager {
                 activeVisualizationClass = undone.getOperation().getDataStructure().getClass();
             }
         }
-        if (!historyManager.canUndo()) {
+        if (undoDisabled) {
             ImGui.endDisabled();
         }
         ImGui.sameLine();
-        if (!historyManager.canRedo()) {
+        boolean redoDisabled = disableActions || !historyManager.canRedo();
+        if (redoDisabled) {
             ImGui.beginDisabled();
         }
         if (ImGui.button("Redo##Global")) {
@@ -438,10 +447,7 @@ public class UIPanelManager {
                 activeVisualizationClass = redone.getOperation().getDataStructure().getClass();
             }
         }
-        if (!historyManager.canRedo()) {
-            ImGui.endDisabled();
-        }
-        if (disableActions) {
+        if (redoDisabled) {
             ImGui.endDisabled();
         }
 
@@ -599,6 +605,28 @@ public class UIPanelManager {
         return true;
     }
 
+    private boolean ensureChildSlotAvailable(BinaryTreeStructure<?> tree, String parentUUID, BinaryTreeNode.ChildType childType) {
+        if (childType == null) {
+            setBuilderError("Select child type (Left or Right).");
+            return false;
+        }
+        UUID parsed = parseUuid(parentUUID, "Parent UUID");
+        if (parsed == null) {
+            return false;
+        }
+        BinaryTreeNode<?> parent = tree.getNode(parsed);
+        if (parent == null) {
+            setBuilderError("Parent UUID does not exist.");
+            return false;
+        }
+        BinaryTreeNode<?> existing = childType == BinaryTreeNode.ChildType.LEFT ? parent.getLeft() : parent.getRight();
+        if (existing != null) {
+            setBuilderError("Selected parent already has a " + childType.name().toLowerCase() + " child.");
+            return false;
+        }
+        return true;
+    }
+
     private String trimToNull(String value) {
         if (value == null) {
             return null;
@@ -660,6 +688,12 @@ public class UIPanelManager {
             setBuilderError(fieldLabel + " is not a valid UUID.");
             return null;
         }
+    }
+
+    private void resetHistoryState() {
+        playbackController.stop();
+        historyManager.clearAll();
+        activeHistoryEntry = null;
     }
 
     private void renderNodePickerRow(String label, ImString storage, String contextKey) {
