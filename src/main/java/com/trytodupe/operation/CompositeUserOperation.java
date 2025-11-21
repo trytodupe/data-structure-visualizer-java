@@ -1,7 +1,10 @@
 package com.trytodupe.operation;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.trytodupe.Main;
 import com.trytodupe.datastructure.DataStructure;
+import com.trytodupe.serialization.GsonProvider;
 import com.trytodupe.serialization.ISerializable;
 
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
 
     protected transient List<UserOperation<?>> childOperations;
     protected transient int activeChildIndex = 0;
+    private List<JsonObject> serializedChildOperations;
 
     public CompositeUserOperation (T dataStructure) {
         super(dataStructure);
@@ -113,6 +117,16 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         return Math.min(activeChildIndex, childOperations.size() - 1);
     }
 
+    @Override
+    public JsonObject toJson(Gson gson) {
+        List<JsonObject> snapshots = new ArrayList<>();
+        for (UserOperation<?> childOperation : childOperations) {
+            snapshots.add(childOperation.toJson(gson));
+        }
+        this.serializedChildOperations = snapshots;
+        return super.toJson(gson);
+    }
+
     private UserOperation<?> findNextChildWithSteps() {
         int idx = activeChildIndex;
         while (idx < childOperations.size()) {
@@ -156,8 +170,17 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         if (this.childOperations == null) {
             this.childOperations = new ArrayList<>();
         }
+        if (this.serializedChildOperations != null && !this.serializedChildOperations.isEmpty()) {
+            this.childOperations.clear();
+            for (JsonObject childJson : serializedChildOperations) {
+                ISerializable child = ISerializable.fromJson(GsonProvider.get(), childJson);
+                if (child instanceof UserOperation<?>) {
+                    this.childOperations.add((UserOperation<?>) child);
+                }
+            }
+            this.serializedChildOperations = null;
+        }
         this.activeChildIndex = 0;
         this.currentStep = -1;
-
     }
 }
