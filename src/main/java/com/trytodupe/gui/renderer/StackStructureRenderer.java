@@ -21,10 +21,9 @@ public class StackStructureRenderer extends DataStructureRenderer<StackStructure
 
     @Override
     public void renderContent(StackStructure stackStructure, HighlightInfo highlightInfo) {
-        ImVec2 cursorPos = ImGui.getCursorPos();
-        ImVec2 windowPos = ImGui.getWindowPos();
-        float startX = windowPos.x + cursorPos.x + 20;
-        float startY = windowPos.y + cursorPos.y + 40;
+        ImVec2 canvasPos = ImGui.getCursorScreenPos();
+        float startX = canvasPos.x + 50;
+        float startY = canvasPos.y + 50;
 
         int stackSize = stackStructure.size();
         ImGui.text("Stack (size=" + stackSize + ")");
@@ -33,13 +32,15 @@ public class StackStructureRenderer extends DataStructureRenderer<StackStructure
         for (int i = 0; i < stackSize; i++) {
             float cellY = startY + (stackSize - i - 1) * (CELL_HEIGHT + CELL_SPACING);
             drawCell(startX, cellY, CELL_WIDTH, CELL_HEIGHT, highlightInfo, i, stackSize - 1);
-            ImGui.getWindowDrawList().addText(startX + CELL_WIDTH + 10, cellY + 10, 0xFFFFFFFF, "Index " + i);
+            ImGui.setCursorScreenPos(startX + CELL_WIDTH + 10, cellY + 10);
+            ImGui.text("Index " + i);
         }
 
         if (highlightInfo != null && highlightInfo.highlightTempSlot) {
             float tempY = startY + stackSize * (CELL_HEIGHT + CELL_SPACING);
             drawRect(startX, tempY, CELL_WIDTH, CELL_HEIGHT, true);
-            ImGui.getWindowDrawList().addText(startX + CELL_WIDTH + 10, tempY + 10, 0xFFFFFFFF, "Temp");
+            ImGui.setCursorScreenPos(startX + CELL_WIDTH + 10, tempY + 10);
+            ImGui.text("Temp");
         }
     }
 

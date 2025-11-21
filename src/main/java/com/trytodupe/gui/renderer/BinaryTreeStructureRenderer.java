@@ -27,8 +27,7 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
 
     @Override
     public void renderContent(BinaryTreeStructure<?> treeStructure, HighlightInfo highlightInfo) {
-        ImVec2 cursorPos = ImGui.getCursorPos();
-        ImVec2 windowPos = ImGui.getWindowPos();
+        ImVec2 canvasPos = ImGui.getCursorScreenPos();
         ImVec2 canvasSize = ImGui.getContentRegionAvail();
 
         nodePositions.clear();
@@ -38,14 +37,14 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
             return;
         }
 
-        float startX = windowPos.x + cursorPos.x + canvasSize.x / 2f;
-        float startY = windowPos.y + cursorPos.y + 40f;
+        float startX = canvasPos.x + canvasSize.x / 2f;
+        float startY = canvasPos.y + 40f;
         layoutNode(root, startX, startY, canvasSize.x / 2f);
         drawEdges(root);
         drawNodes(root, highlightInfo);
 
         if (highlightInfo != null && highlightInfo.highlightTempSlot) {
-            drawTempSlot(windowPos.x + cursorPos.x + 20f, windowPos.y + cursorPos.y + 20f);
+            drawTempSlot(canvasPos.x + 20f, canvasPos.y + 20f);
         }
     }
 

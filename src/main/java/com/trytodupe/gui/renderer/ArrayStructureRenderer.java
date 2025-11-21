@@ -21,10 +21,9 @@ public class ArrayStructureRenderer extends DataStructureRenderer<ArrayStructure
 
     @Override
     public void renderContent(ArrayStructure arrayStructure, HighlightInfo highlightInfo) {
-        ImVec2 cursorPos = ImGui.getCursorPos();
-        ImVec2 windowPos = ImGui.getWindowPos();
-        float startX = windowPos.x + cursorPos.x + 20;
-        float startY = windowPos.y + cursorPos.y + 40;
+        ImVec2 canvasPos = ImGui.getCursorScreenPos();
+        float startX = canvasPos.x + 50;
+        float startY = canvasPos.y + 50;
 
         ImGui.text("Array Elements (" + arrayStructure.getSize() + ")");
         ImGui.spacing();
@@ -37,14 +36,17 @@ public class ArrayStructureRenderer extends DataStructureRenderer<ArrayStructure
             boolean isHighlighted = highlightInfo != null && highlightInfo.arrayIndices.contains(i);
             drawCell(cellX, cellY, CELL_WIDTH, CELL_HEIGHT, highlightEntire || isHighlighted);
 
-            ImGui.getWindowDrawList().addText(cellX + 15, cellY + 15, 0xFFFFFFFF, String.valueOf(arrayStructure.getData(i)));
-            ImGui.getWindowDrawList().addText(cellX, cellY + CELL_HEIGHT + 5, 0xFFFFFFFF, String.valueOf(i));
+            ImGui.setCursorScreenPos(cellX + 15, cellY + 15);
+            ImGui.text(String.valueOf(arrayStructure.getData(i)));
+            ImGui.setCursorScreenPos(cellX, cellY + CELL_HEIGHT + 5);
+            ImGui.text(String.valueOf(i));
         }
 
         if (highlightInfo != null && highlightInfo.highlightTempSlot) {
             float tempSlotX = startX + arrayStructure.getSize() * (CELL_WIDTH + CELL_SPACING);
             drawCell(tempSlotX, startY, CELL_WIDTH, CELL_HEIGHT, true);
-            ImGui.getWindowDrawList().addText(tempSlotX, startY + CELL_HEIGHT + 5, 0xFFFFFFFF, "T");
+            ImGui.setCursorScreenPos(tempSlotX, startY + CELL_HEIGHT + 5);
+            ImGui.text("T");
         }
     }
 
