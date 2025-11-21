@@ -3,9 +3,11 @@ package com.trytodupe.gui.renderer;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.gui.HighlightInfo;
+import com.trytodupe.gui.TreeNodePicker;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImDrawFlags;
+import imgui.flag.ImGuiMouseButton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +17,14 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
 
     private static final float NODE_RADIUS = 20f;
     private static final float LEVEL_HEIGHT = 80f;
+    private static final float MIN_HORIZONTAL_SPACING = 60f;
 
     private final Map<String, NodePosition> nodePositions = new HashMap<>();
+    private TreeNodePicker nodePicker;
+
+    public void setNodePicker(TreeNodePicker picker) {
+        this.nodePicker = picker;
+    }
 
     @Override
     public void render(BinaryTreeStructure<?> treeStructure, HighlightInfo highlightInfo) {
@@ -37,9 +45,11 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
             return;
         }
 
-        float startX = canvasPos.x + canvasSize.x / 2f;
-        float startY = canvasPos.y + 40f;
-        layoutNode(root, startX, startY, canvasSize.x / 2f);
+        float margin = 80f;
+        float availableWidth = Math.max(200f, canvasSize.x - margin * 2f);
+        float startX = canvasPos.x + margin + availableWidth / 2f;
+        float startY = canvasPos.y + 60f;
+        layoutNode(root, startX, startY, availableWidth);
         drawEdges(root);
         drawNodes(root, highlightInfo);
 
@@ -50,11 +60,12 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
 
     private void layoutNode(BinaryTreeNode<?> node, float x, float y, float offset) {
         nodePositions.put(node.getUUID().toString(), new NodePosition(x, y));
+        float childOffset = Math.max(offset / 2f, MIN_HORIZONTAL_SPACING);
         if (node.getLeft() != null) {
-            layoutNode(node.getLeft(), x - offset, y + LEVEL_HEIGHT, offset / 2f);
+            layoutNode(node.getLeft(), x - childOffset, y + LEVEL_HEIGHT, childOffset);
         }
         if (node.getRight() != null) {
-            layoutNode(node.getRight(), x + offset, y + LEVEL_HEIGHT, offset / 2f);
+            layoutNode(node.getRight(), x + childOffset, y + LEVEL_HEIGHT, childOffset);
         }
     }
 
@@ -91,10 +102,26 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
             return;
         }
         boolean highlight = highlightInfo != null && highlightInfo.nodeUUIDs.contains(UUID.fromString(node.getUUID().toString()));
+        boolean picking = nodePicker != null && nodePicker.isPicking();
+        boolean hoveredForPick = false;
+        if (picking) {
+            ImVec2 mousePos = ImGui.getMousePos();
+            float dx = mousePos.x - pos.x;
+            float dy = mousePos.y - pos.y;
+            hoveredForPick = dx * dx + dy * dy <= (NODE_RADIUS * NODE_RADIUS);
+            if (hoveredForPick && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
+                nodePicker.complete(node.getUUID().toString());
+            }
+        }
+
         int borderColor = highlight ? 0xFF00FF00 : 0xFFFFFFFF;
+        if (hoveredForPick) {
+            borderColor = 0xFF00FFFF;
+        }
         ImGui.getWindowDrawList().addCircle(pos.x, pos.y, NODE_RADIUS, borderColor, 32, 2f);
-        if (highlight) {
-            ImGui.getWindowDrawList().addCircleFilled(pos.x, pos.y, NODE_RADIUS - 2f, 0x4000FF00);
+        if (highlight || hoveredForPick) {
+            int fillColor = hoveredForPick ? 0x4000FFFF : 0x4000FF00;
+            ImGui.getWindowDrawList().addCircleFilled(pos.x, pos.y, NODE_RADIUS - 2f, fillColor);
         }
         String value = node.getValue() == null ? "null" : node.getValue().toString();
         ImVec2 text = ImGui.calcTextSize(value);

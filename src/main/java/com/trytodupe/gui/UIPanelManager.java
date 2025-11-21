@@ -44,6 +44,7 @@ public class UIPanelManager {
     private final ArrayStructureRenderer arrayRenderer = new ArrayStructureRenderer();
     private final StackStructureRenderer stackRenderer = new StackStructureRenderer();
     private final BinaryTreeStructureRenderer treeRenderer = new BinaryTreeStructureRenderer();
+    private final TreeNodePicker nodePicker = new TreeNodePicker();
 
     private OperationHistoryEntry activeHistoryEntry;
 
@@ -77,6 +78,7 @@ public class UIPanelManager {
     public UIPanelManager(PlaybackController playbackController, OperationHistoryManager historyManager) {
         this.playbackController = playbackController;
         this.historyManager = historyManager;
+        this.treeRenderer.setNodePicker(nodePicker);
     }
 
     public void render() {
@@ -217,7 +219,7 @@ public class UIPanelManager {
 
         ImGui.separator();
 
-        ImGui.inputTextWithHint("Parent UUID (blank=root)", "parent UUID", binaryTreeInsertParent);
+        renderNodePickerRow("Parent Node (blank = root)", binaryTreeInsertParent, "binary-insert-parent");
         ImGui.inputInt("Value##BinaryTreeInsertValue", binaryTreeInsertValue);
         ImGui.combo("Child Type", binaryTreeChildTypeSelection, CHILD_TYPE_LABELS);
         if (ImGui.button("Insert Node")) {
@@ -236,8 +238,8 @@ public class UIPanelManager {
         }
 
         ImGui.separator();
-        ImGui.inputTextWithHint("Child UUID##Delete", "child UUID", binaryTreeDeleteNode);
-        ImGui.inputTextWithHint("Parent UUID##Delete", "leave blank to auto-detect", binaryTreeDeleteParent);
+        renderNodePickerRow("Child Node", binaryTreeDeleteNode, "binary-delete-child");
+        renderNodePickerRow("Parent Node (optional)", binaryTreeDeleteParent, "binary-delete-parent");
         if (ImGui.button("Delete Node")) {
             String childUUID = trimToNull(binaryTreeDeleteNode.get());
             if (childUUID == null) {
@@ -257,7 +259,7 @@ public class UIPanelManager {
         }
 
         ImGui.separator();
-        ImGui.inputTextWithHint("Node UUID##Update", "node UUID", binaryTreeUpdateNode);
+        renderNodePickerRow("Node", binaryTreeUpdateNode, "binary-update-node");
         ImGui.inputInt("New Value", binaryTreeUpdateValue);
         if (ImGui.button("Update Value")) {
             String nodeUUID = trimToNull(binaryTreeUpdateNode.get());
@@ -289,7 +291,7 @@ public class UIPanelManager {
         }
 
         ImGui.separator();
-        ImGui.inputTextWithHint("Node UUID##BSTDelete", "node UUID", bstDeleteUuid);
+        renderNodePickerRow("BST Node", bstDeleteUuid, "bst-delete-node");
         if (ImGui.button("Delete From BST")) {
             String uuid = trimToNull(bstDeleteUuid.get());
             if (uuid == null) {
@@ -303,7 +305,7 @@ public class UIPanelManager {
     private void renderVisualizationWindow() {
         ImGui.begin("Visualization");
 
-        String[] items = {"Array", "Stack", "Binary Tree"};
+        String[] items = {"Array", "Stack", "Binary Tree", "BST"};
         if (ImGui.beginCombo("Structure", items[selectedVisualization])) {
             for (int i = 0; i < items.length; i++) {
                 boolean selected = selectedVisualization == i;
@@ -331,6 +333,10 @@ public class UIPanelManager {
             case 2:
                 BinaryTreeStructure<?> tree = Main.getDataStructure(BinaryTreeStructure.class);
                 treeRenderer.renderContent(tree, highlightInfo);
+                break;
+            case 3:
+                BinarySearchTreeStructure<?> bst = Main.getDataStructure(BinarySearchTreeStructure.class);
+                treeRenderer.renderContent(bst, highlightInfo);
                 break;
             default:
                 ImGui.text("Unsupported visualization.");
@@ -633,6 +639,26 @@ public class UIPanelManager {
         } catch (IllegalArgumentException ex) {
             setBuilderError(fieldLabel + " is not a valid UUID.");
             return null;
+        }
+    }
+
+    private void renderNodePickerRow(String label, ImString storage, String contextKey) {
+        String current = trimToNull(storage.get());
+        ImGui.text(label + ": " + (current == null ? "(none)" : current));
+        ImGui.sameLine();
+        if (nodePicker.isPicking(contextKey)) {
+            if (ImGui.button("Cancel##" + contextKey)) {
+                nodePicker.cancel();
+            }
+            ImGui.sameLine();
+            ImGui.textDisabled("Click a node...");
+        } else {
+            if (ImGui.button("Pick##" + contextKey)) {
+                nodePicker.begin(contextKey, uuid -> {
+                    storage.set(uuid);
+                    clearBuilderError();
+                });
+            }
         }
     }
 }
