@@ -3,6 +3,7 @@ package com.trytodupe.gui;
 import com.trytodupe.Main;
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.datastructure.DataStructure;
+import com.trytodupe.datastructure.LinkedListStructure;
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
@@ -14,6 +15,7 @@ import com.trytodupe.gui.playback.PlaybackController;
 import com.trytodupe.gui.playback.PlaybackState;
 import com.trytodupe.gui.renderer.ArrayStructureRenderer;
 import com.trytodupe.gui.renderer.BinaryTreeStructureRenderer;
+import com.trytodupe.gui.renderer.LinkedListStructureRenderer;
 import com.trytodupe.gui.renderer.StackStructureRenderer;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.CompositeUserOperation;
@@ -27,6 +29,9 @@ import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOpera
 import com.trytodupe.operation.binarytree.user.BinaryTreeDeleteUserOperation;
 import com.trytodupe.operation.binarytree.user.BinaryTreeInsertUserOperation;
 import com.trytodupe.operation.binarytree.user.BinaryTreeUpdateValueUserOperation;
+import com.trytodupe.operation.linkedlist.user.LinkedListDeleteUserOperation;
+import com.trytodupe.operation.linkedlist.user.LinkedListInitUserOperation;
+import com.trytodupe.operation.linkedlist.user.LinkedListInsertUserOperation;
 import com.trytodupe.operation.stack.user.StackInitUserOperation;
 import com.trytodupe.operation.stack.user.StackPopUserOperation;
 import com.trytodupe.operation.stack.user.StackPushUserOperation;
@@ -46,6 +51,7 @@ public class UIPanelManager {
     private final ArrayStructureRenderer arrayRenderer = new ArrayStructureRenderer();
     private final StackStructureRenderer stackRenderer = new StackStructureRenderer();
     private final BinaryTreeStructureRenderer treeRenderer = new BinaryTreeStructureRenderer();
+    private final LinkedListStructureRenderer linkedListRenderer = new LinkedListStructureRenderer();
     private final TreeNodePicker nodePicker = new TreeNodePicker();
 
     private OperationHistoryEntry activeHistoryEntry;
@@ -60,6 +66,10 @@ public class UIPanelManager {
     private final int[] stackValue = {1};
     private final ImString arrayInitInput = new ImString(128);
     private final ImString stackInitInput = new ImString(128);
+    private final ImString linkedListInitInput = new ImString(256);
+    private final int[] linkedListInsertValue = {0};
+    private final int[] linkedListInsertIndex = {0};
+    private final int[] linkedListDeleteIndex = {0};
     private final ImString binaryTreeInitInput = new ImString(256);
     private final ImString binaryTreeInsertParent = new ImString(64);
     private final ImInt binaryTreeInsertValue = new ImInt(0);
@@ -112,8 +122,14 @@ public class UIPanelManager {
                 renderStackBuilder();
                 ImGui.endTabItem();
             }
-            if (ImGui.beginTabItem("Tree")) {
+            if (ImGui.beginTabItem("Linked List")) {
                 selectedStructureTab = 2;
+                activeVisualizationClass = LinkedListStructure.class;
+                renderLinkedListBuilder();
+                ImGui.endTabItem();
+            }
+            if (ImGui.beginTabItem("Tree")) {
+                selectedStructureTab = 3;
                 renderTreeBuilder();
                 ImGui.endTabItem();
             }
@@ -195,6 +211,42 @@ public class UIPanelManager {
         if (ImGui.button("Pop")) {
             if (ensureStackNotEmpty(stack)) {
                 startNewOperation(new StackPopUserOperation(stack));
+            }
+        }
+    }
+
+    private void renderLinkedListBuilder() {
+        LinkedListStructure list = Main.getDataStructure(LinkedListStructure.class);
+        ImGui.inputTextWithHint("Initial Values##LinkedList", "e.g. 1,2,3", linkedListInitInput);
+        if (ImGui.button("Initialize Linked List")) {
+            int[] values = parseCommaSeparatedInts(linkedListInitInput.get(), "Linked list initial values");
+            if (values != null) {
+                list.clear();
+                resetHistoryState();
+                startNewOperation(new LinkedListInitUserOperation(list, values));
+            }
+        }
+
+        ImGui.separator();
+        linkedListInsertIndex[0] = Math.max(0, Math.min(linkedListInsertIndex[0], list.size()));
+        ImGui.sliderInt("Insert Index##LinkedList", linkedListInsertIndex, 0, Math.max(list.size(), 0));
+        ImGui.sliderInt("Value##LinkedListInsert", linkedListInsertValue, -999, 999);
+        if (ImGui.button("Insert Node")) {
+            if (ensureLinkedListInsertIndex(list, linkedListInsertIndex[0])) {
+                startNewOperation(new LinkedListInsertUserOperation(list, linkedListInsertIndex[0], linkedListInsertValue[0]));
+            }
+        }
+
+        ImGui.separator();
+        if (list.size() == 0) {
+            linkedListDeleteIndex[0] = 0;
+        } else {
+            linkedListDeleteIndex[0] = Math.max(0, Math.min(linkedListDeleteIndex[0], list.size() - 1));
+        }
+        ImGui.sliderInt("Delete Index##LinkedList", linkedListDeleteIndex, 0, Math.max(list.size() - 1, 0));
+        if (ImGui.button("Delete Node")) {
+            if (ensureLinkedListDeleteIndex(list, linkedListDeleteIndex[0])) {
+                startNewOperation(new LinkedListDeleteUserOperation(list, linkedListDeleteIndex[0]));
             }
         }
     }
@@ -336,7 +388,10 @@ public class UIPanelManager {
             return;
         }
 
-        if (BinarySearchTreeStructure.class.isAssignableFrom(activeVisualizationClass)) {
+        if (LinkedListStructure.class.isAssignableFrom(activeVisualizationClass)) {
+            LinkedListStructure list = Main.getDataStructure(LinkedListStructure.class);
+            linkedListRenderer.renderContent(list, highlightInfo);
+        } else if (BinarySearchTreeStructure.class.isAssignableFrom(activeVisualizationClass)) {
             BinarySearchTreeStructure<?> bst = Main.getDataStructure(BinarySearchTreeStructure.class);
             treeRenderer.renderContent(bst, highlightInfo);
         } else if (BinaryTreeStructure.class.isAssignableFrom(activeVisualizationClass)) {
@@ -622,6 +677,26 @@ public class UIPanelManager {
         BinaryTreeNode<?> existing = childType == BinaryTreeNode.ChildType.LEFT ? parent.getLeft() : parent.getRight();
         if (existing != null) {
             setBuilderError("Selected parent already has a " + childType.name().toLowerCase() + " child.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean ensureLinkedListInsertIndex(LinkedListStructure list, int index) {
+        if (index < 0 || index > list.size()) {
+            setBuilderError("Insert index must be between 0 and " + list.size());
+            return false;
+        }
+        return true;
+    }
+
+    private boolean ensureLinkedListDeleteIndex(LinkedListStructure list, int index) {
+        if (list.size() == 0) {
+            setBuilderError("Linked list is empty; nothing to delete.");
+            return false;
+        }
+        if (index < 0 || index >= list.size()) {
+            setBuilderError("Delete index must be between 0 and " + (list.size() - 1));
             return false;
         }
         return true;

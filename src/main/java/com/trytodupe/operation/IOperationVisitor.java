@@ -15,6 +15,8 @@ import com.trytodupe.operation.binarytree.atomic.BinaryTreeSwapValueAtomicOperat
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOperation;
 import com.trytodupe.operation.huffmantree.atomic.HuffmanTreeAddAtomicOperation;
 import com.trytodupe.operation.huffmantree.atomic.HuffmanTreeMergeAtomicOperation;
+import com.trytodupe.operation.linkedlist.atomic.LinkedListDeleteAtomicOperation;
+import com.trytodupe.operation.linkedlist.atomic.LinkedListInsertAtomicOperation;
 import com.trytodupe.operation.stack.atomic.StackPopAtomicOperation;
 import com.trytodupe.operation.stack.atomic.StackPushAtomicOperation;
 import com.trytodupe.operation.utils.VisualizePathAtomicOperation;
@@ -35,6 +37,8 @@ public interface IOperationVisitor {
     void visit(BinaryTreeUpdateValueAtomicOperation<?> op);
     void visit(HuffmanTreeAddAtomicOperation<?> op);
     void visit(HuffmanTreeMergeAtomicOperation<?> op);
+    void visit(LinkedListInsertAtomicOperation op);
+    void visit(LinkedListDeleteAtomicOperation op);
     void visit(StackPopAtomicOperation op);
     void visit(StackPushAtomicOperation op);
     void visit(VisualizePathAtomicOperation op);

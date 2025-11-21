@@ -16,6 +16,8 @@ import com.trytodupe.operation.binarytree.atomic.BinaryTreeSwapValueAtomicOperat
 import com.trytodupe.operation.binarytree.atomic.BinaryTreeUpdateValueAtomicOperation;
 import com.trytodupe.operation.huffmantree.atomic.HuffmanTreeAddAtomicOperation;
 import com.trytodupe.operation.huffmantree.atomic.HuffmanTreeMergeAtomicOperation;
+import com.trytodupe.operation.linkedlist.atomic.LinkedListDeleteAtomicOperation;
+import com.trytodupe.operation.linkedlist.atomic.LinkedListInsertAtomicOperation;
 import com.trytodupe.operation.stack.atomic.StackPopAtomicOperation;
 import com.trytodupe.operation.stack.atomic.StackPushAtomicOperation;
 import com.trytodupe.operation.utils.VisualizePathAtomicOperation;
@@ -161,6 +163,20 @@ public class HighlightVisitor implements IOperationVisitor {
     public void visit(VisualizePathAtomicOperation op) {
         for (String uuid : op.getNodeUUIDs()) {
             highlightInfo.nodeUUIDs.add(UUID.fromString(uuid));
+        }
+    }
+
+    @Override
+    public void visit(LinkedListInsertAtomicOperation op) {
+        if (op.getInsertedUuid() != null) {
+            highlightInfo.nodeUUIDs.add(UUID.fromString(op.getInsertedUuid()));
+        }
+    }
+
+    @Override
+    public void visit(LinkedListDeleteAtomicOperation op) {
+        if (op.getRemovedUuid() != null) {
+            highlightInfo.nodeUUIDs.add(UUID.fromString(op.getRemovedUuid()));
         }
     }
 }

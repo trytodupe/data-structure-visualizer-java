@@ -3,6 +3,7 @@ package com.trytodupe;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.datastructure.ArrayStructure;
+import com.trytodupe.datastructure.LinkedListStructure;
 import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
@@ -25,6 +26,7 @@ public class Main extends Application {
     static {
         REGISTRY.put(ArrayStructure.class, new ArrayStructure());
         REGISTRY.put(StackStructure.class, new StackStructure());
+        REGISTRY.put(LinkedListStructure.class, new LinkedListStructure());
         REGISTRY.put(BinaryTreeStructure.class, new BinaryTreeStructure<>());
         REGISTRY.put(BinarySearchTreeStructure.class, new BinarySearchTreeStructure<>());
         REGISTRY.put(HuffmanTreeStructure.class, new HuffmanTreeStructure<>());
