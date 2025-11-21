@@ -1,6 +1,11 @@
 package com.trytodupe.gui.history;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.trytodupe.operation.UserOperation;
+import com.trytodupe.serialization.GsonProvider;
+import com.trytodupe.serialization.ISerializable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,9 +88,58 @@ public class OperationHistoryManager {
         return inProgressEntry;
     }
 
+    public void setInProgressEntry(OperationHistoryEntry entry) {
+        this.inProgressEntry = entry;
+    }
+
     public void clearAll() {
         entries.clear();
         lastDoneIndex = -1;
         inProgressEntry = null;
+    }
+
+    public OperationHistoryEntry peekRedoEntry() {
+        if (!canRedo()) {
+            return null;
+        }
+        return entries.get(lastDoneIndex + 1);
+    }
+
+    public String exportAsJson() {
+        JsonArray array = new JsonArray();
+        for (OperationHistoryEntry entry : entries) {
+            JsonObject item = new JsonObject();
+            item.addProperty("description", entry.getDescription());
+            item.addProperty("timestamp", entry.getTimestamp());
+            item.addProperty("status", entry.getStatus().name());
+            item.add("operation", entry.getOperation().toJson(GsonProvider.get()));
+            array.add(item);
+        }
+        return GsonProvider.get().toJson(array);
+    }
+
+    public void importFromJson(String json) {
+        entries.clear();
+        lastDoneIndex = -1;
+        inProgressEntry = null;
+
+        if (json == null || json.trim().isEmpty()) {
+            return;
+        }
+
+        JsonArray array = JsonParser.parseString(json).getAsJsonArray();
+        for (int i = 0; i < array.size(); i++) {
+            JsonObject item = array.get(i).getAsJsonObject();
+            JsonObject opJson = item.getAsJsonObject("operation");
+            if (opJson == null) {
+                continue;
+            }
+            ISerializable deserialized = ISerializable.fromJson(GsonProvider.get(), opJson);
+            if (deserialized instanceof UserOperation<?> userOp) {
+                OperationHistoryEntry entry = new OperationHistoryEntry(userOp);
+                entry.markUndone();
+                entries.add(entry);
+            }
+        }
     }
 }

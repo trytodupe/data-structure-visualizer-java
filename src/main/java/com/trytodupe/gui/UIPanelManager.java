@@ -84,6 +84,8 @@ public class UIPanelManager {
     private final ImString bstDeleteUuid = new ImString(64);
 
     private String builderErrorMessage = "";
+    private final ImString historyJsonBuffer = new ImString(8192);
+    private String historyStatusMessage = "";
 
     private static final String[] CHILD_TYPE_LABELS = {"LEFT", "RIGHT"};
 
@@ -504,6 +506,45 @@ public class UIPanelManager {
         }
         if (redoDisabled) {
             ImGui.endDisabled();
+        }
+        ImGui.sameLine();
+        if (redoDisabled) {
+            ImGui.beginDisabled();
+        }
+        if (ImGui.button("Redo && Visualize")) {
+            OperationHistoryEntry redoEntry = historyManager.peekRedoEntry();
+            if (redoEntry != null) {
+                activeVisualizationClass = redoEntry.getOperation().getDataStructure().getClass();
+                playbackController.start(redoEntry.getOperation());
+                redoEntry.markInProgress();
+                historyManager.setInProgressEntry(redoEntry);
+                activeHistoryEntry = redoEntry;
+            }
+        }
+        if (redoDisabled) {
+            ImGui.endDisabled();
+        }
+
+        ImGui.separator();
+
+        if (ImGui.button("Export JSON")) {
+            historyJsonBuffer.set(historyManager.exportAsJson());
+            historyStatusMessage = "Exported " + historyManager.getEntries().size() + " operations.";
+        }
+        ImGui.sameLine();
+        if (ImGui.button("Import JSON")) {
+            try {
+                playbackController.stop();
+                activeHistoryEntry = null;
+                historyManager.importFromJson(historyJsonBuffer.get());
+                historyStatusMessage = "Imported " + historyManager.getEntries().size() + " operations.";
+            } catch (Exception ex) {
+                historyStatusMessage = "Import failed: " + ex.getMessage();
+            }
+        }
+        ImGui.inputTextMultiline("History JSON", historyJsonBuffer, ImGui.getContentRegionAvailX(), 120f);
+        if (!historyStatusMessage.isEmpty()) {
+            ImGui.textColored(0xFF66CCFF, historyStatusMessage);
         }
 
         ImGui.separator();
