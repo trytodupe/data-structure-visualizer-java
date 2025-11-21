@@ -23,11 +23,6 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
     public void build() {
         if (!built) {
             buildOperations();
-
-            for (UserOperation<?> childOperation : childOperations) {
-                childOperation.build();
-            }
-
             activeChildIndex = 0;
             built = true;
         }
@@ -122,6 +117,7 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         int idx = activeChildIndex;
         while (idx < childOperations.size()) {
             UserOperation<?> child = childOperations.get(idx);
+            child.build();
             if (child.getTotalStep() == 0 || child.getCurrentStep() >= child.getTotalStep() - 1) {
                 idx++;
                 continue;
@@ -137,6 +133,7 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         int idx = Math.min(activeChildIndex, childOperations.size() - 1);
         while (idx >= 0) {
             UserOperation<?> child = childOperations.get(idx);
+            child.build();
             if (child.getCurrentStep() >= 0) {
                 activeChildIndex = idx;
                 return child;
