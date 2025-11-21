@@ -36,17 +36,14 @@ public class ArrayStructureRenderer extends DataStructureRenderer<ArrayStructure
             boolean isHighlighted = highlightInfo != null && highlightInfo.arrayIndices.contains(i);
             drawCell(cellX, cellY, CELL_WIDTH, CELL_HEIGHT, highlightEntire || isHighlighted);
 
-            ImGui.setCursorScreenPos(cellX + 15, cellY + 15);
-            ImGui.text(String.valueOf(arrayStructure.getData(i)));
-            ImGui.setCursorScreenPos(cellX, cellY + CELL_HEIGHT + 5);
-            ImGui.text(String.valueOf(i));
+            ImGui.getWindowDrawList().addText(cellX + 15, cellY + 15, 0xFFFFFFFF, String.valueOf(arrayStructure.getData(i)));
+            ImGui.getWindowDrawList().addText(cellX, cellY + CELL_HEIGHT + 5, 0xFFFFFFFF, String.valueOf(i));
         }
 
         if (highlightInfo != null && highlightInfo.highlightTempSlot) {
             float tempSlotX = startX + arrayStructure.getSize() * (CELL_WIDTH + CELL_SPACING);
             drawCell(tempSlotX, startY, CELL_WIDTH, CELL_HEIGHT, true);
-            ImGui.setCursorScreenPos(tempSlotX, startY + CELL_HEIGHT + 5);
-            ImGui.text("T");
+            ImGui.getWindowDrawList().addText(tempSlotX, startY + CELL_HEIGHT + 5, 0xFFFFFFFF, "T");
         }
     }
 

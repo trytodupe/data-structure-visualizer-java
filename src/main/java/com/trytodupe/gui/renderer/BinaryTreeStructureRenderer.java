@@ -129,7 +129,7 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
         }
         String value = node.getValue() == null ? "null" : node.getValue().toString();
         ImVec2 text = ImGui.calcTextSize(value);
-        ImGui.getWindowDrawList().addText(pos.x - text.x / 2f, pos.y - text.y / 2f, 0xFF000000, value);
+        ImGui.getWindowDrawList().addText(pos.x - text.x / 2f, pos.y - text.y / 2f, 0xFFFFFFFF, value);
 
         drawNodes(node.getLeft(), highlightInfo);
         drawNodes(node.getRight(), highlightInfo);
@@ -138,7 +138,7 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
     private void drawTempSlot(float x, float y) {
         ImGui.getWindowDrawList().addRect(x, y, x + 60f, y + 60f, 0xFF00FF00, 0f, ImDrawFlags.None, 2f);
         ImGui.getWindowDrawList().addRectFilled(x, y, x + 60f, y + 60f, 0x4000FF00);
-        ImGui.getWindowDrawList().addText(x + 10f, y + 20f, 0xFF000000, "Temp");
+        ImGui.getWindowDrawList().addText(x + 10f, y + 20f, 0xFFFFFFFF, "Temp");
     }
 
     private static class NodePosition {

@@ -32,15 +32,13 @@ public class StackStructureRenderer extends DataStructureRenderer<StackStructure
         for (int i = 0; i < stackSize; i++) {
             float cellY = startY + (stackSize - i - 1) * (CELL_HEIGHT + CELL_SPACING);
             drawCell(startX, cellY, CELL_WIDTH, CELL_HEIGHT, highlightInfo, i, stackSize - 1);
-            ImGui.setCursorScreenPos(startX + CELL_WIDTH + 10, cellY + 10);
-            ImGui.text("Index " + i);
+            ImGui.getWindowDrawList().addText(startX + CELL_WIDTH + 10, cellY + 10, 0xFFFFFFFF, "Index " + i);
         }
 
         if (highlightInfo != null && highlightInfo.highlightTempSlot) {
             float tempY = startY + stackSize * (CELL_HEIGHT + CELL_SPACING);
             drawRect(startX, tempY, CELL_WIDTH, CELL_HEIGHT, true);
-            ImGui.setCursorScreenPos(startX + CELL_WIDTH + 10, tempY + 10);
-            ImGui.text("Temp");
+            ImGui.getWindowDrawList().addText(startX + CELL_WIDTH + 10, tempY + 10, 0xFFFFFFFF, "Temp");
         }
     }
 
