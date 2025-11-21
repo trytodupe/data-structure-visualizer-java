@@ -74,6 +74,7 @@
 | List<AtomicOperation> |
 | buildOperations() |
 | execute()/undo() |
+| stepForward()/stepBackward() |
 +------------------------+
 |
 v
