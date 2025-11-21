@@ -2,6 +2,7 @@ package com.trytodupe.gui;
 
 import com.trytodupe.Main;
 import com.trytodupe.datastructure.ArrayStructure;
+import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
@@ -16,7 +17,6 @@ import com.trytodupe.gui.renderer.BinaryTreeStructureRenderer;
 import com.trytodupe.gui.renderer.StackStructureRenderer;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.CompositeUserOperation;
-import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
 import com.trytodupe.operation.array.user.ArrayInsertUserOperation;
@@ -51,7 +51,7 @@ public class UIPanelManager {
     private OperationHistoryEntry activeHistoryEntry;
 
     private int selectedStructureTab = 0;
-    private int selectedVisualization = 0;
+    private Class<? extends DataStructure> activeVisualizationClass = ArrayStructure.class;
 
     private final int[] arrayInsertValue = {10};
     private final int[] arrayInsertIndex = {0};
@@ -139,6 +139,7 @@ public class UIPanelManager {
                 if (values.length > array.capacity()) {
                     setBuilderError("Array initial values exceed capacity (" + array.capacity() + ").");
                 } else {
+                    array.clear();
                     startNewOperation(new ArrayInitUserOperation(array, values));
                 }
             }
@@ -173,6 +174,7 @@ public class UIPanelManager {
                 if (values.length > stack.capacity()) {
                     setBuilderError("Stack initial values exceed capacity (" + stack.capacity() + ").");
                 } else {
+                    stack.clear();
                     startNewOperation(new StackInitUserOperation(stack, values));
                 }
             }
@@ -215,6 +217,7 @@ public class UIPanelManager {
         if (ImGui.button("Init Binary Tree")) {
             Integer[] values = parseNullableIntegerArray(binaryTreeInitInput.get(), "Binary tree values");
             if (values != null) {
+                tree.clear();
                 startNewOperation(new BinaryTreeInitCompositeOperation<>(tree, values));
             }
         }
@@ -230,6 +233,8 @@ public class UIPanelManager {
 
             if (parentUUID != null && !ensureTreeNodeExists(tree, parentUUID, "Parent UUID")) {
                 // error already set
+            } else if (parentUUID == null && tree.getRoot() != null) {
+                setBuilderError("Root already exists; select a parent node.");
             } else {
                 BinaryTreeNode.ChildType childType = parentUUID == null ? null
                     : (binaryTreeChildTypeSelection.get() == 0
@@ -244,7 +249,9 @@ public class UIPanelManager {
         renderNodePickerRow("Parent Node (optional)", binaryTreeDeleteParent, "binary-delete-parent");
         if (ImGui.button("Delete Node")) {
             String childUUID = trimToNull(binaryTreeDeleteNode.get());
-            if (childUUID == null) {
+            if (!ensureTreeNotEmpty(tree)) {
+                // message set
+            } else if (childUUID == null) {
                 setBuilderError("Child UUID is required for deletion.");
             } else if (ensureTreeNodeExists(tree, childUUID, "Child UUID")) {
                 String parentUUID = trimToNull(binaryTreeDeleteParent.get());
@@ -265,7 +272,9 @@ public class UIPanelManager {
         ImGui.inputInt("New Value", binaryTreeUpdateValue);
         if (ImGui.button("Update Value")) {
             String nodeUUID = trimToNull(binaryTreeUpdateNode.get());
-            if (nodeUUID == null) {
+            if (!ensureTreeNotEmpty(tree)) {
+                // handled
+            } else if (nodeUUID == null) {
                 setBuilderError("Node UUID is required to update value.");
             } else if (ensureTreeNodeExists(tree, nodeUUID, "Node UUID")) {
                 startNewOperation(new BinaryTreeUpdateValueUserOperation<>(tree, nodeUUID, binaryTreeUpdateValue.get()));
@@ -282,6 +291,7 @@ public class UIPanelManager {
             int[] raw = parseCommaSeparatedInts(bstInitInput.get(), "BST initial values");
             if (raw != null) {
                 Integer[] values = boxIntegers(raw);
+                bst.clear();
                 startNewOperation(new BinarySearchTreeInitCompositeOperation<>(bst, values));
             }
         }
@@ -296,7 +306,9 @@ public class UIPanelManager {
         renderNodePickerRow("BST Node", bstDeleteUuid, "bst-delete-node");
         if (ImGui.button("Delete From BST")) {
             String uuid = trimToNull(bstDeleteUuid.get());
-            if (uuid == null) {
+            if (!ensureTreeNotEmpty(bst)) {
+                // handled
+            } else if (uuid == null) {
                 setBuilderError("Node UUID is required for BST deletion.");
             } else if (ensureTreeNodeExists(bst, uuid, "Node UUID")) {
                 startNewOperation(new BinarySearchTreeDeleteUserOperation<>(bst, uuid));
@@ -307,42 +319,27 @@ public class UIPanelManager {
     private void renderVisualizationWindow() {
         ImGui.begin("Visualization");
 
-        String[] items = {"Array", "Stack", "Binary Tree", "BST"};
-        if (ImGui.beginCombo("Structure", items[selectedVisualization])) {
-            for (int i = 0; i < items.length; i++) {
-                boolean selected = selectedVisualization == i;
-                if (ImGui.selectable(items[i], selected)) {
-                    selectedVisualization = i;
-                }
-                if (selected) {
-                    ImGui.setItemDefaultFocus();
-                }
-            }
-            ImGui.endCombo();
+        HighlightInfo highlightInfo = playbackController.getHighlightInfo();
+        if (activeVisualizationClass == null) {
+            ImGui.text("No data structure selected.");
+            ImGui.end();
+            return;
         }
 
-        HighlightInfo highlightInfo = playbackController.getHighlightInfo();
-
-        switch (selectedVisualization) {
-            case 0:
-                ArrayStructure array = Main.getDataStructure(ArrayStructure.class);
-                arrayRenderer.renderContent(array, highlightInfo);
-                break;
-            case 1:
-                StackStructure stack = Main.getDataStructure(StackStructure.class);
-                stackRenderer.renderContent(stack, highlightInfo);
-                break;
-            case 2:
-                BinaryTreeStructure<?> tree = Main.getDataStructure(BinaryTreeStructure.class);
-                treeRenderer.renderContent(tree, highlightInfo);
-                break;
-            case 3:
-                BinarySearchTreeStructure<?> bst = Main.getDataStructure(BinarySearchTreeStructure.class);
-                treeRenderer.renderContent(bst, highlightInfo);
-                break;
-            default:
-                ImGui.text("Unsupported visualization.");
-                break;
+        if (BinarySearchTreeStructure.class.isAssignableFrom(activeVisualizationClass)) {
+            BinarySearchTreeStructure<?> bst = Main.getDataStructure(BinarySearchTreeStructure.class);
+            treeRenderer.renderContent(bst, highlightInfo);
+        } else if (BinaryTreeStructure.class.isAssignableFrom(activeVisualizationClass)) {
+            BinaryTreeStructure<?> tree = Main.getDataStructure(BinaryTreeStructure.class);
+            treeRenderer.renderContent(tree, highlightInfo);
+        } else if (StackStructure.class.isAssignableFrom(activeVisualizationClass)) {
+            StackStructure stack = Main.getDataStructure(StackStructure.class);
+            stackRenderer.renderContent(stack, highlightInfo);
+        } else if (ArrayStructure.class.isAssignableFrom(activeVisualizationClass)) {
+            ArrayStructure array = Main.getDataStructure(ArrayStructure.class);
+            arrayRenderer.renderContent(array, highlightInfo);
+        } else {
+            ImGui.text("Unsupported visualization target: " + activeVisualizationClass.getSimpleName());
         }
 
         if (highlightInfo != null && !highlightInfo.isEmpty()) {
@@ -412,44 +409,52 @@ public class UIPanelManager {
 
         boolean disableActions = isUiLocked();
 
-        for (OperationHistoryEntry entry : historyManager.getEntries()) {
+        if (disableActions) {
+            ImGui.beginDisabled();
+        }
+        if (!historyManager.canUndo()) {
+            ImGui.beginDisabled();
+        }
+        if (ImGui.button("Undo##Global")) {
+            OperationHistoryEntry undone = historyManager.undoLatest();
+            if (undone != null) {
+                playbackController.stop();
+                activeHistoryEntry = null;
+                activeVisualizationClass = undone.getOperation().getDataStructure().getClass();
+            }
+        }
+        if (!historyManager.canUndo()) {
+            ImGui.endDisabled();
+        }
+        ImGui.sameLine();
+        if (!historyManager.canRedo()) {
+            ImGui.beginDisabled();
+        }
+        if (ImGui.button("Redo##Global")) {
+            OperationHistoryEntry redone = historyManager.redoNext();
+            if (redone != null) {
+                playbackController.stop();
+                activeHistoryEntry = null;
+                activeVisualizationClass = redone.getOperation().getDataStructure().getClass();
+            }
+        }
+        if (!historyManager.canRedo()) {
+            ImGui.endDisabled();
+        }
+        if (disableActions) {
+            ImGui.endDisabled();
+        }
+
+        ImGui.separator();
+
+        List<OperationHistoryEntry> entries = historyManager.getEntries();
+        for (int idx = entries.size() - 1; idx >= 0; idx--) {
+            OperationHistoryEntry entry = entries.get(idx);
             ImGui.separator();
             ImGui.text(entry.getDescription() == null ? "(No description)" : entry.getDescription());
             ImGui.text(String.format(Locale.US, "Status: %s", entry.getStatus()));
 
-            if (disableActions) {
-                ImGui.beginDisabled();
-            }
-
-            boolean canUndo = entry.getStatus() == OperationHistoryStatus.DONE;
-            if (!canUndo) {
-                ImGui.beginDisabled();
-            }
-            if (ImGui.button("Undo##" + entry.getId())) {
-                historyManager.undo(entry);
-                playbackController.stop();
-                activeHistoryEntry = null;
-            }
-            if (!canUndo) {
-                ImGui.endDisabled();
-            }
-
-            ImGui.sameLine();
-
-            boolean canRedo = entry.getStatus() == OperationHistoryStatus.UNDONE;
-            if (!canRedo) {
-                ImGui.beginDisabled();
-            }
-            if (ImGui.button("Redo##" + entry.getId())) {
-                historyManager.redo(entry);
-            }
-            if (!canRedo) {
-                ImGui.endDisabled();
-            }
-
-            ImGui.sameLine();
-
-            boolean canVisualize = entry.getStatus() == OperationHistoryStatus.UNDONE;
+            boolean canVisualize = entry.getStatus() != OperationHistoryStatus.IN_PROGRESS;
             if (!canVisualize) {
                 ImGui.beginDisabled();
             }
@@ -459,10 +464,7 @@ public class UIPanelManager {
             if (!canVisualize) {
                 ImGui.endDisabled();
             }
-
-            if (disableActions) {
-                ImGui.endDisabled();
-            }
+            ImGui.separator();
         }
 
         ImGui.end();
@@ -476,6 +478,7 @@ public class UIPanelManager {
         clearBuilderError();
         OperationHistoryEntry entry = historyManager.add(operation);
         activeHistoryEntry = entry;
+        activeVisualizationClass = operation.getDataStructure().getClass();
         playbackController.start(operation);
     }
 
@@ -484,36 +487,26 @@ public class UIPanelManager {
             return;
         }
         activeHistoryEntry = entry;
-        entry.markInProgress();
+        activeVisualizationClass = entry.getOperation().getDataStructure().getClass();
         playbackController.start(entry.getOperation());
     }
 
     private void syncHistoryState() {
-        if (!playbackController.hasActiveOperation()) {
-            activeHistoryEntry = null;
-            return;
-        }
-
-        if (activeHistoryEntry == null) {
-            activeHistoryEntry = historyManager.getEntries().stream()
-                .filter(e -> e.getOperation() == playbackController.getActiveOperation())
-                .findFirst()
-                .orElse(null);
-        }
-
-        if (activeHistoryEntry == null) {
+        OperationHistoryEntry tracked = historyManager.getInProgressEntry();
+        if (tracked == null) {
             return;
         }
 
         if (playbackController.getState() == PlaybackState.IN_PROGRESS) {
-            activeHistoryEntry.markInProgress();
+            tracked.markInProgress();
+            return;
+        }
+
+        UserOperation<?> op = playbackController.getActiveOperation();
+        if (op != null && op.getTotalStep() > 0 && op.getCurrentStep() >= op.getTotalStep() - 1) {
+            historyManager.markDone(tracked);
         } else {
-            UserOperation<?> op = playbackController.getActiveOperation();
-            if (op.getTotalStep() == 0 || op.getCurrentStep() >= op.getTotalStep() - 1) {
-                historyManager.markDone(activeHistoryEntry);
-            } else {
-                activeHistoryEntry.markIdle();
-            }
+            historyManager.markIdle(tracked);
         }
     }
 
@@ -593,6 +586,14 @@ public class UIPanelManager {
     private boolean ensureStackNotEmpty(StackStructure stack) {
         if (stack.size() <= 0) {
             setBuilderError("Stack is empty; cannot pop.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean ensureTreeNotEmpty(BinaryTreeStructure<?> tree) {
+        if (tree.getRoot() == null) {
+            setBuilderError("Tree is empty.");
             return false;
         }
         return true;

@@ -119,4 +119,12 @@ public class BinaryTreeStructure<E> extends DataStructure {
         BinaryTreeNode.printTree(root);
         System.out.println();
     }
+
+    @Override
+    public void clear() {
+        nodes.clear();
+        root = null;
+        tempNode = null;
+        detactchedRoots.clear();
+    }
 }

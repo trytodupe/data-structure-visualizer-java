@@ -11,17 +11,26 @@ import java.util.UUID;
 public class OperationHistoryManager {
 
     private final List<OperationHistoryEntry> entries = new ArrayList<>();
+    private int lastDoneIndex = -1;
+    private OperationHistoryEntry inProgressEntry = null;
 
     public OperationHistoryEntry add(UserOperation<?> operation) {
+        // drop redo tail
+        while (entries.size() - 1 > lastDoneIndex) {
+            entries.remove(entries.size() - 1);
+        }
         OperationHistoryEntry entry = new OperationHistoryEntry(operation);
         entry.markInProgress();
-        entries.add(0, entry);
+        entries.add(entry);
+        inProgressEntry = entry;
         return entry;
     }
 
     public void markDone(OperationHistoryEntry entry) {
         if (entry != null) {
             entry.markDone();
+            lastDoneIndex = entries.indexOf(entry);
+            inProgressEntry = null;
         }
     }
 
@@ -29,6 +38,15 @@ public class OperationHistoryManager {
         if (entry != null) {
             entry.markIdle();
         }
+    }
+
+    public boolean canUndo() {
+        return lastDoneIndex >= 0 && entries.get(lastDoneIndex).getStatus() == OperationHistoryStatus.DONE && inProgressEntry == null;
+    }
+
+    public boolean canRedo() {
+        return inProgressEntry == null && lastDoneIndex + 1 < entries.size()
+            && entries.get(lastDoneIndex + 1).getStatus() == OperationHistoryStatus.UNDONE;
     }
 
     public List<OperationHistoryEntry> getEntries() {
@@ -39,19 +57,29 @@ public class OperationHistoryManager {
         return entries.stream().filter(e -> e.getId().equals(id)).findFirst();
     }
 
-    public void undo(OperationHistoryEntry entry) {
-        if (entry == null || entry.getStatus() == OperationHistoryStatus.IN_PROGRESS) {
-            return;
+    public OperationHistoryEntry undoLatest() {
+        if (!canUndo()) {
+            return null;
         }
+        OperationHistoryEntry entry = entries.get(lastDoneIndex);
         entry.getOperation().undo();
         entry.markUndone();
+        lastDoneIndex--;
+        return entry;
     }
 
-    public void redo(OperationHistoryEntry entry) {
-        if (entry == null || entry.getStatus() == OperationHistoryStatus.IN_PROGRESS) {
-            return;
+    public OperationHistoryEntry redoNext() {
+        if (!canRedo()) {
+            return null;
         }
+        OperationHistoryEntry entry = entries.get(lastDoneIndex + 1);
         entry.getOperation().execute();
         entry.markDone();
+        lastDoneIndex++;
+        return entry;
+    }
+
+    public OperationHistoryEntry getInProgressEntry() {
+        return inProgressEntry;
     }
 }

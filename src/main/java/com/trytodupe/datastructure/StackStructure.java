@@ -59,4 +59,12 @@ public class StackStructure extends DataStructure {
         System.out.println("data = " + Arrays.toString(Arrays.copyOf(data, top + 1)));
     }
 
+    @Override
+    public void clear() {
+        top = -1;
+        if (Main.DEBUG) {
+            printValue();
+        }
+    }
+
 }

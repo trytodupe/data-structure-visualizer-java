@@ -54,4 +54,12 @@ public class ArrayStructure extends DataStructure {
     public void printValue () {
         System.out.println("data = " + Arrays.toString(Arrays.copyOf(data, currentSize)));
     }
+
+    @Override
+    public void clear() {
+        currentSize = 0;
+        if (Main.DEBUG) {
+            printValue();
+        }
+    }
 }

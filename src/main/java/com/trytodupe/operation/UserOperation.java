@@ -149,6 +149,10 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
         return description;
     }
 
+    public T getDataStructure() {
+        return dataStructure;
+    }
+
     @SuppressWarnings("unchecked")
     protected Class<T> getDataStructureType() {
         ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();

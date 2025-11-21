@@ -4,4 +4,6 @@ public abstract class DataStructure {
 
     public abstract void printValue();
 
+    public abstract void clear();
+
 }
