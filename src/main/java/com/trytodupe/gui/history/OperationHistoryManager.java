@@ -135,7 +135,8 @@ public class OperationHistoryManager {
                 continue;
             }
             ISerializable deserialized = ISerializable.fromJson(GsonProvider.get(), opJson);
-            if (deserialized instanceof UserOperation<?> userOp) {
+            if (deserialized instanceof UserOperation<?>) {
+                UserOperation<?> userOp = (UserOperation<?>) deserialized;
                 OperationHistoryEntry entry = new OperationHistoryEntry(userOp);
                 entry.markUndone();
                 entries.add(entry);

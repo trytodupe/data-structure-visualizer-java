@@ -157,6 +157,7 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
             this.childOperations = new ArrayList<>();
         }
         this.activeChildIndex = 0;
+        this.currentStep = -1;
 
     }
 }

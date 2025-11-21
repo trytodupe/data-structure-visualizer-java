@@ -175,6 +175,8 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
         if (this.atomicOperations == null) {
             this.atomicOperations = new ArrayList<>();
         }
+
+        this.currentStep = -1;
     }
 
 }
