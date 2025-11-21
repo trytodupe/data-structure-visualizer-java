@@ -5,9 +5,13 @@ import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.datastructure.DataStructure;
 import com.trytodupe.datastructure.LinkedListStructure;
 import com.trytodupe.datastructure.StackStructure;
+import com.trytodupe.datastructure.tree.AVLTreeStructure;
 import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
+import com.trytodupe.datastructure.tree.node.AVLNodeExtension;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
+import com.trytodupe.datastructure.tree.node.HuffmanNodeExtension;
 import com.trytodupe.gui.history.OperationHistoryEntry;
 import com.trytodupe.gui.history.OperationHistoryManager;
 import com.trytodupe.gui.history.OperationHistoryStatus;
@@ -22,6 +26,7 @@ import com.trytodupe.operation.CompositeUserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
 import com.trytodupe.operation.array.user.ArrayInsertUserOperation;
+import com.trytodupe.operation.avltree.composite.AVLTreeInitCompositeOperation;
 import com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCompositeOperation;
 import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeDeleteUserOperation;
 import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
@@ -29,6 +34,7 @@ import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOpera
 import com.trytodupe.operation.binarytree.user.BinaryTreeDeleteUserOperation;
 import com.trytodupe.operation.binarytree.user.BinaryTreeInsertUserOperation;
 import com.trytodupe.operation.binarytree.user.BinaryTreeUpdateValueUserOperation;
+import com.trytodupe.operation.huffmantree.composite.HuffmanTreeInitCompositeOperation;
 import com.trytodupe.operation.linkedlist.user.LinkedListDeleteUserOperation;
 import com.trytodupe.operation.linkedlist.user.LinkedListInitUserOperation;
 import com.trytodupe.operation.linkedlist.user.LinkedListInsertUserOperation;
@@ -82,6 +88,8 @@ public class UIPanelManager {
     private final ImString bstInitInput = new ImString(256);
     private final ImInt bstInsertValue = new ImInt(0);
     private final ImString bstDeleteUuid = new ImString(64);
+    private final ImString avlInitInput = new ImString(256);
+    private final ImString huffmanInitInput = new ImString(256);
 
     private String builderErrorMessage = "";
     private final ImString historyJsonBuffer = new ImString(8192);
@@ -265,6 +273,16 @@ public class UIPanelManager {
                 renderBstBuilder();
                 ImGui.endTabItem();
             }
+            if (ImGui.beginTabItem("AVL Tree")) {
+                activeVisualizationClass = AVLTreeStructure.class;
+                renderAvlBuilder();
+                ImGui.endTabItem();
+            }
+            if (ImGui.beginTabItem("Huffman Tree")) {
+                activeVisualizationClass = HuffmanTreeStructure.class;
+                renderHuffmanBuilder();
+                ImGui.endTabItem();
+            }
             ImGui.endTabBar();
         }
     }
@@ -380,6 +398,37 @@ public class UIPanelManager {
         }
     }
 
+    private void renderAvlBuilder() {
+        AVLTreeStructure<Integer> avl = Main.getDataStructure(AVLTreeStructure.class);
+        ImGui.text("Initialize AVL (auto-balance)");
+        ImGui.inputTextWithHint("Values##AVLInit", "e.g. 10,4,15,2", avlInitInput);
+        if (ImGui.button("Init AVL Tree")) {
+            int[] raw = parseCommaSeparatedInts(avlInitInput.get(), "AVL initial values");
+            if (raw != null) {
+                avl.clear();
+                resetHistoryState();
+                Integer[] boxed = boxIntegers(raw);
+                startNewOperation(new AVLTreeInitCompositeOperation<>(avl, boxed));
+            }
+        }
+    }
+
+    private void renderHuffmanBuilder() {
+        HuffmanTreeStructure<Character> huffman = Main.getDataStructure(HuffmanTreeStructure.class);
+        ImGui.text("Input string (spaces ignored)");
+        ImGui.inputTextWithHint("String##Huffman", "e.g. data structure", huffmanInitInput);
+        if (ImGui.button("Build Huffman Tree")) {
+            String input = huffmanInitInput.get().trim();
+            if (input.isEmpty()) {
+                setBuilderError("Input string cannot be empty.");
+            } else {
+                huffman.clear();
+                resetHistoryState();
+                startNewOperation(new HuffmanTreeInitCompositeOperation<>(huffman, input));
+            }
+        }
+    }
+
     private void renderVisualizationWindow() {
         ImGui.begin("Visualization");
 
@@ -390,9 +439,40 @@ public class UIPanelManager {
             return;
         }
 
+        treeRenderer.resetLabelProviders();
         if (LinkedListStructure.class.isAssignableFrom(activeVisualizationClass)) {
             LinkedListStructure list = Main.getDataStructure(LinkedListStructure.class);
             linkedListRenderer.renderContent(list, highlightInfo);
+        } else if (AVLTreeStructure.class.isAssignableFrom(activeVisualizationClass)) {
+            AVLTreeStructure<?> avl = Main.getDataStructure(AVLTreeStructure.class);
+            treeRenderer.setSecondaryLabelProvider(node -> {
+                if (node == null) {
+                    return null;
+                }
+                int balance = avl.getBalance(node.getUUID());
+                int height = 0;
+                if (node.getExtension() instanceof AVLNodeExtension ext) {
+                    height = ext.getHeight();
+                }
+                return "h=" + height + " b=" + balance;
+            });
+            treeRenderer.renderContent(avl, highlightInfo);
+        } else if (HuffmanTreeStructure.class.isAssignableFrom(activeVisualizationClass)) {
+            HuffmanTreeStructure<?> huffman = Main.getDataStructure(HuffmanTreeStructure.class);
+            treeRenderer.setPrimaryLabelProvider(node -> {
+                Object value = node.getValue();
+                if (value == null) {
+                    return "*";
+                }
+                return value.toString();
+            });
+            treeRenderer.setSecondaryLabelProvider(node -> {
+                if (node.getExtension() instanceof HuffmanNodeExtension ext) {
+                    return "w=" + ext.getWeight();
+                }
+                return null;
+            });
+            treeRenderer.renderContent(huffman, highlightInfo);
         } else if (BinarySearchTreeStructure.class.isAssignableFrom(activeVisualizationClass)) {
             BinarySearchTreeStructure<?> bst = Main.getDataStructure(BinarySearchTreeStructure.class);
             treeRenderer.renderContent(bst, highlightInfo);

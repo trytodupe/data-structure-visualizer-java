@@ -1,6 +1,8 @@
 package com.trytodupe.gui.renderer;
 
+import com.trytodupe.datastructure.tree.AVLTreeStructure;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.HuffmanTreeStructure;
 import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.gui.HighlightInfo;
 import com.trytodupe.gui.TreeNodePicker;
@@ -10,8 +12,10 @@ import imgui.flag.ImDrawFlags;
 import imgui.flag.ImGuiMouseButton;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTreeStructure<?>> {
 
@@ -21,9 +25,24 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
 
     private final Map<String, NodePosition> nodePositions = new HashMap<>();
     private TreeNodePicker nodePicker;
+    private Function<BinaryTreeNode<?>, String> primaryLabelProvider = this::defaultPrimaryLabel;
+    private Function<BinaryTreeNode<?>, String> secondaryLabelProvider = node -> null;
 
     public void setNodePicker(TreeNodePicker picker) {
         this.nodePicker = picker;
+    }
+
+    public void setPrimaryLabelProvider(Function<BinaryTreeNode<?>, String> provider) {
+        this.primaryLabelProvider = provider != null ? provider : this::defaultPrimaryLabel;
+    }
+
+    public void setSecondaryLabelProvider(Function<BinaryTreeNode<?>, String> provider) {
+        this.secondaryLabelProvider = provider != null ? provider : node -> null;
+    }
+
+    public void resetLabelProviders() {
+        this.primaryLabelProvider = this::defaultPrimaryLabel;
+        this.secondaryLabelProvider = node -> null;
     }
 
     @Override
@@ -41,7 +60,11 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
         nodePositions.clear();
         BinaryTreeNode<?> root = treeStructure.getRoot();
         if (root == null) {
-            ImGui.text("Tree is empty.");
+            if (treeStructure instanceof HuffmanTreeStructure<?> huffman) {
+                renderForest(huffman, highlightInfo, canvasPos, canvasSize);
+            } else {
+                ImGui.text("Tree is empty.");
+            }
             return;
         }
 
@@ -125,10 +148,19 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
         ImGui.getWindowDrawList().addCircle(pos.x, pos.y, NODE_RADIUS, borderColor, 32, 2f);
         int fillColor = hoveredForPick ? 0x4000FFFF : (highlight ? 0x4000FF00 : 0x80000000);
         ImGui.getWindowDrawList().addCircleFilled(pos.x, pos.y, NODE_RADIUS - 2f, fillColor);
-        String value = node.getValue() == null ? "null" : node.getValue().toString();
-        ImVec2 text = ImGui.calcTextSize(value);
+        String primary = primaryLabelProvider.apply(node);
+        if (primary == null) {
+            primary = "";
+        }
+        ImVec2 text = ImGui.calcTextSize(primary);
         ImGui.getWindowDrawList().addCircleFilled(pos.x, pos.y, NODE_RADIUS - 6f, 0xFF000000);
-        ImGui.getWindowDrawList().addText(pos.x - text.x / 2f, pos.y - text.y / 2f, 0xFFFFFFFF, value);
+        ImGui.getWindowDrawList().addText(pos.x - text.x / 2f, pos.y - text.y / 2f, 0xFFFFFFFF, primary);
+        String secondary = secondaryLabelProvider.apply(node);
+        if (secondary != null && !secondary.isEmpty()) {
+            ImVec2 secondarySize = ImGui.calcTextSize(secondary);
+            float secondaryY = pos.y + text.y * 0.5f;
+            ImGui.getWindowDrawList().addText(pos.x - secondarySize.x / 2f, secondaryY, 0xFFCCCCCC, secondary);
+        }
 
         drawNodes(node.getLeft(), highlightInfo);
         drawNodes(node.getRight(), highlightInfo);
@@ -138,6 +170,38 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
         ImGui.getWindowDrawList().addRect(x, y, x + 60f, y + 60f, 0xFF00FF00, 0f, ImDrawFlags.None, 2f);
         ImGui.getWindowDrawList().addRectFilled(x, y, x + 60f, y + 60f, 0x4000FF00);
         ImGui.getWindowDrawList().addText(x + 10f, y + 20f, 0xFFFFFFFF, "Temp");
+    }
+
+    private String defaultPrimaryLabel(BinaryTreeNode<?> node) {
+        Object value = node.getValue();
+        return value == null ? "null" : value.toString();
+    }
+
+    private void renderForest(HuffmanTreeStructure<?> huffman,
+                              HighlightInfo highlightInfo,
+                              ImVec2 canvasPos,
+                              ImVec2 canvasSize) {
+        List<? extends BinaryTreeNode<?>> roots = huffman.getRoots();
+        if (roots == null || roots.isEmpty()) {
+            ImGui.text("Tree is empty.");
+            return;
+        }
+        float margin = 60f;
+        float totalWidth = Math.max(200f, canvasSize.x - margin * 2f);
+        float perWidth = totalWidth / roots.size();
+        float startY = canvasPos.y + 60f;
+        for (int i = 0; i < roots.size(); i++) {
+            BinaryTreeNode<?> root = roots.get(i);
+            float minX = canvasPos.x + margin + i * perWidth;
+            float maxX = minX + perWidth - MIN_HORIZONTAL_SPACING;
+            layoutNode(root, minX, maxX, startY);
+        }
+        for (BinaryTreeNode<?> root : roots) {
+            drawEdges(root);
+        }
+        for (BinaryTreeNode<?> root : roots) {
+            drawNodes(root, highlightInfo);
+        }
     }
 
     private static class NodePosition {
