@@ -60,7 +60,8 @@ public class BinaryTreeStructureRenderer extends DataStructureRenderer<BinaryTre
         nodePositions.clear();
         BinaryTreeNode<?> root = treeStructure.getRoot();
         if (root == null) {
-            if (treeStructure instanceof HuffmanTreeStructure<?> huffman) {
+            if (treeStructure instanceof HuffmanTreeStructure<?>) {
+                HuffmanTreeStructure<?> huffman = (HuffmanTreeStructure<?>) treeStructure;
                 renderForest(huffman, highlightInfo, canvasPos, canvasSize);
             } else {
                 ImGui.text("Tree is empty.");

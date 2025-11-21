@@ -451,7 +451,8 @@ public class UIPanelManager {
                 }
                 int balance = avl.getBalance(node.getUUID());
                 int height = 0;
-                if (node.getExtension() instanceof AVLNodeExtension ext) {
+                if (node.getExtension() instanceof AVLNodeExtension) {
+                    AVLNodeExtension ext = (AVLNodeExtension) node.getExtension();
                     height = ext.getHeight();
                 }
                 return "h=" + height + " b=" + balance;
@@ -467,7 +468,8 @@ public class UIPanelManager {
                 return value.toString();
             });
             treeRenderer.setSecondaryLabelProvider(node -> {
-                if (node.getExtension() instanceof HuffmanNodeExtension ext) {
+                if (node.getExtension() instanceof HuffmanNodeExtension) {
+                    HuffmanNodeExtension ext = (HuffmanNodeExtension) node.getExtension();
                     return "w=" + ext.getWeight();
                 }
                 return null;
