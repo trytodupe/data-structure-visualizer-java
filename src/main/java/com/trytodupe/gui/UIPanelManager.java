@@ -3,7 +3,9 @@ package com.trytodupe.gui;
 import com.trytodupe.Main;
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.datastructure.StackStructure;
+import com.trytodupe.datastructure.tree.BinarySearchTreeStructure;
 import com.trytodupe.datastructure.tree.BinaryTreeStructure;
+import com.trytodupe.datastructure.tree.node.BinaryTreeNode;
 import com.trytodupe.gui.history.OperationHistoryEntry;
 import com.trytodupe.gui.history.OperationHistoryManager;
 import com.trytodupe.gui.history.OperationHistoryStatus;
@@ -14,15 +16,25 @@ import com.trytodupe.gui.renderer.BinaryTreeStructureRenderer;
 import com.trytodupe.gui.renderer.StackStructureRenderer;
 import com.trytodupe.operation.UserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
+import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
 import com.trytodupe.operation.array.user.ArrayInsertUserOperation;
+import com.trytodupe.operation.binarysearchtree.composite.BinarySearchTreeInitCompositeOperation;
+import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeDeleteUserOperation;
+import com.trytodupe.operation.binarysearchtree.user.BinarySearchTreeInsertUserOperation;
+import com.trytodupe.operation.binarytree.composite.BinaryTreeInitCompositeOperation;
+import com.trytodupe.operation.binarytree.user.BinaryTreeDeleteUserOperation;
+import com.trytodupe.operation.binarytree.user.BinaryTreeInsertUserOperation;
+import com.trytodupe.operation.binarytree.user.BinaryTreeUpdateValueUserOperation;
 import com.trytodupe.operation.stack.user.StackInitUserOperation;
 import com.trytodupe.operation.stack.user.StackPopUserOperation;
 import com.trytodupe.operation.stack.user.StackPushUserOperation;
 import imgui.ImGui;
+import imgui.type.ImInt;
 import imgui.type.ImString;
 
 import java.util.Locale;
+import java.util.UUID;
 
 public class UIPanelManager {
 
@@ -45,8 +57,22 @@ public class UIPanelManager {
     private final int[] stackValue = {1};
     private final ImString arrayInitInput = new ImString(128);
     private final ImString stackInitInput = new ImString(128);
+    private final ImString binaryTreeInitInput = new ImString(256);
+    private final ImString binaryTreeInsertParent = new ImString(64);
+    private final ImInt binaryTreeInsertValue = new ImInt(0);
+    private final ImInt binaryTreeChildTypeSelection = new ImInt(0);
+    private final ImString binaryTreeDeleteParent = new ImString(64);
+    private final ImString binaryTreeDeleteNode = new ImString(64);
+    private final ImString binaryTreeUpdateNode = new ImString(64);
+    private final ImInt binaryTreeUpdateValue = new ImInt(0);
+
+    private final ImString bstInitInput = new ImString(256);
+    private final ImInt bstInsertValue = new ImInt(0);
+    private final ImString bstDeleteUuid = new ImString(64);
 
     private String builderErrorMessage = "";
+
+    private static final String[] CHILD_TYPE_LABELS = {"LEFT", "RIGHT"};
 
     public UIPanelManager(PlaybackController playbackController, OperationHistoryManager historyManager) {
         this.playbackController = playbackController;
@@ -82,7 +108,7 @@ public class UIPanelManager {
             }
             if (ImGui.beginTabItem("Tree")) {
                 selectedStructureTab = 2;
-                ImGui.text("Tree operations coming soon.");
+                renderTreeBuilder();
                 ImGui.endTabItem();
             }
             ImGui.endTabBar();
@@ -159,6 +185,117 @@ public class UIPanelManager {
         if (ImGui.button("Pop")) {
             if (ensureStackNotEmpty(stack)) {
                 startNewOperation(new StackPopUserOperation(stack));
+            }
+        }
+    }
+
+    private void renderTreeBuilder() {
+        if (ImGui.beginTabBar("TreeBuilderTabs")) {
+            if (ImGui.beginTabItem("Binary Tree")) {
+                renderBinaryTreeBuilder();
+                ImGui.endTabItem();
+            }
+            if (ImGui.beginTabItem("BST")) {
+                renderBstBuilder();
+                ImGui.endTabItem();
+            }
+            ImGui.endTabBar();
+        }
+    }
+
+    private void renderBinaryTreeBuilder() {
+        BinaryTreeStructure<Integer> tree = Main.getDataStructure(BinaryTreeStructure.class);
+
+        ImGui.text("Initialize (level-order, use 'null' for gaps)");
+        ImGui.inputTextWithHint("Values##BinaryTreeInit", "e.g. 1,2,3,null,5", binaryTreeInitInput);
+        if (ImGui.button("Init Binary Tree")) {
+            Integer[] values = parseNullableIntegerArray(binaryTreeInitInput.get(), "Binary tree values");
+            if (values != null) {
+                startNewOperation(new BinaryTreeInitCompositeOperation<>(tree, values));
+            }
+        }
+
+        ImGui.separator();
+
+        ImGui.inputTextWithHint("Parent UUID (blank=root)", "parent UUID", binaryTreeInsertParent);
+        ImGui.inputInt("Value##BinaryTreeInsertValue", binaryTreeInsertValue);
+        ImGui.combo("Child Type", binaryTreeChildTypeSelection, CHILD_TYPE_LABELS);
+        if (ImGui.button("Insert Node")) {
+            String parentUUID = trimToNull(binaryTreeInsertParent.get());
+            Integer value = binaryTreeInsertValue.get();
+
+            if (parentUUID != null && !ensureTreeNodeExists(tree, parentUUID, "Parent UUID")) {
+                // error already set
+            } else {
+                BinaryTreeNode.ChildType childType = parentUUID == null ? null
+                    : (binaryTreeChildTypeSelection.get() == 0
+                        ? BinaryTreeNode.ChildType.LEFT
+                        : BinaryTreeNode.ChildType.RIGHT);
+                startNewOperation(new BinaryTreeInsertUserOperation<>(tree, parentUUID, value, childType));
+            }
+        }
+
+        ImGui.separator();
+        ImGui.inputTextWithHint("Child UUID##Delete", "child UUID", binaryTreeDeleteNode);
+        ImGui.inputTextWithHint("Parent UUID##Delete", "leave blank to auto-detect", binaryTreeDeleteParent);
+        if (ImGui.button("Delete Node")) {
+            String childUUID = trimToNull(binaryTreeDeleteNode.get());
+            if (childUUID == null) {
+                setBuilderError("Child UUID is required for deletion.");
+            } else if (ensureTreeNodeExists(tree, childUUID, "Child UUID")) {
+                String parentUUID = trimToNull(binaryTreeDeleteParent.get());
+                if (parentUUID != null) {
+                    if (!ensureTreeNodeExists(tree, parentUUID, "Parent UUID")) {
+                        return;
+                    }
+                } else {
+                    BinaryTreeNode<Integer> parentNode = tree.getParent(UUID.fromString(childUUID));
+                    parentUUID = parentNode == null ? null : parentNode.getUUID().toString();
+                }
+                startNewOperation(new BinaryTreeDeleteUserOperation<>(tree, parentUUID, childUUID));
+            }
+        }
+
+        ImGui.separator();
+        ImGui.inputTextWithHint("Node UUID##Update", "node UUID", binaryTreeUpdateNode);
+        ImGui.inputInt("New Value", binaryTreeUpdateValue);
+        if (ImGui.button("Update Value")) {
+            String nodeUUID = trimToNull(binaryTreeUpdateNode.get());
+            if (nodeUUID == null) {
+                setBuilderError("Node UUID is required to update value.");
+            } else if (ensureTreeNodeExists(tree, nodeUUID, "Node UUID")) {
+                startNewOperation(new BinaryTreeUpdateValueUserOperation<>(tree, nodeUUID, binaryTreeUpdateValue.get()));
+            }
+        }
+    }
+
+    private void renderBstBuilder() {
+        BinarySearchTreeStructure<Integer> bst = Main.getDataStructure(BinarySearchTreeStructure.class);
+
+        ImGui.text("Initialize BST (insert order)");
+        ImGui.inputTextWithHint("Values##BSTInit", "e.g. 10,4,15,2", bstInitInput);
+        if (ImGui.button("Init BST")) {
+            int[] raw = parseCommaSeparatedInts(bstInitInput.get(), "BST initial values");
+            if (raw != null) {
+                Integer[] values = boxIntegers(raw);
+                startNewOperation(new BinarySearchTreeInitCompositeOperation<>(bst, values));
+            }
+        }
+
+        ImGui.separator();
+        ImGui.inputInt("Value##BSTInsert", bstInsertValue);
+        if (ImGui.button("Insert Into BST")) {
+            startNewOperation(new BinarySearchTreeInsertUserOperation<>(bst, bstInsertValue.get()));
+        }
+
+        ImGui.separator();
+        ImGui.inputTextWithHint("Node UUID##BSTDelete", "node UUID", bstDeleteUuid);
+        if (ImGui.button("Delete From BST")) {
+            String uuid = trimToNull(bstDeleteUuid.get());
+            if (uuid == null) {
+                setBuilderError("Node UUID is required for BST deletion.");
+            } else if (ensureTreeNodeExists(bst, uuid, "Node UUID")) {
+                startNewOperation(new BinarySearchTreeDeleteUserOperation<>(bst, uuid));
             }
         }
     }
@@ -434,5 +571,68 @@ public class UIPanelManager {
             return false;
         }
         return true;
+    }
+
+    private String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private Integer[] parseNullableIntegerArray(String raw, String contextLabel) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return new Integer[0];
+        }
+        String[] tokens = raw.split(",");
+        Integer[] result = new Integer[tokens.length];
+        for (int i = 0; i < tokens.length; i++) {
+            String token = tokens[i].trim();
+            if (token.isEmpty()) {
+                setBuilderError(contextLabel + ": empty value at position " + (i + 1));
+                return null;
+            }
+            if ("null".equalsIgnoreCase(token)) {
+                result[i] = null;
+            } else {
+                try {
+                    result[i] = Integer.parseInt(token);
+                } catch (NumberFormatException ex) {
+                    setBuilderError(contextLabel + ": '" + token + "' is not a valid integer.");
+                    return null;
+                }
+            }
+        }
+        return result;
+    }
+
+    private Integer[] boxIntegers(int[] raw) {
+        Integer[] result = new Integer[raw.length];
+        for (int i = 0; i < raw.length; i++) {
+            result[i] = raw[i];
+        }
+        return result;
+    }
+
+    private boolean ensureTreeNodeExists(BinaryTreeStructure<?> tree, String uuid, String fieldLabel) {
+        UUID parsed = parseUuid(uuid, fieldLabel);
+        if (parsed == null) {
+            return false;
+        }
+        if (tree.getNode(parsed) == null) {
+            setBuilderError(fieldLabel + " does not exist in the current tree.");
+            return false;
+        }
+        return true;
+    }
+
+    private UUID parseUuid(String uuid, String fieldLabel) {
+        try {
+            return UUID.fromString(uuid);
+        } catch (IllegalArgumentException ex) {
+            setBuilderError(fieldLabel + " is not a valid UUID.");
+            return null;
+        }
     }
 }
