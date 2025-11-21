@@ -18,6 +18,13 @@ public class LinkedListInsertUserOperation extends UserOperation<LinkedListStruc
 
     @Override
     protected void buildOperations() {
-        super.atomicOperations.add(new LinkedListInsertAtomicOperation(index, value));
+        String prevUuid = null;
+        if (index > 0 && index - 1 < dataStructure.size()) {
+            LinkedListStructure.Node prev = dataStructure.getNodeAtIndex(index - 1);
+            if (prev != null) {
+                prevUuid = prev.getUuid();
+            }
+        }
+        super.atomicOperations.add(new LinkedListInsertAtomicOperation(index, value, prevUuid));
     }
 }

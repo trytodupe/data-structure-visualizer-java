@@ -77,7 +77,7 @@ public class LinkedListStructure extends DataStructure {
             node.next = head;
             head = node;
         } else {
-            Node prev = getNode(position - 1);
+            Node prev = getNodeAtIndex(position - 1);
             node.next = prev.next;
             prev.next = node;
         }
@@ -98,7 +98,7 @@ public class LinkedListStructure extends DataStructure {
             removed = head;
             head = head.next;
         } else {
-            Node prev = getNode(position - 1);
+            Node prev = getNodeAtIndex(position - 1);
             removed = prev.next;
             prev.next = removed.next;
         }
@@ -139,7 +139,7 @@ public class LinkedListStructure extends DataStructure {
         return target;
     }
 
-    private Node getNode(int index) {
+    public Node getNodeAtIndex(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }

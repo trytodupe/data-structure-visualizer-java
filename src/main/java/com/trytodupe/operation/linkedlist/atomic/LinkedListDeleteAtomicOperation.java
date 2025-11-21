@@ -7,10 +7,12 @@ import com.trytodupe.operation.IOperationVisitor;
 public class LinkedListDeleteAtomicOperation extends AtomicOperation<LinkedListStructure> {
 
     private final int index;
+    private final String targetUuid;
     private LinkedListStructure.Node removedNode;
 
-    public LinkedListDeleteAtomicOperation(int index) {
+    public LinkedListDeleteAtomicOperation(int index, String targetUuid) {
         this.index = index;
+        this.targetUuid = targetUuid;
     }
 
     public int getIndex() {
@@ -18,7 +20,10 @@ public class LinkedListDeleteAtomicOperation extends AtomicOperation<LinkedListS
     }
 
     public String getRemovedUuid() {
-        return removedNode != null ? removedNode.getUuid() : null;
+        if (removedNode != null) {
+            return removedNode.getUuid();
+        }
+        return targetUuid;
     }
 
     public int getRemovedValue() {
@@ -27,7 +32,14 @@ public class LinkedListDeleteAtomicOperation extends AtomicOperation<LinkedListS
 
     @Override
     public void execute(LinkedListStructure dataStructure) {
-        removedNode = dataStructure.removeAt(index);
+        if (targetUuid != null) {
+            removedNode = dataStructure.removeByUUID(targetUuid);
+            if (removedNode == null) {
+                removedNode = dataStructure.removeAt(index);
+            }
+        } else {
+            removedNode = dataStructure.removeAt(index);
+        }
     }
 
     @Override

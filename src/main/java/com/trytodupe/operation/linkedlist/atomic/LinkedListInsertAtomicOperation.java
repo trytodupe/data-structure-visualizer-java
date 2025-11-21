@@ -8,11 +8,13 @@ public class LinkedListInsertAtomicOperation extends AtomicOperation<LinkedListS
 
     private final int index;
     private final int value;
+    private final String previousUuid;
     private String insertedUuid;
 
-    public LinkedListInsertAtomicOperation(int index, int value) {
+    public LinkedListInsertAtomicOperation(int index, int value, String previousUuid) {
         this.index = index;
         this.value = value;
+        this.previousUuid = previousUuid;
     }
 
     public int getIndex() {
@@ -25,6 +27,10 @@ public class LinkedListInsertAtomicOperation extends AtomicOperation<LinkedListS
 
     public String getInsertedUuid() {
         return insertedUuid;
+    }
+
+    public String getPreviousUuid() {
+        return previousUuid;
     }
 
     @Override

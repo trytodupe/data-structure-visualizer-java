@@ -168,6 +168,9 @@ public class HighlightVisitor implements IOperationVisitor {
 
     @Override
     public void visit(LinkedListInsertAtomicOperation op) {
+        if (op.getPreviousUuid() != null) {
+            highlightInfo.nodeUUIDs.add(UUID.fromString(op.getPreviousUuid()));
+        }
         if (op.getInsertedUuid() != null) {
             highlightInfo.nodeUUIDs.add(UUID.fromString(op.getInsertedUuid()));
         }

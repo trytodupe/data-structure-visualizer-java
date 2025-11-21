@@ -17,7 +17,7 @@ public class LinkedListInitUserOperation extends UserOperation<LinkedListStructu
     @Override
     protected void buildOperations() {
         for (int i = 0; i < values.length; i++) {
-            super.atomicOperations.add(new LinkedListInsertAtomicOperation(i, values[i]));
+            super.atomicOperations.add(new LinkedListInsertAtomicOperation(i, values[i], null));
         }
     }
 }

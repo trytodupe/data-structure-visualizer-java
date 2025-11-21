@@ -16,6 +16,13 @@ public class LinkedListDeleteUserOperation extends UserOperation<LinkedListStruc
 
     @Override
     protected void buildOperations() {
-        super.atomicOperations.add(new LinkedListDeleteAtomicOperation(index));
+        String targetUuid = null;
+        if (index >= 0 && index < dataStructure.size()) {
+            LinkedListStructure.Node node = dataStructure.getNodeAtIndex(index);
+            if (node != null) {
+                targetUuid = node.getUuid();
+            }
+        }
+        super.atomicOperations.add(new LinkedListDeleteAtomicOperation(index, targetUuid));
     }
 }
