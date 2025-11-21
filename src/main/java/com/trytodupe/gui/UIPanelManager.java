@@ -15,6 +15,7 @@ import com.trytodupe.gui.renderer.ArrayStructureRenderer;
 import com.trytodupe.gui.renderer.BinaryTreeStructureRenderer;
 import com.trytodupe.gui.renderer.StackStructureRenderer;
 import com.trytodupe.operation.UserOperation;
+import com.trytodupe.operation.CompositeUserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayDeleteUserOperation;
 import com.trytodupe.operation.array.user.ArrayInitUserOperation;
@@ -365,6 +366,22 @@ public class UIPanelManager {
         UserOperation<?> operation = playbackController.getActiveOperation();
         ImGui.text("Status: " + playbackController.getState().name());
         ImGui.textWrapped(operation.getDescription());
+
+        if (operation instanceof CompositeUserOperation<?> composite) {
+            ImGui.separator();
+            List<UserOperation<?>> children = composite.getChildOperations();
+            int childCount = children.size();
+            int activeIdx = childCount == 0 ? -1 : Math.max(0, Math.min(composite.getActiveChildIndex(), childCount - 1));
+            int displayIdx = (activeIdx < 0) ? 0 : activeIdx + 1;
+            ImGui.text(String.format("Sub-Operation: %d / %d", displayIdx, childCount));
+            if (activeIdx >= 0 && activeIdx < childCount) {
+                UserOperation<?> child = children.get(activeIdx);
+                ImGui.textWrapped("Current: " + child.getDescription());
+                int childProgress = Math.max(child.getCurrentStep() + 1, 0);
+                int childTotal = child.getTotalStep();
+                ImGui.text(String.format("Child progress: %d / %d", childProgress, childTotal));
+            }
+        }
 
         ImGui.separator();
         if (ImGui.button("Step Back")) {

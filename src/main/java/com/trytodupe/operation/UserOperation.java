@@ -132,7 +132,7 @@ public abstract class UserOperation<T extends DataStructure> implements ISeriali
 
     public int jumpTo(int targetStep) {
         this.build();
-        int maxStep = atomicOperations.size() - 1;
+        int maxStep = getTotalStep() - 1;
         int clamped = Math.max(-1, Math.min(targetStep, maxStep));
 
         while (currentStep < clamped) {
