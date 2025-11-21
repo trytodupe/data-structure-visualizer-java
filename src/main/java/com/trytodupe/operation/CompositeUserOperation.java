@@ -15,7 +15,7 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
 
     protected transient List<UserOperation<?>> childOperations;
     protected transient int activeChildIndex = 0;
-    private List<JsonObject> serializedChildOperations;
+    private com.google.gson.JsonArray childOperationSnapshots;
 
     public CompositeUserOperation (T dataStructure) {
         super(dataStructure);
@@ -26,7 +26,9 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
     @Override
     public void build() {
         if (!built) {
-            buildOperations();
+            if (childOperations.isEmpty()) {
+                buildOperations();
+            }
             activeChildIndex = 0;
             built = true;
         }
@@ -119,12 +121,14 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
 
     @Override
     public JsonObject toJson(Gson gson) {
-        List<JsonObject> snapshots = new ArrayList<>();
+        com.google.gson.JsonArray arr = new com.google.gson.JsonArray();
         for (UserOperation<?> childOperation : childOperations) {
-            snapshots.add(childOperation.toJson(gson));
+            arr.add(childOperation.toJson(gson));
         }
-        this.serializedChildOperations = snapshots;
-        return super.toJson(gson);
+        this.childOperationSnapshots = arr;
+        JsonObject result = super.toJson(gson);
+        this.childOperationSnapshots = null;
+        return result;
     }
 
     private UserOperation<?> findNextChildWithSteps() {
@@ -170,15 +174,16 @@ public abstract class CompositeUserOperation<T extends DataStructure> extends Us
         if (this.childOperations == null) {
             this.childOperations = new ArrayList<>();
         }
-        if (this.serializedChildOperations != null && !this.serializedChildOperations.isEmpty()) {
+        if (this.childOperationSnapshots != null && this.childOperationSnapshots.size() > 0) {
             this.childOperations.clear();
-            for (JsonObject childJson : serializedChildOperations) {
+            for (int i = 0; i < childOperationSnapshots.size(); i++) {
+                JsonObject childJson = childOperationSnapshots.get(i).getAsJsonObject();
                 ISerializable child = ISerializable.fromJson(GsonProvider.get(), childJson);
                 if (child instanceof UserOperation<?>) {
                     this.childOperations.add((UserOperation<?>) child);
                 }
             }
-            this.serializedChildOperations = null;
+            this.childOperationSnapshots = null;
         }
         this.activeChildIndex = 0;
         this.currentStep = -1;
