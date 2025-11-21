@@ -49,7 +49,8 @@ public class VisualizationPanel {
                 }
                 int balance = avl.getBalance(node.getUUID());
                 int height = 0;
-                if (node.getExtension() instanceof AVLNodeExtension ext) {
+                if (node.getExtension() instanceof AVLNodeExtension) {
+                    AVLNodeExtension ext = (AVLNodeExtension) node.getExtension();
                     height = ext.getHeight();
                 }
                 return "h=" + height + " b=" + balance;
@@ -62,7 +63,8 @@ public class VisualizationPanel {
                 return value == null ? "*" : value.toString();
             });
             state.treeRenderer.setSecondaryLabelProvider(node -> {
-                if (node.getExtension() instanceof HuffmanNodeExtension ext) {
+                if (node.getExtension() instanceof HuffmanNodeExtension) {
+                    HuffmanNodeExtension ext = (HuffmanNodeExtension) node.getExtension();
                     return "w=" + ext.getWeight();
                 }
                 return null;
