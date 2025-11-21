@@ -2,6 +2,7 @@ package com.trytodupe.operation.stack.user;
 
 import com.trytodupe.datastructure.StackStructure;
 import com.trytodupe.operation.UserOperation;
+import com.trytodupe.operation.common.DataStructureClearAtomicOperation;
 import com.trytodupe.operation.stack.atomic.StackPushAtomicOperation;
 
 import java.util.Arrays;
@@ -22,6 +23,7 @@ public class StackInitUserOperation extends UserOperation<StackStructure> {
 
     @Override
     protected void buildOperations () {
+        super.atomicOperations.add(new DataStructureClearAtomicOperation<>());
         for (int value : initialValues) {
             super.atomicOperations.add(new StackPushAtomicOperation(value));
         }

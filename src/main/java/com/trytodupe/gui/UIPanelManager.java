@@ -516,6 +516,8 @@ public class UIPanelManager {
             if (redoEntry != null) {
                 activeVisualizationClass = redoEntry.getOperation().getDataStructure().getClass();
                 playbackController.start(redoEntry.getOperation());
+                redoEntry.getOperation().build();
+                redoEntry.getOperation().jumpTo(-1);
                 redoEntry.markInProgress();
                 historyManager.setInProgressEntry(redoEntry);
                 activeHistoryEntry = redoEntry;

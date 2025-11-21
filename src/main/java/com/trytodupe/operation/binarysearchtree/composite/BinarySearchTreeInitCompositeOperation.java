@@ -22,6 +22,7 @@ public class BinarySearchTreeInitCompositeOperation<E extends Comparable<E>> ext
 
     @Override
     protected void buildOperations() {
+        dataStructure.clear();
 
         for (E value : values) {
             super.childOperations.add(new BinarySearchTreeInsertUserOperation<>(dataStructure, value));

@@ -2,6 +2,7 @@ package com.trytodupe.operation.array.user;
 
 import com.trytodupe.datastructure.ArrayStructure;
 import com.trytodupe.operation.UserOperation;
+import com.trytodupe.operation.common.DataStructureClearAtomicOperation;
 import com.trytodupe.operation.array.atomic.ArrayResizeAtomicOperation;
 import com.trytodupe.operation.array.atomic.ArrayWriteAtomicOperation;
 
@@ -23,6 +24,7 @@ public class ArrayInitUserOperation extends UserOperation<ArrayStructure> {
 
     @Override
     protected void buildOperations () {
+        super.atomicOperations.add(new DataStructureClearAtomicOperation<>());
         super.atomicOperations.add(new ArrayResizeAtomicOperation(initialValues.length));
 
         for (int i = 0; i < initialValues.length; i++) {

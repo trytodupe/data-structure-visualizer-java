@@ -34,6 +34,7 @@ public class BinaryTreeInitCompositeOperation<E> extends CompositeUserOperation<
 
     @Override
     protected void buildOperations() {
+        super.dataStructure.clear();
         // Store UUIDs of inserted nodes for parent lookup
         List<String> nodeUUIDs = new ArrayList<>();
 
